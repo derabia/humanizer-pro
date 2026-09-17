@@ -33,9 +33,9 @@ build rather than regenerating the file automatically.
 | Class | Count |
 |---|---|
 | lexicon | 25 |
-| signal | 42 |
+| signal | 43 |
 | judgment-only | 79 |
-| **Total** | **146** |
+| **Total** | **147** |
 
 ## EN-* (`en-patterns.md`)
 
@@ -114,6 +114,7 @@ individual rows here; the tier file itself is the map for that content.
 | AR-SH-005 | judgment-only | no compiled regex or signal check; audited by reading the reference entry |
 | AR-SH-006 | lexicon | compiled pattern in `scripts/lib/ar-detector/lexicons.js` |
 | AR-SH-007 | lexicon | compiled pattern in `scripts/lib/ar-detector/lexicons.js` |
+| AR-SH-008 | signal | graded stylometric check (`vocabularyConcentration`) in `scripts/lib/ar-detector/signals.js` |
 
 ## AR-MSA-* (`ar-msa.md`)
 

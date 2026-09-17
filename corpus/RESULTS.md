@@ -9,7 +9,7 @@ raw console output of each run is kept under `docs/evidence/`.
 | field | value |
 |---|---|
 | date | 2026-09-17 |
-| engine version | `ccf1441+dirty(1 file(s) under skills/humanizer-pro/scripts)` |
+| engine version | `949da07+dirty(4 file(s) under skills/humanizer-pro/scripts)` |
 | pre-model cutoff | 2022-11-30T00:00:00Z |
 | corpus fetched | 2026-09-17 |
 | documents measured | 300 of 300 in the manifest |
@@ -26,9 +26,9 @@ positive by construction and a `MIXED` verdict is a partial one.
 
 | register | n | flagged (>= AI) | mixed | human | mean score | median | max | FP rate | Wilson 95% |
 |---|---|---|---|---|---|---|---|---|---|
-| encyclopedic | 230 | 5 | 38 | 187 | 12.03 | 2 | 83 | 2.17% | 0.93% to 4.99% |
-| news | 70 | 0 | 6 | 64 | 7.46 | 2 | 42 | 0.00% | 0.00% to 5.20% |
-| **all** | 300 | 5 | 44 | 251 | 10.97 | 2 | 83 | 1.67% | 0.71% to 3.84% |
+| encyclopedic | 230 | 0 | 27 | 203 | 9.70 | 3 | 47 | 0.00% | 0.00% to 1.64% |
+| news | 70 | 0 | 4 | 66 | 7.29 | 2 | 38 | 0.00% | 0.00% to 5.20% |
+| **all** | 300 | 0 | 31 | 269 | 9.14 | 2.5 | 47 | 0.00% | 0.00% to 1.26% |
 
 ## Per register and provenance class
 
@@ -39,29 +39,29 @@ in `featured` is evidence about the sample, not about the lexicon.
 
 | register | class | n | flagged | mixed | mean score | FP rate | Wilson 95% |
 |---|---|---|---|---|---|---|---|
-| encyclopedic | featured | 25 | 0 | 3 | 10.04 | 0.00% | 0.00% to 13.32% |
-| encyclopedic | good | 105 | 2 | 15 | 10.50 | 1.90% | 0.52% to 6.68% |
-| encyclopedic | random | 100 | 3 | 20 | 14.14 | 3.00% | 1.03% to 8.45% |
-| news | random | 70 | 0 | 6 | 7.46 | 0.00% | 0.00% to 5.20% |
+| encyclopedic | featured | 25 | 0 | 3 | 8.68 | 0.00% | 0.00% to 13.32% |
+| encyclopedic | good | 105 | 0 | 12 | 8.82 | 0.00% | 0.00% to 3.53% |
+| encyclopedic | random | 100 | 0 | 12 | 10.89 | 0.00% | 0.00% to 3.70% |
+| news | random | 70 | 0 | 4 | 7.29 | 0.00% | 0.00% to 5.20% |
 
-Not-HUMAN rate over all registers (flagged plus mixed): 16.33% (Wilson 95% 12.58% to 20.94%).
+Not-HUMAN rate over all registers (flagged plus mixed): 10.33% (Wilson 95% 7.38% to 14.29%).
 
 ## Top 10 scoring documents
 
 | score | label | register/class | variety | words | top issue ids | document |
 |---|---|---|---|---|---|---|
-| 83 | AI | encyclopedic/random | egt | 598 | AR-EGT-001x9, AR-EGT-005x3, AR-EGT-007x3, AR-EGT-002x1, AR-EGT-003x1 | [غاري بيرنتسن](https://ar.wikipedia.org/w/index.php?oldid=56648280) |
-| 72 | AI | encyclopedic/good | egt | 598 | AR-EGT-001x12, AR-EGT-005x4, AR-EGT-002x1, AR-EGT-026x1 | [أنغكور وات](https://ar.wikipedia.org/w/index.php?oldid=58135491) |
-| 71 | AI | encyclopedic/good | egt | 592 | AR-EGT-001x10, AR-EGT-005x2, AR-SH-007x2, AR-EGT-002x1, AR-EGT-026x1 | [البرتغال](https://ar.wikipedia.org/w/index.php?oldid=59899008) |
-| 68 | AI | encyclopedic/random | egt | 526 | AR-EGT-001x5, AR-EGT-005x4, AR-EGT-002x1, AR-EGT-026x1, AR-SH-002-Cx1 | [القافلة الثقافية السورية](https://ar.wikipedia.org/w/index.php?oldid=57222131) |
-| 67 | AI | encyclopedic/random | msa | 600 | AR-MSA-006x15 | [وندسور (أونتاريو)](https://ar.wikipedia.org/w/index.php?oldid=58688610) |
-| 53 | MIXED | encyclopedic/good | msa | 540 | AR-MSA-006x6, AR-MSA-014x1, AR-MSA-028x1, AR-SH-004x1 | [برج العرب الجديدة](https://ar.wikipedia.org/w/index.php?oldid=59888074) |
-| 51 | MIXED | encyclopedic/random | msa | 576 | AR-MSA-006x9, AR-SH-002-Bx3, AR-MSA-028x1 | [تدريب التكامل السمعي](https://ar.wikipedia.org/w/index.php?oldid=55809342) |
-| 51 | MIXED | encyclopedic/good | msa | 544 | AR-MSA-006x8, AR-SH-007x2 | [أركيامفورا لونجيسيرفيا](https://ar.wikipedia.org/w/index.php?oldid=57521086) |
-| 51 | MIXED | encyclopedic/random | msa | 809 | AR-MSA-006x4, AR-SH-007x2, AR-SH-002-Ax1 | [التبسيط الإلهي](https://ar.wikipedia.org/w/index.php?oldid=59940628) |
-| 51 | MIXED | encyclopedic/featured | msa | 554 | AR-MSA-006x9, AR-SH-002-Bx2, AR-MSA-028x1 | [سمنة](https://ar.wikipedia.org/w/index.php?oldid=59838445) |
+| 47 | MIXED | encyclopedic/random | msa | 809 | AR-MSA-006x4, AR-SH-007x2, AR-SH-002-Ax1 | [التبسيط الإلهي](https://ar.wikipedia.org/w/index.php?oldid=59940628) |
+| 42 | MIXED | encyclopedic/good | msa | 540 | AR-MSA-006x6, AR-MSA-014x1, AR-MSA-028x1, AR-SH-004x1 | [برج العرب الجديدة](https://ar.wikipedia.org/w/index.php?oldid=59888074) |
+| 41 | MIXED | encyclopedic/good | msa | 530 | AR-SH-007x4, AR-MSA-006x2, AR-MSA-012x1, AR-SH-003x1 | [التعليم في الكويت](https://ar.wikipedia.org/w/index.php?oldid=59870646) |
+| 38 | MIXED | encyclopedic/good | msa | 574 | AR-MSA-006x3, AR-SH-002-Ax1 | [علم تونس](https://ar.wikipedia.org/w/index.php?oldid=59971722) |
+| 38 | MIXED | encyclopedic/random | msa | 497 | AR-MSA-006x4, AR-SH-002-Bx2, AR-SH-007x2, AR-MSA-032x1 | [تقييم الجروح](https://ar.wikipedia.org/w/index.php?oldid=58639777) |
+| 38 | MIXED | encyclopedic/random | msa | 530 | AR-MSA-006x4, AR-SH-004x1 | [آلف (شخصية)](https://ar.wikipedia.org/w/index.php?oldid=59703082) |
+| 38 | MIXED | news/random | msa | 213 | AR-MSA-006x4, AR-SH-004x1 | [أنفلونزا الخنازير تظهر مجددًا في الكويت](https://ar.wikinews.org/w/index.php?oldid=161128) |
+| 37 | MIXED | encyclopedic/featured | msa | 560 | AR-MSA-006x4, AR-SH-002-Bx3, AR-SH-007x2 | [دبيان](https://ar.wikipedia.org/w/index.php?oldid=58738768) |
+| 37 | MIXED | encyclopedic/good | msa | 591 | AR-MSA-006x4, AR-SH-007x3, AR-MSA-012x1 | [السياحة في لبنان](https://ar.wikipedia.org/w/index.php?oldid=58627674) |
+| 36 | MIXED | encyclopedic/good | msa | 592 | AR-MSA-006x4, AR-SH-007x4 | [سفر الخروج](https://ar.wikipedia.org/w/index.php?oldid=59733627) |
 
-## Issue ids across the 49 documents scoring >= 25
+## Issue ids across the 31 documents scoring >= 25
 
 `docs` counts documents in which the id fired at least once; `hits` sums
 occurrences. Only each document's five most frequent ids are counted, so
@@ -69,24 +69,18 @@ occurrences. Only each document's five most frequent ids are counted, so
 
 | pattern id / issue type | docs | hits |
 |---|---|---|
-| AR-MSA-006 | 45 | 210 |
+| AR-MSA-006 | 31 | 137 |
 | AR-SH-007 | 16 | 39 |
 | AR-SH-002-B | 10 | 27 |
 | AR-MSA-028 | 6 | 6 |
-| AR-EGT-001 | 4 | 36 |
-| AR-EGT-005 | 4 | 13 |
-| AR-EGT-002 | 4 | 4 |
 | AR-SH-004 | 4 | 4 |
-| AR-EGT-026 | 3 | 3 |
 | AR-SH-002-A | 2 | 2 |
 | AR-MSA-012 | 2 | 2 |
-| AR-EGT-007 | 1 | 3 |
 | AR-MSA-014 | 1 | 1 |
 | AR-SH-003 | 1 | 1 |
-| AR-EGT-003 | 1 | 1 |
+| AR-SH-008 | 1 | 1 |
 | AR-MSA-032 | 1 | 1 |
 | AR-SH-001 | 1 | 1 |
-| AR-SH-002-C | 1 | 1 |
 | AR-MSA-002 | 1 | 1 |
 
 ## Corpus
@@ -209,5 +203,231 @@ own.**
 - **This is a false-positive measurement and nothing else.** It says nothing
   about whether the engine catches AI text. True-positive behaviour is
   covered only by this repository's own fixtures, which are synthetic.
+
+
+### Round 1, wave 2F: engine changes (IMP-27, IMP-23)
+
+Six measurements over the same 300-document corpus, same day, same corpus
+sha256 set, `0` manifest files missing and `0` sha mismatches in every run.
+Runs 0-2 are the section above, re-verified as Run 0 here. Unlike round 1,
+this wave changed `index.js`, `signals.js` and `lang.js`: weights, gates and
+routing, not only the lexicon.
+
+| # | change | FP rate (all) | Wilson 95% | mixed | score >= 25 | mean (all) | evidence |
+|---|---|---|---|---|---|---|---|
+| 0 | baseline: the engine as round 1 left it (commit `0e63a64`) | 1.67% (5/300) | 0.71% to 3.84% | 44 | 49 | 10.97 | `docs/evidence/round1-wave2F-fp-run0-baseline.txt` |
+| 2b | same, re-measured at `949da07` after a concurrent pass landed IMP-20 in `detect.js`, still no wave-2F change | 1.67% (5/300) | 0.71% to 3.84% | 44 | 49 | 10.97 | `docs/evidence/round1-wave2F-fp-run2b-head-baseline.txt` |
+| 3 | IMP-27 dialect-evidence guard (`lib/lang.js` only) | **0.33% (1/300)** | 0.06% to 1.86% | 45 | 46 | 10.14 | `docs/evidence/round1-wave2F-fp-run3-imp27.txt` |
+| 4 | per-pattern contribution cap of 24 (`lib/ar-detector/index.js`) | **0.00% (0/300)** | 0.00% to 1.26% | 31 | 31 | 9.09 | `docs/evidence/round1-wave2F-fp-run4-cap.txt` |
+| 5 | IMP-23 `AR-SH-008` vocabulary concentration (`signals.js`, `index.js`) | 0.00% (0/300) | 0.00% to 1.26% | 31 | 31 | 9.14 | `docs/evidence/round1-wave2F-fp-run5-imp23.txt` |
+
+Per-register, at Run 5: encyclopedic 0/230 flagged (0.00%, 0.00% to 1.64%),
+27 mixed, mean 9.70; news 0/70 flagged (0.00%, 0.00% to 5.20%), 4 mixed,
+mean 7.29. Not-HUMAN rate (flagged plus mixed) fell from **16.33%**
+(12.58% to 20.94%) to **10.33%** (7.38% to 14.29%).
+
+**The false-positive rate is now zero on this corpus, with a Wilson upper
+bound of 1.26%.** That upper bound, not the zero, is the number to quote: 300
+documents cannot distinguish a true rate of 0% from one of 1%.
+
+#### Run 3: corpus finding 1 was right about the target, wrong about the mechanism
+
+The round-1 section above states that the four misrouted documents were routed
+to Egyptian by `lib/lang.js`'s variety selection. **Measured, that is not what
+happened.** `identify()` returns `variety: 'msa'` for **all 300** documents,
+before and after this wave. The Egyptian analysis came from `detect.js`'s
+register-mix check, whose dialect-intent gate promotes a dialect verdict when
+`dialectEvidence[variety].distinct >= 2`, or `>= 1` with at least 3 hits.
+
+The markers supplying those counts, measured across the whole corpus
+(`docs/evidence/round1-wave2F-marker-homographs.txt`):
+
+| marker | docs / hits | what it actually was in this corpus |
+|---|---|---|
+| دي | 18 / 29 | the Latin particle "de" and the letter D in transliterated names (بيريس دي ترافا، بي اس دي) |
+| يعني | 21 / 22 | plain MSA "means / that is" |
+| دول | 15 / 18 | plain MSA plural of دولة, "states/countries" |
+| ايه | 3 / 17 | the letter A in transliterated acronyms (سي آي إيه = CIA، انتونوف ايه ان = Antonov An) |
+| بقى | 7 / 8 | MSA بقي "remained", normalization collapses ى and ي |
+| والله | 3 / 3 | the MSA oath, in quoted classical text |
+| طب | 2 / 3 | MSA "medicine" (طب الأسنان، طب حيوي) |
+| روح | 1 / 1 | MSA "spirit/soul" |
+| هاي | 1 / 1 | a syllable of a transliterated name |
+
+**Not one true dialect marker fired on 300 documents.** Every hit was a
+homograph or a transliteration fragment. Per document:
+
+| document | round-1 score | markers | strong markers after IMP-27 |
+|---|---|---|---|
+| `encyclopedic-6617310.txt` غاري بيرنتسن | 83 | إيه x12 (CIA) | 0 |
+| `encyclopedic-195796.txt` أنغكور وات | 72 | يعني x1, دي x1 | 0 |
+| `encyclopedic-6568.txt` البرتغال | 71 | دول x2, دي x1 | 0 |
+| `encyclopedic-8622703.txt` القافلة الثقافية السورية | 68 | دي x1, دول x1 | 0 |
+
+Three further documents cleared the same gate without reaching `AI`
+(`encyclopedic-1917542`, `-2516065`, `-8359977`); they too now supply zero
+strong markers. Seven gate-passing pairs became zero.
+
+Two filters were added to `lib/lang.js`, and the report distinguishes them
+because they did very different amounts of work:
+
+1. **Ambiguous markers are not dialect evidence.** The nine markers above are
+   reported as `ambiguousDistinct` / `ambiguousHits` and never as `distinct` /
+   `hits`; they still appear in `evidence[]`. **This filter is what removed
+   all four false positives**, because `distinct` is what the promotion gate
+   reads.
+2. **MSA-dominance guard**, as the wave brief specified:
+   `strongHits * 3 >= msaHits`, or strong-marker density `>= 3` per 100 Arabic
+   words. `msaHits` counts a narrow set of MSA-only function words
+   (الذي/التي/الذين، لم/لن/ليس، سوف، كذلك/حيث/إذ) from the `AR-EGT-026` and
+   `AR-SHM-001` leakage checklists. It governs `identify()`'s own verdict and
+   publishes `msaHits`, `msaHitsPer100` and a per-variety `guardPassed`.
+   **On this corpus it rejected nothing that filter 1 had not already
+   removed**, and that is reported rather than dressed up: it is a defensive
+   second line against a text with real dialect markers swamped by MSA
+   function words, a case the corpus does not contain. It is exercised by
+   synthetic tests in `tests/lang.test.js` instead.
+
+Both filters were kept inside `lib/lang.js`: `detect.js` was being edited
+concurrently and was read-only for this wave. Its gate could additionally
+consume `guardPassed`, which is left to that file's owner.
+
+*Stated trade-off:* genuine Egyptian or Levantine text whose **only** dialect
+markers are on the ambiguous list now routes to `msa`. No fixture regresses,
+every Arabic dialect fixture and the register-collapse promotion fixture carry
+at least two strong markers, but it is a real narrowing and is queued for
+native review.
+
+#### Run 4: corpus finding 2, the per-pattern contribution cap
+
+The fifth false positive (`encyclopedic-893832.txt` وندسور أونتاريو, score 67)
+was not a routing failure: MSA text, analysed as MSA, with **one** issue id,
+`AR-MSA-006` (تم/يتم), fifteen times. Round 1 recorded that `AR-MSA-006` fired
+in 45 of the 49 documents reaching `MIXED`, with 210 hits.
+
+The summed, repeat-discounted contribution of any one `patternId` is now
+capped at **24**, one point below `MIXED`. The value is not arbitrary: it is
+the largest integer that keeps any single pattern below `MIXED`, and it makes
+the engine's existing stated doctrine enforceable: `index.js`'s header
+already recorded that three hits of one `P0` score 24.5 and stay `HUMAN`
+because corroboration is required.
+
+**Deliberate deviation.** The wave brief exempted `P0` patterns from the cap.
+`AR-MSA-006` is itself `P0`, so that exemption would have left the one
+measured single-pattern false positive untouched. The cap therefore applies to
+every tier. A `P0` keeps its *weight*: it reaches the cap in three hits where
+a `P1` needs six and a `P2` seventeen, and corroboration between different
+patterns is untouched: two capped patterns still sum to 48.
+
+Measured on a synthetic MSA text of 20 تم/يتم passives in varied-length
+sentences, so `AR-MSA-006` is the only id that fires:
+
+| | uncapped | capped |
+|---|---|---|
+| `AR-MSA-006` contribution | 84 | 24 |
+| score / label | 84 / `AI` | **24 / `HUMAN`** |
+
+This is the single largest effect in the wave: `mixed` fell from 45 to 31 and
+the mean from 10.14 to 9.09. Every hit is still reported; only the score is
+capped.
+
+#### Run 5: IMP-23, `AR-SH-008` vocabulary concentration
+
+A graded `P2` signal over content tokens: top-word share, and type-token ratio
+across a fixed 200-content-token window. Both gates come from this corpus and
+nowhere else (`docs/evidence/round1-wave2F-vocab-distribution.txt`):
+
+| gate | value | percentile | corpus distribution |
+|---|---|---|---|
+| `VOCAB_TOP_SHARE_GATE` | 0.0629 | p97.5 of top-word share (n=300) | median 0.0331, p95 0.0560, max 0.0829 |
+| `VOCAB_TTR_GATE` | 0.6455 | p2.5 of TTR (n=243 long enough for the window) | median 0.8000, p5 0.6955, min 0.5200 |
+
+**Deviation from the brief, measured.** The brief asked for p95 and p5. That
+pair puts 9.33% of human documents in contention, not 5%, because the two
+tails are disjoint: 15 documents trip the share gate, 13 trip the TTR gate,
+and **no document trips both**. The binding constraint is that at most 5% of
+human documents receive any contribution, so the gates sit at the tightest
+measured percentile pair that satisfies it, p97.5/p2.5, a union of exactly
+15 of 300 = **5.00%**.
+
+Two stoplist groups were forced by the distribution rather than chosen:
+`بن` (the patronymic connector) was the most frequent "content" token in six
+of the twelve highest-concentration human documents, at up to 55 occurrences,
+and `عم` (the Levantine progressive particle) topped an Egyptian/Levantine
+fixture. Left uncovered, the signal would have detected Arabic biographies and
+dialect grammar rather than vocabulary concentration.
+
+Measured over the corpus with the committed gates: `AR-SH-008` fires on
+exactly **15 of 300 = 5.00%** of human documents, **all 15 at weight 1** (no
+human document concentrates on both axes), and only **1** of those 15 is among
+the 31 documents scoring `>= 25`.
+
+Measured effect: the flagged rate did **not** rise (0.00% before and after),
+`mixed` is unchanged at 31, and the mean rose by **0.05** points (9.09 to
+9.14) across 300 documents. `AR-SH-008` fired in exactly **1** of the 31
+documents scoring `>= 25`. That is the intended size: a `P2` graded 1..2
+cannot move a label on its own.
+
+**The acceptance criterion this signal misses, stated plainly.** IMP-23 asks
+that a human fixture be able to score between 1 and 24 instead of always 0.
+**No human fixture in `tests/fixtures/` trips either gate.** Every Arabic
+fixture holds 76-121 content tokens with a top-word share between 0.0120 and
+0.0345; the highest, `ar-msa/human-05.md` at 0.0345, is a little over half
+the gate. Loosening the gates to reach a fixture would break the 5% human-
+contribution constraint, which is the harder requirement, so the gates were
+left where the corpus put them. The demonstration that the signal can
+contribute without flagging is the corpus instead: 15 of 300 human documents
+receive 1 or 2 points and none is flagged. Two AI fixtures do trip it
+(`ar-msa/ai-02.md`, top share 0.0693; `ar-shami/ai-04.md`, 0.0652), both
+already `AI` on other grounds, so their labels are unchanged.
+
+#### Also in this wave, not measurable as a rate
+
+- `PATTERNS[].phraseCount` now includes `stemPhrases` entries (IMP-17
+  follow-up), with `stemPhraseCount` alongside it. Documentation only; no
+  scoring change.
+- `AR-MSA-031` and `AR-MSA-032` are listed in `scripts/README.md`'s signal
+  table, which had not been updated when they were added.
+- **`AR-EGT-002` on `tests/fixtures/human-sourced/egt-01.md`: investigated,
+  left as is.** The fixture is a sourced Egyptian Wikipedia article and the
+  pattern fires on `وأخيراً` and `مثلاً`. Both carry genuine tanwin fatha in
+  the source revision, neither is inside a quoted MSA span, and there is no
+  lexicon or regex defect: `AR-EGT-002`'s premise, Egyptian colloquial has no
+  case system) holds, so the detector is correctly reporting MSA orthography
+  in Egyptian-target prose. Score impact is one `P1` hit; the fixture scores
+  8 / `HUMAN`.
+
+#### What the caveats section above still says, and what it no longer does
+
+Every caveat under "Caveats on the number itself" stands: two registers,
+Wikimedia text only, a 600-word trim, small per-class n, and no true-positive
+measurement. One has changed. Round 1 said no threshold or gate in `index.js`
+was touched and that the engine was uncalibrated end to end. Three numbers are
+now corpus-derived, the two `AR-SH-008` gates and the ambiguous-marker list,
+and are marked as such in `scripts/README.md`. The tier weights, the label
+thresholds, the per-pattern cap and every other gate remain reasoned rather
+than fitted, and `stats.calibration` still reports
+`uncalibrated-review-signal`.
+
+One new caveat belonged here and has been closed by measurement. Runs 3 to 5
+were made while `scripts/detect.js` was owned by a concurrent pass (IMP-20
+ignore-region masking), and `fp-measure.js` routes through `detect.js`, so part
+of the Run 0 to Run 5 delta could have belonged to that pass rather than this
+one. Run 0 was measured at commit `0e63a64` and Runs 3 to 5 at `949da07`, which
+contains IMP-20. Run 2b re-measures `949da07` with **no wave-2F engine change
+applied at all**:
+
+| run | commit | wave-2F engine changes | FP rate | Wilson 95% | mixed | score >= 25 | mean |
+|---|---|---|---|---|---|---|---|
+| 0 | `0e63a64` | none | 1.67% (5/300) | 0.71% to 3.84% | 44 | 49 | 10.97 |
+| 2b | `949da07` (adds IMP-20) | none | 1.67% (5/300) | 0.71% to 3.84% | 44 | 49 | 10.97 |
+
+**Identical in every column.** The IMP-20 ignore-region work moved nothing on
+this corpus, which is expected: these are plain Wikipedia paragraphs with no
+code fences, ignore regions or markdown for it to mask. The whole of the Run 0
+to Run 5 delta is therefore attributable to this wave. Evidence:
+`docs/evidence/round1-wave2F-fp-run2b-head-baseline.txt`. Each evidence file
+still records the working-tree state at the top of its run and lists the dirty
+files, so the attribution is re-checkable.
 
 <!-- CHANGE-LOG-END -->

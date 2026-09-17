@@ -1,0 +1,80 @@
+round-1 wave 2F, Run 3: after IMP-27 routing guard (lib/lang.js only)
+working tree:  2 files changed, 175 insertions(+), 26 deletions(-)
+
+Arabic false-positive measurement (IMP-01)
+
+date            : 2026-09-17
+engine version  : 949da07+dirty(1 file(s) under skills/humanizer-pro/scripts)
+  dirty         : M skills/humanizer-pro/scripts/lib/lang.js
+corpus cutoff   : 2022-11-30T00:00:00Z
+corpus fetched  : 2026-09-17
+doc length      : >= 150 and <= 600 Arabic words
+thresholds      : MIXED >= 25, AI >= 55
+documents       : 300 measured of 300 in manifest
+
+Per register
+
+register      n    flagged  mixed  human  mean   median  max  FP rate  Wilson 95%    
+------------  ---  -------  -----  -----  -----  ------  ---  -------  --------------
+encyclopedic  230  1        39     190    10.95  2       67   0.43%    0.08% .. 2.42%
+news          70   0        6      64     7.46   2       42   0.00%    0.00% .. 5.20%
+ALL           300  1        45     254    10.14  2       67   0.33%    0.06% .. 1.86%
+
+Per register and provenance class
+
+  encyclopedic/featured: n=25 flagged=0 mixed=3 mean=10.04 FP=0.00% [0.00% .. 13.32%]
+  encyclopedic/good: n=105 flagged=0 mixed=16 mean=9.50 FP=0.00% [0.00% .. 3.53%]
+  encyclopedic/random: n=100 flagged=1 mixed=20 mean=12.71 FP=1.00% [0.18% .. 5.45%]
+  news/random: n=70 flagged=0 mixed=6 mean=7.46 FP=0.00% [0.00% .. 5.20%]
+
+Not-HUMAN rate (flagged + mixed): 15.33% [11.70% .. 19.85%]
+
+Top 10 scoring documents
+
+   67 AI     encyclopedic/random msa 600w  AR-MSA-006x15
+      وندسور (أونتاريو)
+      https://ar.wikipedia.org/w/index.php?oldid=58688610
+   53 MIXED  encyclopedic/good msa 540w  AR-MSA-006x6 AR-MSA-014x1 AR-MSA-028x1 AR-SH-004x1
+      برج العرب الجديدة
+      https://ar.wikipedia.org/w/index.php?oldid=59888074
+   51 MIXED  encyclopedic/random msa 576w  AR-MSA-006x9 AR-SH-002-Bx3 AR-MSA-028x1
+      تدريب التكامل السمعي
+      https://ar.wikipedia.org/w/index.php?oldid=55809342
+   51 MIXED  encyclopedic/good msa 544w  AR-MSA-006x8 AR-SH-007x2
+      أركيامفورا لونجيسيرفيا
+      https://ar.wikipedia.org/w/index.php?oldid=57521086
+   51 MIXED  encyclopedic/random msa 809w  AR-MSA-006x4 AR-SH-007x2 AR-SH-002-Ax1
+      التبسيط الإلهي
+      https://ar.wikipedia.org/w/index.php?oldid=59940628
+   51 MIXED  encyclopedic/featured msa 554w  AR-MSA-006x9 AR-SH-002-Bx2 AR-MSA-028x1
+      سمنة
+      https://ar.wikipedia.org/w/index.php?oldid=59838445
+   45 MIXED  encyclopedic/random msa 524w  AR-MSA-006x7 AR-SH-001x1
+      المؤشر الحيوي للسرطان
+      https://ar.wikipedia.org/w/index.php?oldid=58799752
+   44 MIXED  encyclopedic/featured msa 549w  AR-MSA-006x5 AR-SH-002-Bx2 AR-SH-007x2
+      تأثير أرقام يوم الميلاد
+      https://ar.wikipedia.org/w/index.php?oldid=58380831
+   44 MIXED  encyclopedic/random msa 396w  AR-MSA-006x6 AR-SH-007x2
+      حبس نفس الشهيق العميق
+      https://ar.wikipedia.org/w/index.php?oldid=59638240
+   42 MIXED  encyclopedic/random msa 462w  AR-MSA-006x8
+      الغراب (فلم)
+      https://ar.wikipedia.org/w/index.php?oldid=59116437
+
+Issue ids over the 46 documents scoring >= 25
+
+  AR-MSA-006       docs=  46 hits=214
+  AR-SH-007        docs=  16 hits=39
+  AR-SH-002-B      docs=  10 hits=27
+  AR-MSA-028       docs=   6 hits=6
+  AR-SH-004        docs=   4 hits=4
+  AR-SH-002-A      docs=   2 hits=2
+  AR-MSA-012       docs=   2 hits=2
+  AR-MSA-014       docs=   1 hits=1
+  AR-SH-003        docs=   1 hits=1
+  AR-MSA-032       docs=   1 hits=1
+  AR-SH-001        docs=   1 hits=1
+  AR-MSA-002       docs=   1 hits=1
+
+wrote corpus\RESULTS.md

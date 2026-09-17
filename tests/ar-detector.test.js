@@ -538,3 +538,224 @@ test('IMP-02: the sourced fixtures cover more than one variety, and the header m
     );
   }
 });
+
+// ─── Per-pattern contribution cap (corpus finding 2) ─────────────────────
+
+/**
+ * 20 تم/يتم periphrastic passives in sentences of deliberately VARIED length,
+ * so AR-MSA-006 is the only id that fires: a mechanically uniform version of
+ * the same text also trips AR-SH-004 (uniform rhythm) and AR-MSA-028
+ * (trigram repetition), which would measure those signals instead of the cap.
+ */
+const TWENTY_PASSIVES = [
+  'تم افتتاح المبنى.',
+  'يتم استقبال الزوار في الطابق الأرضي من الصباح الباكر وحتى غروب الشمس، ويجلس الحارس عند المدخل الشمالي يقرأ صحيفته القديمة.',
+  'تمت ترميم الواجهة الحجرية العام الماضي.',
+  'يتم الآن نقل المعروضات الصغيرة إلى قاعة جديدة أوسع وأفضل تهوية.',
+  'تم بناء الجناح الشرقي عام ألف وتسعمئة وأربعين على يد معماري محلي لم يوقع مخططاته قط.',
+  'يتم الترميم ببطء.',
+  'تمت إضافة مصعد.',
+  'يتم فتح القاعة الكبرى أيام الجمعة فقط، لأن السقف الخشبي يحتاج راحة طويلة بين موسم وآخر.',
+  'تم تركيب الإضاءة الجديدة الشهر الماضي بعد نقاش طويل بين القيّمين والمهندسين حول لون الضوء.',
+  'يتم تنظيف الأرضية ليلا.',
+  'تم اقتناء لوحتين من مزاد صغير في مدينة ساحلية لا يعرفها كثيرون، وكانت إحداهما تالفة.',
+  'يتم عرض المجموعة النحاسية في خزانة زجاجية ضيقة.',
+  'تمت طباعة الدليل المصور.',
+  'يتم بيع التذاكر عند الباب، ولا تقبل الحجوزات المسبقة إلا للمدارس والرحلات المنظمة.',
+  'تم تعيين مرشدة جديدة تتحدث ثلاث لغات وتعرف تاريخ الحي بيتا بيتا وشجرة شجرة.',
+  'يتم إغلاق المتحف في الأعياد.',
+  'تم إصلاح السلم الحجري.',
+  'يتم تدوين ملاحظات الزوار في سجل كبير موضوع على منضدة خشبية قديمة عند المخرج.',
+  'تمت استعادة ثلاث قطع كانت مفقودة منذ سنوات طويلة، وعادت إلى مكانها الأصلي في القاعة.',
+  'يتم ذلك كله بميزانية متواضعة.',
+].join(' ');
+
+test('cap: the cap is exported and sits one point below MIXED', () => {
+  assert.equal(THRESHOLDS.PATTERN_CONTRIBUTION_CAP, 24);
+  assert.equal(
+    THRESHOLDS.PATTERN_CONTRIBUTION_CAP, THRESHOLDS.MIXED - 1,
+    'the cap must sit exactly one point below MIXED, so no single pattern can reach it',
+  );
+});
+
+test('cap: 20 تم-passives and nothing else score 24 / HUMAN, not 84 / AI', () => {
+  const r = analyzeText(TWENTY_PASSIVES, { variety: 'msa' });
+
+  // Precondition: AR-MSA-006 is the ONLY id that fires, 20 times.
+  const ids = [...new Set(r.issues.map((i) => i.patternId))];
+  assert.deepEqual(ids, ['AR-MSA-006'], `expected only AR-MSA-006, got ${ids.join(', ')}`);
+  assert.equal(r.issues.length, 20, `expected 20 AR-MSA-006 hits, got ${r.issues.length}`);
+  assert.equal(r.issues[0].severity, 'P0', 'AR-MSA-006 is P0, the cap applies to P0 too');
+
+  // The cap, and the exact resulting score.
+  const capped = (r.stats.cappedPatterns || []).find((c) => c.patternId === 'AR-MSA-006');
+  assert.ok(capped, `expected AR-MSA-006 to be capped, got ${JSON.stringify(r.stats.cappedPatterns)}`);
+  assert.equal(capped.uncapped, 84, 'uncapped subtotal: 14 + 7 + 18 x 3.5 = 84');
+  assert.equal(capped.capped, 24);
+  assert.equal(r.score, 24, 'the documented resulting score');
+  assert.equal(r.label, 'HUMAN');
+  assert.ok(r.score < THRESHOLDS.AI, 'well below the AI threshold');
+  assert.ok(r.score < THRESHOLDS.MIXED, 'and below MIXED: no single pattern can reach it');
+  assert.equal(r.stats.patternContributionCap, THRESHOLDS.PATTERN_CONTRIBUTION_CAP);
+});
+
+test('cap: every hit is still reported even though the score is capped', () => {
+  // The cap is a SCORING rule, not a reporting one, an editor must still see
+  // all 20 passives to fix them.
+  const r = analyzeText(TWENTY_PASSIVES, { variety: 'msa' });
+  assert.equal(r.stats.issueCount, 20);
+  assert.equal(r.stats.p0Count, 20);
+});
+
+test('cap: different patterns still corroborate, two capped patterns sum past MIXED', () => {
+  // علاوة على ذلك (AR-SH-002-A, P0) plus تم/يتم: two independent patterns,
+  // each individually capped, together clear MIXED. The cap suppresses
+  // single-pattern accumulation only.
+  const text = `${TWENTY_PASSIVES} علاوة على ذلك فإن الأمر واضح. علاوة على ذلك يبقى السؤال. `
+    + 'علاوة على ذلك تظل الحاجة قائمة. علاوة على ذلك لا خلاف في هذا.';
+  const r = analyzeText(text, { variety: 'msa' });
+  const ids = new Set(r.issues.map((i) => i.patternId));
+  assert.ok(ids.size >= 2, `expected at least 2 distinct patterns, got ${[...ids].join(', ')}`);
+  assert.ok(
+    r.score >= THRESHOLDS.MIXED,
+    `expected corroborating patterns to clear MIXED, got ${r.score} (${[...ids].join(', ')})`,
+  );
+});
+
+test('cap: AI fixtures still reach THRESHOLDS.AI, they stack distinct patterns', () => {
+  const failures = [];
+  for (const file of AI_FIXTURES) {
+    const text = readFixture(file);
+    const r = analyzeText(text, {
+      variety: varietyOf(text, 'msa'),
+      sourceMode: 'rendered-markdown',
+    });
+    const distinctPatterns = new Set(r.issues.map((i) => i.patternId)).size;
+    if (r.score < THRESHOLDS.AI) {
+      failures.push(`${path.basename(file)} -> ${r.score} (${distinctPatterns} distinct patterns)`);
+    }
+  }
+  assert.deepEqual(failures, [], `AI fixtures below THRESHOLDS.AI after the cap:\n  ${failures.join('\n  ')}`);
+});
+
+// ─── AR-SH-008 vocabulary concentration (IMP-23) ─────────────────────────
+
+const signals = require('../skills/humanizer-pro/scripts/lib/ar-detector/signals.js');
+
+test('AR-SH-008: the gates are the corpus-measured percentiles', () => {
+  // Copied from docs/evidence/round1-wave2F-vocab-distribution.txt. Changing
+  // either number requires a fresh measurement, which is the point of
+  // pinning them here.
+  assert.equal(signals.GATES.VOCAB_TOP_SHARE_GATE, 0.0629);
+  assert.equal(signals.GATES.VOCAB_TTR_GATE, 0.6455);
+  assert.equal(signals.GATES.TTR_WINDOW, 200);
+  assert.equal(signals.GATES.VOCAB_MIN_CONTENT_TOKENS, 80);
+});
+
+test('AR-SH-008: vocabularyConcentration is not applicable below the content-token floor', () => {
+  const v = signals.vocabularyConcentration(['كتاب', 'قلم', 'طاولة']);
+  assert.equal(v.applicable, false);
+  assert.equal(v.topShare, null);
+  assert.equal(v.ttr, null);
+  assert.equal(v.contentTokenCount, 3);
+});
+
+test('AR-SH-008: ttr is null between the share floor and the TTR window', () => {
+  // 100 distinct content tokens: above VOCAB_MIN_CONTENT_TOKENS (80) so the
+  // share is reported, below TTR_WINDOW (200) so the ratio is not, a TTR
+  // over 100 tokens is not comparable to one over 200.
+  const tokens = [];
+  for (let i = 0; i < 100; i += 1) tokens.push(`مادة${'ا'.repeat(i % 9 + 1)}${i}`);
+  const v = signals.vocabularyConcentration(tokens);
+  assert.equal(v.applicable, true);
+  assert.equal(v.ttr, null, 'ttr must be null below the fixed window');
+  assert.equal(typeof v.topShare, 'number');
+  assert.equal(v.ttrWindow, 200);
+});
+
+test('AR-SH-008: the stoplist removes function words, name-chain connectors and dialect particles', () => {
+  const stop = new Set(signals.AR_STOPWORDS_RAW);
+  for (const w of ['في', 'من', 'الذي', 'كان', 'هذا']) {
+    assert.ok(stop.has(w), `${w} must be stoplisted (Arabic function word)`);
+  }
+  for (const w of ['بن', 'ابن', 'ألف', 'مليون']) {
+    assert.ok(stop.has(w), `${w} must be stoplisted (name-chain connector / bare numeral)`);
+  }
+  for (const w of ['اللي', 'عم', 'مش', 'مو', 'شو', 'عشان']) {
+    assert.ok(stop.has(w), `${w} must be stoplisted (dialect function word)`);
+  }
+  // تم/يتم is AR-MSA-006's business; stoplisting it here would hide a real
+  // concentration.
+  for (const w of ['تم', 'يتم']) {
+    assert.ok(!stop.has(w), `${w} must NOT be stoplisted, it is AR-MSA-006's signal`);
+  }
+});
+
+test('AR-SH-008: a concentrated text fires the signal at a graded weight of 1 or 2', () => {
+  // One content word repeated hard, in varied sentences so the rhythm and
+  // trigram signals stay quiet.
+  const sentences = [];
+  for (let i = 0; i < 24; i += 1) {
+    sentences.push(i % 3 === 0
+      ? 'الطاقة الشمسية واعدة.'
+      : `وتنتشر الطاقة الشمسية في منطقة رقم ${i} حيث يتوافر الإشعاع بوفرة ملحوظة عبر فصول السنة كلها`
+        + ' وتتسع رقعة الاستثمار فيها عاما بعد عام على نحو مطرد.');
+  }
+  const r = analyzeText(sentences.join(' '), { variety: 'msa' });
+  const hit = r.issues.find((i) => i.patternId === 'AR-SH-008');
+  assert.ok(hit, `expected AR-SH-008 to fire, got ${[...new Set(r.issues.map((i) => i.patternId))].join(', ')}`);
+  assert.equal(hit.severity, 'P2');
+  assert.ok(hit.weight === 1 || hit.weight === 2, `expected a graded weight of 1 or 2, got ${hit.weight}`);
+  assert.ok(hit.weight <= WEIGHTS.P2, 'a graded weight may never exceed its tier weight');
+  assert.equal(r.stats.vocabularyConcentration.applicable, true);
+  assert.ok(r.stats.vocabularyConcentration.shareTrips || r.stats.vocabularyConcentration.ttrTrips);
+});
+
+test('AR-SH-008: human fixtures stay well inside the gates', () => {
+  // The gates were set at the 97.5th/2.5th percentiles of a 300-document
+  // human corpus so that at most 5% of human documents receive ANY
+  // contribution. None of this repository's human fixtures does.
+  const offenders = [];
+  for (const file of HUMAN_FIXTURES) {
+    const text = readFixture(file);
+    const r = analyzeText(text, {
+      variety: varietyOf(text, 'msa'),
+      sourceMode: 'rendered-markdown',
+    });
+    if (r.issues.some((i) => i.patternId === 'AR-SH-008')) {
+      offenders.push(`${path.basename(file)} -> ${JSON.stringify(r.stats.vocabularyConcentration)}`);
+    }
+  }
+  assert.deepEqual(offenders, [], `AR-SH-008 fired on a human fixture:\n  ${offenders.join('\n  ')}`);
+});
+
+test('AR-SH-008: is listed in PATTERNS as a graded signal', () => {
+  const entry = PATTERNS.find((p) => p.id === 'AR-SH-008');
+  assert.ok(entry, 'AR-SH-008 must appear in PATTERNS');
+  assert.equal(entry.scope, 'signal');
+  assert.equal(entry.severity, 'P2');
+  assert.equal(entry.graded, '1..2');
+});
+
+// ─── IMP-17 follow-up, stem phrases count as phrases ────────────────────
+
+test('PATTERNS.phraseCount includes stemPhrases entries', () => {
+  const lexicons = require('../skills/humanizer-pro/scripts/lib/ar-detector/lexicons.js');
+  const withStems = [];
+  for (const [, list] of Object.entries(lexicons.RAW_PATTERNS)) {
+    for (const p of list) {
+      if (p.stemPhrases && p.stemPhrases.length) withStems.push(p);
+    }
+  }
+  assert.ok(withStems.length > 0, 'expected at least one pattern with stemPhrases (AR-SH-001, IMP-17)');
+  for (const raw of withStems) {
+    const entry = PATTERNS.find((p) => p.id === raw.id && p.scope !== 'signal');
+    assert.ok(entry, `${raw.id} must appear in PATTERNS`);
+    assert.equal(
+      entry.phraseCount,
+      (raw.phrases || []).length + raw.stemPhrases.length,
+      `${raw.id}: phraseCount must include its ${raw.stemPhrases.length} stem phrase(s)`,
+    );
+    assert.equal(entry.stemPhraseCount, raw.stemPhrases.length);
+  }
+});

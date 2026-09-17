@@ -177,3 +177,13 @@ term names for the five classical defects, so it carries no
 Total flagged items after round 1: 7 (2 shared, 5 MSA). Line numbers for
 items 4 to 7 are given by pattern id rather than by line, because the
 entries sit at the end of a file that later rounds will keep appending to.
+
+## Round 1 addition: ambiguous dialect markers (needs Egyptian review)
+
+`scripts/lib/lang.js` now treats these nine tokens as ambiguous (they are MSA
+homographs or transliteration fragments in the 300-document human corpus) and
+never counts them as strong dialect evidence: دي، يعني، دول، ايه، بقى، والله،
+طب، روح، هاي. Consequence: a short Egyptian text that carries only these
+markers routes to MSA. Question for the reviewer: is there realistic Egyptian
+prose whose only dialect markers are from this list? If yes, name two or three
+strong markers that always co-occur so they can be added to the strong list.

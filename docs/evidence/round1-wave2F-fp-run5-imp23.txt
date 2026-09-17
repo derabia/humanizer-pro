@@ -1,0 +1,84 @@
+round-1 wave 2F, Run 5 (authoritative, after the full documentation pass): IMP-27 guard + per-pattern cap + AR-SH-008
+working tree:  10 files changed, 1338 insertions(+), 48 deletions(-)
+
+Arabic false-positive measurement (IMP-01)
+
+date            : 2026-09-17
+engine version  : 949da07+dirty(4 file(s) under skills/humanizer-pro/scripts)
+  dirty         : M skills/humanizer-pro/scripts/README.md
+  dirty         : skills/humanizer-pro/scripts/lib/ar-detector/index.js
+  dirty         : skills/humanizer-pro/scripts/lib/ar-detector/signals.js
+  dirty         : skills/humanizer-pro/scripts/lib/lang.js
+corpus cutoff   : 2022-11-30T00:00:00Z
+corpus fetched  : 2026-09-17
+doc length      : >= 150 and <= 600 Arabic words
+thresholds      : MIXED >= 25, AI >= 55
+documents       : 300 measured of 300 in manifest
+
+Per register
+
+register      n    flagged  mixed  human  mean  median  max  FP rate  Wilson 95%    
+------------  ---  -------  -----  -----  ----  ------  ---  -------  --------------
+encyclopedic  230  0        27     203    9.70  3       47   0.00%    0.00% .. 1.64%
+news          70   0        4      66     7.29  2       38   0.00%    0.00% .. 5.20%
+ALL           300  0        31     269    9.14  2.5     47   0.00%    0.00% .. 1.26%
+
+Per register and provenance class
+
+  encyclopedic/featured: n=25 flagged=0 mixed=3 mean=8.68 FP=0.00% [0.00% .. 13.32%]
+  encyclopedic/good: n=105 flagged=0 mixed=12 mean=8.82 FP=0.00% [0.00% .. 3.53%]
+  encyclopedic/random: n=100 flagged=0 mixed=12 mean=10.89 FP=0.00% [0.00% .. 3.70%]
+  news/random: n=70 flagged=0 mixed=4 mean=7.29 FP=0.00% [0.00% .. 5.20%]
+
+Not-HUMAN rate (flagged + mixed): 10.33% [7.38% .. 14.29%]
+
+Top 10 scoring documents
+
+   47 MIXED  encyclopedic/random msa 809w  AR-MSA-006x4 AR-SH-007x2 AR-SH-002-Ax1
+      التبسيط الإلهي
+      https://ar.wikipedia.org/w/index.php?oldid=59940628
+   42 MIXED  encyclopedic/good msa 540w  AR-MSA-006x6 AR-MSA-014x1 AR-MSA-028x1 AR-SH-004x1
+      برج العرب الجديدة
+      https://ar.wikipedia.org/w/index.php?oldid=59888074
+   41 MIXED  encyclopedic/good msa 530w  AR-SH-007x4 AR-MSA-006x2 AR-MSA-012x1 AR-SH-003x1
+      التعليم في الكويت
+      https://ar.wikipedia.org/w/index.php?oldid=59870646
+   38 MIXED  encyclopedic/good msa 574w  AR-MSA-006x3 AR-SH-002-Ax1
+      علم تونس
+      https://ar.wikipedia.org/w/index.php?oldid=59971722
+   38 MIXED  encyclopedic/random msa 497w  AR-MSA-006x4 AR-SH-002-Bx2 AR-SH-007x2 AR-MSA-032x1
+      تقييم الجروح
+      https://ar.wikipedia.org/w/index.php?oldid=58639777
+   38 MIXED  encyclopedic/random msa 530w  AR-MSA-006x4 AR-SH-004x1
+      آلف (شخصية)
+      https://ar.wikipedia.org/w/index.php?oldid=59703082
+   38 MIXED  news/random msa 213w  AR-MSA-006x4 AR-SH-004x1
+      أنفلونزا الخنازير تظهر مجددًا في الكويت
+      https://ar.wikinews.org/w/index.php?oldid=161128
+   37 MIXED  encyclopedic/featured msa 560w  AR-MSA-006x4 AR-SH-002-Bx3 AR-SH-007x2
+      دبيان
+      https://ar.wikipedia.org/w/index.php?oldid=58738768
+   37 MIXED  encyclopedic/good msa 591w  AR-MSA-006x4 AR-SH-007x3 AR-MSA-012x1
+      السياحة في لبنان
+      https://ar.wikipedia.org/w/index.php?oldid=58627674
+   36 MIXED  encyclopedic/good msa 592w  AR-MSA-006x4 AR-SH-007x4
+      سفر الخروج
+      https://ar.wikipedia.org/w/index.php?oldid=59733627
+
+Issue ids over the 31 documents scoring >= 25
+
+  AR-MSA-006       docs=  31 hits=137
+  AR-SH-007        docs=  16 hits=39
+  AR-SH-002-B      docs=  10 hits=27
+  AR-MSA-028       docs=   6 hits=6
+  AR-SH-004        docs=   4 hits=4
+  AR-SH-002-A      docs=   2 hits=2
+  AR-MSA-012       docs=   2 hits=2
+  AR-MSA-014       docs=   1 hits=1
+  AR-SH-003        docs=   1 hits=1
+  AR-SH-008        docs=   1 hits=1
+  AR-MSA-032       docs=   1 hits=1
+  AR-SH-001        docs=   1 hits=1
+  AR-MSA-002       docs=   1 hits=1
+
+wrote corpus\RESULTS.md

@@ -371,6 +371,74 @@ real — the tell is passive-as-default, not passive voice itself.
 
 ---
 
+## AR-SH-008 - Vocabulary Concentration | تركيز المعجم
+
+**Severity:** P2 (graded 1..2; see the note at the end of this entry)
+
+**Provenance:** `origin: humanizer-pro`. No upstream file in
+`_sources/semitic` states a lexical-variety rule: the three variety files
+address sentence *rhythm* (SM-MSA-013, SM-EGT-010, SM-SHM-024) and synonym
+*rotation* for one claim (SM-MSA-007, absorbed as `ar-msa.md` AR-MSA-007), but
+none measures how concentrated a document's vocabulary is. The idea of a
+statistical, corpus-calibrated lexical signal is credited to
+finestructure-ai/humanizer-multilingual's statistical layer (MIT); the two
+statistics chosen here, the stoplist, and both gates are this project's own
+and are derived from this project's own measurement, not reproduced from that
+source. Tracked as IMP-23 in `docs/COMPETITIVE-ANALYSIS.md` §6.
+
+**Family:** register-flattening
+
+**What it looks like:** One content word carries an unusually large share of
+the document's content vocabulary, or the vocabulary as a whole is unusually
+repetitive over a fixed window. The text keeps re-naming its subject where a
+human writer would pronominalize it, let context carry it, or reach for a
+near-synonym or a hyponym.
+
+**Why it reads as AI:** Generation optimizes each sentence locally and has no
+running memory of how often it has already named the topic, so the keyword
+gets re-inserted at every opportunity. A human writer tires of their own
+keyword and varies it, or drops it entirely once the referent is established;
+Arabic in particular has rich pronominal suffixes and a productive إضافة that
+make re-naming avoidable.
+
+**Fix:** Replace the repeated keyword with a pronoun or a pronominal suffix
+where the referent is unambiguous, with a precise near-synonym or a narrower
+term where it adds information, and with nothing at all where the context
+already supplies it. Do **not** rotate through synonyms mechanically; that is
+AR-MSA-007, a different tell.
+
+**Before / after** (MSA, `origin: humanizer-pro`):
+
+<!-- NATIVE-REVIEW: msa -->
+- ❌ تُعدّ الطاقة الشمسية خيارًا واعدًا. وتنتشر الطاقة الشمسية في دول الخليج،
+  وتعتمد الطاقة الشمسية على وفرة الإشعاع، وتحتاج الطاقة الشمسية إلى مساحات
+  واسعة، ولذلك تتوسع مشاريع الطاقة الشمسية في الصحراء.
+- ✓ تُعدّ الطاقة الشمسية خيارًا واعدًا، وهي تنتشر في دول الخليج لوفرة الإشعاع
+  هناك. لكنها تحتاج مساحات واسعة، ولذلك تتوسع مشاريعها في الصحراء لا في
+  المدن.
+<!-- /NATIVE-REVIEW -->
+
+**Carve-outs:** A technical, legal or lexicographic text names its term of art
+on purpose and must not be edited toward vagueness, a standards document that
+says «الواجهة» forty times is being precise, not repetitive. Arabic biography
+repeats بن through a patronymic chain, and statistical prose repeats نسبة and
+ألف; those are structural, not topical, and the engine's stoplist excludes
+them for exactly that reason. This is the weakest tier in the set and must
+never be the only reason a document is called generated.
+
+**Measured, not asserted.** Unlike every other entry in this file, this one's
+thresholds come from a measurement rather than from an editorial reading. They
+are the 97.5th percentile of top-word share and the 2.5th percentile of
+type-token ratio over the 300-document pre-2022 human Arabic control corpus
+(`corpus/README.md`), set so that at most 5% of human documents receive any
+contribution at all. The distribution is saved in
+`docs/evidence/round1-wave2F-vocab-distribution.txt` and the implementation in
+`lib/ar-detector/signals.js`. The signal is **graded**: it contributes 1 point
+when one of the two statistics crosses its gate and 2 when both do, which is
+why it is the only entry in this skill whose weight is not simply its tier's.
+
+---
+
 ## Typography and numbers
 
 **Origin: humanizer-pro.** None of the three upstream variety files address

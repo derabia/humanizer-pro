@@ -9,13 +9,24 @@
  *   confidence: 0..1,
  *   evidence: [{ marker, count, variety }],
  *   arabicRatio: 0..1,
- *   dialectEvidence: { egt: { distinct, hits }, shami: { distinct, hits } } | null,
+ *   dialectEvidence: {
+ *     egt:   { distinct, hits, ambiguousDistinct, ambiguousHits, guardPassed },
+ *     shami: { distinct, hits, ambiguousDistinct, ambiguousHits, guardPassed },
+ *     msaHits, msaHitsPer100,
+ *   } | null,
  * }
  *
  * dialectEvidence reports marker evidence per dialect REGARDLESS of whether
  * it cleared the strong-evidence threshold below — so a caller can see weak
  * dialect evidence even when `variety` came back 'msa'. null for lang
  * 'en'/'unknown' or when `override` was used (no scoring ran).
+ *
+ * `distinct` / `hits` count STRONG markers only; markers in
+ * AMBIGUOUS_MARKERS (below) are reported separately as
+ * `ambiguousDistinct` / `ambiguousHits` and never as `distinct` / `hits`.
+ * Every marker, strong or ambiguous, still appears in `evidence[]`.
+ * `msaHits` counts MSA_ANCHOR_WORDS occurrences and `guardPassed` records
+ * the IMP-27 MSA-dominance guard outcome for that variety.
  *
  * Routing rule: Arabic-script ratio is computed over LETTERS only (Arabic
  * script letters + Latin letters; digits, punctuation, and whitespace are
@@ -29,9 +40,10 @@
  * Dialect scoring uses whole-word marker matching against the normalized
  * text (via lib/arabic-normalize.js) so tashkeel/alef-form variation
  * doesn't cause misses. Default variety is 'msa' unless dialect evidence
- * clears BOTH thresholds: at least 2 distinct markers found, AND marker
- * density >= 1 per 100 Arabic words. Confidence rises with distinct-marker
- * count and density; it never reaches 1 except via override.
+ * clears BOTH thresholds: at least 2 distinct STRONG markers found, AND
+ * strong-marker density >= 1 per 100 Arabic words, AND the IMP-27
+ * MSA-dominance guard below. Confidence rises with distinct-marker count
+ * and density; it never reaches 1 except via override.
  *
  * override: { lang, variety } short-circuits everything and returns that
  * exact lang/variety with confidence 1 and evidence [{ marker: 'override' }].
@@ -96,6 +108,90 @@ const LEVANTINE_MARKERS = [
   'هيك', 'منيح', 'منيحة',
 ];
 
+// ─── IMP-27: ambiguous markers (MSA homographs) ──────────────────────────
+//
+// Every marker listed here fired on ordinary pre-2022 human Arabic prose in
+// the 300-document control corpus, because each one is ALSO an ordinary MSA
+// word or a fragment of an Arabic transliteration of a foreign name. The
+// measured firings are saved in
+// `docs/evidence/round1-wave2F-marker-homographs.txt`; that file is the
+// entire basis for this list, and nothing was added to it on intuition.
+//
+//   dialect marker | docs / hits | what it actually was in the corpus
+//   دي     18 docs / 29 hits: the Latin particle "de" and the letter D in
+//                              transliterated names (بيريس دي ترافا،
+//                              بي اس دي), not Egyptian "this-f".
+//   يعني   21 / 22:          plain MSA "means / that is" (X يعني Y).
+//   دول    15 / 18:          plain MSA plural of دولة, "states/countries"
+//                              (دول العالم المتقدمة), not Egyptian "those".
+//   ايه     3 / 17:          the letter A in transliterated acronyms
+//                              (سي آي إيه = CIA، انتونوف ايه ان = Antonov An).
+//   بقى     7 /  8:          MSA بقي "remained" (normalization maps
+//                              ى -> ي, so بقي and بقى collapse).
+//   والله   3 /  3:          the MSA oath, common in quoted classical text.
+//   طب      2 /  3:          MSA "medicine" (طب الأسنان، طب حيوي).
+//   روح     1 /  1:          MSA "spirit/soul".
+//   هاي     1 /  1:          a syllable of a transliterated name.
+//
+// Effect: an ambiguous marker never counts toward `distinct` or `hits`, so
+// it can neither carry a dialect verdict here nor satisfy detect.js's
+// register-mix "dialect intent" gate on its own. It is still reported in
+// `evidence[]` and counted under `ambiguousDistinct` / `ambiguousHits`, so
+// nothing is hidden from a caller.
+//
+// Stated trade-off: genuine Egyptian or Levantine text whose ONLY dialect
+// markers are on this list now routes to 'msa'. No fixture in
+// tests/fixtures/ regresses (every one of them carries at least two strong
+// markers), but this is a real narrowing and belongs on the native-review
+// queue, see docs/NATIVE-REVIEW.md.
+const AMBIGUOUS_MARKERS = [
+  'دي', 'يعني', 'دول', 'ايه', 'إيه', 'بقى', 'بقي', 'والله', 'طب', 'روح', 'هاي',
+];
+
+// ─── IMP-27: MSA anchor words ────────────────────────────────────────────
+//
+// A small set of function words and constructions that are unambiguously
+// Modern Standard Arabic and have a distinct dialect counterpart, taken from
+// the MSA -> Egyptian leakage checklist in `references/ar-egyptian.md`
+// (AR-EGT-026) and its Levantine twin (AR-SHM-001): relatives الذي/التي/الذين
+// (dialect: اللي), negation لم/لن/ليس (dialect: مش / ما...ش / مو), the future
+// particle سوف (dialect: حـ / رح), and the connectives كذلك/حيث/إذ, which have
+// no spoken-register equivalent at all.
+//
+// Deliberately NARROWER than lexicons.js's MSA_FUNCTION_WORDS: that list is
+// built for the msa-leakage SCORING signal and includes items (جدا، فقط، كيف،
+// أيضا) that appear freely in written dialect too. Using it here would make
+// the guard below fire on real dialect text.
+const MSA_ANCHOR_WORDS = [
+  'الذي', 'التي', 'الذين', 'اللذان', 'اللتان', 'اللواتي', 'اللاتي',
+  'لم', 'لن', 'ليس', 'ليست',
+  'سوف',
+  'كذلك', 'حيث', 'إذ',
+];
+
+// ─── IMP-27: guard constants ─────────────────────────────────────────────
+//
+// MSA_DOMINANCE_RATIO: a dialect verdict requires
+//   strongHits * 3 >= msaHits
+// i.e. MSA-only function-word evidence may outnumber dialect-marker evidence
+// by at most 3 to 1. Above that the text is MSA prose containing a few
+// dialect-looking words, which is exactly the false positive corpus finding
+// 1 describes.
+//
+// HIGH_DENSITY_PER_100: the escape hatch. Dialect text that is genuinely
+// dense in markers (>= 3 strong hits per 100 Arabic words) is a dialect
+// verdict regardless of how many MSA anchors it also carries, because
+// dialect writing does legitimately reach for الذي and لم on occasion.
+//
+// DISTINCT_MIN / DENSITY_PER_100 are the pre-existing strong-evidence
+// thresholds, named here so all four numbers are exported together.
+const GUARD = {
+  DISTINCT_MIN: 2,
+  DENSITY_PER_100: 1,
+  MSA_DOMINANCE_RATIO: 3,
+  HIGH_DENSITY_PER_100: 3,
+};
+
 // ─── Quoted-speech masking ───────────────────────────────────────────────
 //
 // A narrator writing in one register (typically MSA) who quotes a speaker
@@ -150,6 +246,16 @@ const DIALECT_INDEX = new Map([
   ...buildMarkerIndex(EGYPTIAN_MARKERS, 'egt'),
   ...buildMarkerIndex(LEVANTINE_MARKERS, 'shami'),
 ]);
+
+// Ambiguous markers and MSA anchors are compared against NORMALIZED tokens,
+// so both sets are normalized at module load exactly as the document text
+// will be (taMarbuta: false, the same setting used for scoring).
+const AMBIGUOUS_SET = new Set(
+  AMBIGUOUS_MARKERS.map((w) => normalize(w, { taMarbuta: false }).normalized),
+);
+const MSA_ANCHOR_SET = new Set(
+  MSA_ANCHOR_WORDS.map((w) => normalize(w, { taMarbuta: false }).normalized),
+);
 
 // ─── Script ratio ────────────────────────────────────────────────────────
 
@@ -250,21 +356,32 @@ function identify(text, options) {
 
   const counts = new Map(); // marker -> count
   const varietyOf = new Map(); // marker -> variety
+  let msaHits = 0; // IMP-27: unambiguous MSA-only function words
   for (const word of words) {
+    if (MSA_ANCHOR_SET.has(word)) msaHits += 1;
     const variety = DIALECT_INDEX.get(word);
     if (!variety) continue;
     counts.set(word, (counts.get(word) || 0) + 1);
     varietyOf.set(word, variety);
   }
 
-  const distinctMarkers = counts.size;
-  const totalMarkerHits = Array.from(counts.values()).reduce((a, b) => a + b, 0);
-  const density = wordCount > 0 ? (totalMarkerHits / wordCount) * 100 : 0; // per 100 words
-
-  // Tally by variety to pick the dominant dialect when evidence clears the
-  // threshold.
-  const varietyTotals = new Map(); // variety -> hit count
+  // IMP-27: only STRONG markers count as dialect evidence. Ambiguous ones
+  // (MSA homographs, see AMBIGUOUS_MARKERS) are tallied separately.
+  let distinctMarkers = 0;
+  let totalMarkerHits = 0;
   for (const [marker, count] of counts) {
+    if (AMBIGUOUS_SET.has(marker)) continue;
+    distinctMarkers += 1;
+    totalMarkerHits += count;
+  }
+  const density = wordCount > 0 ? (totalMarkerHits / wordCount) * 100 : 0; // per 100 words
+  const msaHitsPer100 = wordCount > 0 ? (msaHits / wordCount) * 100 : 0;
+
+  // Tally STRONG hits by variety to pick the dominant dialect when evidence
+  // clears the threshold.
+  const varietyTotals = new Map(); // variety -> strong hit count
+  for (const [marker, count] of counts) {
+    if (AMBIGUOUS_SET.has(marker)) continue;
     const variety = varietyOf.get(marker);
     varietyTotals.set(variety, (varietyTotals.get(variety) || 0) + count);
   }
@@ -272,33 +389,62 @@ function identify(text, options) {
   // Per-variety evidence, independent of the strong-evidence threshold, so
   // a caller can see WEAK dialect evidence even when MSA wins outright
   // (e.g. detect.js's register-mix check, ar-egyptian.md Category 1).
-  const dialectEvidence = { egt: { distinct: 0, hits: 0 }, shami: { distinct: 0, hits: 0 } };
+  const dialectEvidence = {
+    egt: { distinct: 0, hits: 0, ambiguousDistinct: 0, ambiguousHits: 0, guardPassed: false },
+    shami: { distinct: 0, hits: 0, ambiguousDistinct: 0, ambiguousHits: 0, guardPassed: false },
+    msaHits,
+    msaHitsPer100: Math.round(msaHitsPer100 * 100) / 100,
+  };
   for (const [marker, count] of counts) {
     const variety = varietyOf.get(marker);
-    if (dialectEvidence[variety]) {
-      dialectEvidence[variety].distinct += 1;
-      dialectEvidence[variety].hits += count;
+    const bucket = dialectEvidence[variety];
+    if (!bucket) continue;
+    if (AMBIGUOUS_SET.has(marker)) {
+      bucket.ambiguousDistinct += 1;
+      bucket.ambiguousHits += count;
+    } else {
+      bucket.distinct += 1;
+      bucket.hits += count;
     }
   }
 
-  const hasStrongEvidence = distinctMarkers >= 2 && density >= 1;
+  // IMP-27 MSA-dominance guard, recorded per variety. A variety passes when
+  // its own strong-marker evidence is not swamped by MSA-only function-word
+  // evidence, or when its marker density is high enough to stand on its own.
+  for (const variety of ['egt', 'shami']) {
+    const bucket = dialectEvidence[variety];
+    const varietyDensity = wordCount > 0 ? (bucket.hits / wordCount) * 100 : 0;
+    bucket.guardPassed = bucket.hits > 0
+      && (bucket.hits * GUARD.MSA_DOMINANCE_RATIO >= msaHits
+        || varietyDensity >= GUARD.HIGH_DENSITY_PER_100);
+  }
+
+  const hasStrongEvidence = distinctMarkers >= GUARD.DISTINCT_MIN
+    && density >= GUARD.DENSITY_PER_100;
 
   let resultVariety = 'msa';
   let confidence;
   const evidence = [];
 
-  if (hasStrongEvidence) {
-    // Dominant variety by total hit count; ties broken by first-seen key
-    // order (stable, deterministic given Map iteration order == insertion
-    // order, which here follows token order in the text).
-    let bestVariety = null;
-    let bestCount = -1;
-    for (const [variety, count] of varietyTotals) {
-      if (count > bestCount) {
-        bestCount = count;
-        bestVariety = variety;
-      }
+  // Dominant variety by total STRONG hit count; ties broken by first-seen
+  // key order (stable, deterministic given Map iteration order == insertion
+  // order, which here follows token order in the text).
+  let bestVariety = null;
+  let bestCount = -1;
+  for (const [variety, count] of varietyTotals) {
+    if (count > bestCount) {
+      bestCount = count;
+      bestVariety = variety;
     }
+  }
+
+  // IMP-27: a dialect verdict needs the strong-evidence thresholds AND the
+  // MSA-dominance guard for the winning variety. Failing the guard returns
+  // 'msa'; `dialectEvidence` still carries the full per-variety tallies and
+  // `guardPassed: false`, so the caller can see exactly why.
+  const guardPassed = bestVariety !== null && dialectEvidence[bestVariety].guardPassed;
+
+  if (hasStrongEvidence && guardPassed) {
     resultVariety = bestVariety;
 
     for (const [marker, count] of counts) {
@@ -339,4 +485,8 @@ module.exports = {
     egt: EGYPTIAN_MARKERS.slice(),
     shami: LEVANTINE_MARKERS.slice(),
   },
+  // IMP-27
+  AMBIGUOUS_MARKERS: AMBIGUOUS_MARKERS.slice(),
+  MSA_ANCHOR_WORDS: MSA_ANCHOR_WORDS.slice(),
+  GUARD,
 };

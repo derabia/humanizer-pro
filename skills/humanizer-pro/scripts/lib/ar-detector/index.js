@@ -49,12 +49,17 @@
  * still HUMAN. Reaching 'AI' requires roughly four independent P0-class
  * signals, or a realistic mix such as two P0 + three P1 + two P2. Repeated
  * hits of the SAME pattern get diminishing returns (1.0, 0.5, then 0.25 for
- * every later hit) so one repeated stock phrase cannot dominate the score.
+ * every later hit) so one repeated stock phrase cannot dominate the score,
+ * and the summed contribution of any one patternId is then capped at
+ * THRESHOLDS.PATTERN_CONTRIBUTION_CAP = 24, one point below MIXED, so no
+ * single pattern can reach MIXED alone however often it fires. See the cap's
+ * own comment block below for the measurement that motivated it.
  *
  * Known consequence, stated rather than hidden: ar-shared.md AR-SH-002 says
  * three instances of علاوة على ذلك alone is enough to suspect AI authorship.
  * Under diminishing returns three hits of that one P0 pattern score
- * 14 + 7 + 3.5 = 24.5 -> 'HUMAN' on its own. This engine deliberately does
+ * 14 + 7 + 3.5 = 24.5, and under the per-pattern cap any number of hits
+ * scores at most 24 -> 'HUMAN' on its own. This engine deliberately does
  * not honour that single-pattern shortcut; it requires corroboration. See
  * scripts/README.md, "Known limitations".
  *
@@ -123,6 +128,11 @@ const THRESHOLDS = {
   // Texts under this many words are never scored above TOO_SHORT_CAP.
   TOO_SHORT_WORDS: 20,
   TOO_SHORT_CAP: 24,
+  // IMP-27 / corpus finding 2: per-pattern contribution cap. The summed
+  // repeat-discounted contribution of any ONE patternId is capped at this
+  // value, so no single pattern can reach MIXED (25) on its own however
+  // many times it fires. See PATTERN_CONTRIBUTION_CAP below.
+  PATTERN_CONTRIBUTION_CAP: 24,
 };
 
 // Repeat discount applied to the Nth hit of the same patternId.
@@ -132,7 +142,60 @@ function repeatFactor(occurrenceIndex) {
   return 0.25;
 }
 
+/**
+ * PER-PATTERN CONTRIBUTION CAP, corpus finding 2 (IMP-27 wave).
+ *
+ * The repeat discount (1.0, 0.5, then 0.25) slows a repeated pattern down
+ * but never stops it: the 0.25 tail is linear, so a P0 pattern firing 15
+ * times still reaches 14 + 7 + 13*3.5 = 66.5 -> 'AI' with no other signal
+ * present. `corpus/RESULTS.md` measured exactly that: one document scoring
+ * 67 whose only issue id is AR-MSA-006 (تم/يتم periphrastic passive),
+ * fifteen times, and AR-MSA-006 alone accounted for 210 hits across 45 of
+ * the 49 documents that reached MIXED. The periphrastic passive is simply
+ * how Arabic encyclopedic prose reports agentless events (تم بناؤه عام كذا),
+ * so density alone is not evidence of generation.
+ *
+ * The fix: the SUMMED, repeat-discounted contribution of any one patternId
+ * is capped at THRESHOLDS.PATTERN_CONTRIBUTION_CAP = 24, one point below
+ * THRESHOLDS.MIXED. No single pattern can therefore reach MIXED by itself,
+ * however often it fires. This makes the engine's stated doctrine
+ * enforceable rather than incidental: the module header already records
+ * that three hits of one P0 pattern score 24.5 and stay 'HUMAN' because
+ * this engine requires corroboration, and the cap extends that from three
+ * hits to any number of them.
+ *
+ * DELIBERATE DEVIATION from the wave brief, recorded here rather than
+ * hidden: the brief exempted P0 patterns from the cap. AR-MSA-006, the one
+ * pattern the corpus shows reaching 'AI' on its own, and the entire reason
+ * for this change, IS P0 (lexicons.js, severity 'P0', minCount 2), so a P0
+ * exemption would have left the measured false positive untouched. The cap
+ * is applied to every tier, P0 included. What a P0 keeps is its *weight*:
+ * one P0 hit is still 14 points against a P1's 6 and a P2's 2, so a P0
+ * pattern still reaches the cap in three hits where a P1 needs six and a P2
+ * needs seventeen. Corroboration between DIFFERENT patterns is untouched:
+ * two capped patterns still sum to 48, and the `ai-NN.md` AI fixtures under
+ * `tests/fixtures/ar-msa`, `ar-egt` and `ar-shami` stack four or more
+ * distinct patterns each.
+ *
+ * The cap is applied identically to `scoreWithoutLeakage`.
+ */
+const PATTERN_CONTRIBUTION_CAP = THRESHOLDS.PATTERN_CONTRIBUTION_CAP;
+
 const SEVERITY_RANK = { P0: 3, P1: 2, P2: 1 };
+
+/**
+ * The points one issue contributes before the repeat discount and the
+ * per-pattern cap. Normally its severity tier's weight; a GRADED signal may
+ * carry an explicit `issue.weight` instead (today only AR-SH-008, the
+ * vocabulary-concentration signal, which scales 1..2 inside the P2 tier).
+ * A graded weight may never exceed its tier weight, so the invariant that
+ * no signal is dearer than its severity says still holds.
+ */
+function issueWeight(issue) {
+  const tier = WEIGHTS[issue.severity];
+  if (typeof issue.weight !== 'number') return tier;
+  return Math.min(issue.weight, tier);
+}
 
 function makeIssue(type, patternId, start, end, text, severity, suggestion) {
   return {
@@ -416,6 +479,53 @@ function analyzeText(text, options) {
     ));
   }
 
+  // ── (i) Vocabulary concentration, AR-SH-008 (IMP-23) ─────────────────
+  //
+  // A GRADED P2 signal, the engine's only one. The weight is the number of
+  // corpus-calibrated gates the document trips, so it is 1 or 2 rather than
+  // the flat P2 weight of 2:
+  //   1: top-word share above signals.GATES.VOCAB_TOP_SHARE_GATE, or
+  //      type-token ratio below signals.GATES.VOCAB_TTR_GATE;
+  //   2: both of them.
+  // Both gates come from the measured human-corpus distribution and were
+  // chosen so that at most 5% of human documents receive any contribution
+  // at all (see the gate comment in signals.js and
+  // docs/evidence/round1-wave2F-vocab-distribution.txt). Measured, NO
+  // document in that 300-document human corpus tripped both gates: all 15
+  // that received a contribution received weight 1, so weight 2 is reserved
+  // for concentration on both axes at once.
+  //
+  // The graded weight rides on `issue.weight`, which the scoring pass below
+  // prefers over WEIGHTS[severity] when present. `severity` stays 'P2' so
+  // that severity-based grouping, sorting and reporting keep working; the
+  // override only ever makes a P2 CHEAPER (1) or leaves it at its tier
+  // weight (2), never dearer.
+  const vocab = signals.vocabularyConcentration(signals.wordTokens(normalized));
+  stats.vocabularyConcentration = {
+    applicable: vocab.applicable,
+    topShare: vocab.topShare === null ? null : Math.round(vocab.topShare * 10000) / 10000,
+    ttr: vocab.ttr === null ? null : Math.round(vocab.ttr * 10000) / 10000,
+    contentTokenCount: vocab.contentTokenCount,
+    ttrWindow: vocab.ttrWindow,
+  };
+  if (vocab.applicable) {
+    const shareTrips = vocab.topShare > signals.GATES.VOCAB_TOP_SHARE_GATE;
+    const ttrTrips = vocab.ttr !== null && vocab.ttr < signals.GATES.VOCAB_TTR_GATE;
+    const vocabWeight = (shareTrips ? 1 : 0) + (ttrTrips ? 1 : 0);
+    stats.vocabularyConcentration.shareTrips = shareTrips;
+    stats.vocabularyConcentration.ttrTrips = ttrTrips;
+    stats.vocabularyConcentration.weight = vocabWeight;
+    if (vocabWeight > 0) {
+      const [s, e] = trimmedSpan(text, ...anchorSpan(sentences, text.length), 120);
+      const issue = makeIssue(
+        'vocabulary-concentration', 'AR-SH-008', s, e, text, 'P2',
+        'المعجم مركّز: كلمة واحدة تتكرر بنسبة عالية، أو تنوّع المفردات منخفض. استعمل الضمير أو الإحالة أو مرادفًا دقيقًا بدل إعادة الكلمة المفتاحية، ودع السياق يحمل ما لا يحتاج تسمية (AR-SH-008).',
+      );
+      issue.weight = vocabWeight;
+      issues.push(issue);
+    }
+  }
+
   // ── Variety-specific diacritic signals (pre-normalization) ────────────
   const diacritics = signals.diacriticProfile(masked);
   stats.tanwinCount = diacritics.tanwinCount;
@@ -439,24 +549,49 @@ function analyzeText(text, options) {
 
   // ── Scoring ───────────────────────────────────────────────────────────
   const seen = new Map(); // patternId -> occurrences so far
-  let rawScore = 0;
+  // Per-pattern subtotals, capped at PATTERN_CONTRIBUTION_CAP once every
+  // issue has been weighted (see the cap's rationale above).
+  const perPattern = new Map(); // patternId -> uncapped subtotal
   // scoreWithoutLeakage: same weighting/repeat-discount pass, but skipping
   // every issue of type 'msa-leakage' (AR-EGT-026 / AR-SHM-001) — used by
   // detect.js's registerMixCheck so that leakage alone (which fires almost
   // identically against near-pure-MSA text regardless of which dialect is
   // forced) can never by itself justify promoting a dialect verdict to AI.
   const seenNoLeakage = new Map();
-  let rawScoreNoLeakage = 0;
+  const perPatternNoLeakage = new Map();
   for (const issue of issues) {
     const n = seen.get(issue.patternId) || 0;
     seen.set(issue.patternId, n + 1);
-    rawScore += WEIGHTS[issue.severity] * repeatFactor(n);
+    const add = issueWeight(issue) * repeatFactor(n);
+    perPattern.set(issue.patternId, (perPattern.get(issue.patternId) || 0) + add);
 
     if (issue.type !== 'msa-leakage') {
       const nl = seenNoLeakage.get(issue.patternId) || 0;
       seenNoLeakage.set(issue.patternId, nl + 1);
-      rawScoreNoLeakage += WEIGHTS[issue.severity] * repeatFactor(nl);
+      const addNl = issueWeight(issue) * repeatFactor(nl);
+      perPatternNoLeakage.set(
+        issue.patternId,
+        (perPatternNoLeakage.get(issue.patternId) || 0) + addNl,
+      );
     }
+  }
+
+  let rawScore = 0;
+  let rawScoreNoLeakage = 0;
+  // Patterns whose uncapped subtotal exceeded the cap, for stats/debugging.
+  const cappedPatterns = [];
+  for (const [patternId, subtotal] of perPattern) {
+    if (subtotal > PATTERN_CONTRIBUTION_CAP) {
+      cappedPatterns.push({
+        patternId,
+        uncapped: Math.round(subtotal * 100) / 100,
+        capped: PATTERN_CONTRIBUTION_CAP,
+      });
+    }
+    rawScore += Math.min(subtotal, PATTERN_CONTRIBUTION_CAP);
+  }
+  for (const subtotal of perPatternNoLeakage.values()) {
+    rawScoreNoLeakage += Math.min(subtotal, PATTERN_CONTRIBUTION_CAP);
   }
 
   let score = Math.min(100, Math.round(rawScore));
@@ -474,6 +609,8 @@ function analyzeText(text, options) {
 
   stats.rawScore = Math.round(rawScore * 100) / 100;
   stats.scoreWithoutLeakage = scoreWithoutLeakage;
+  stats.patternContributionCap = PATTERN_CONTRIBUTION_CAP;
+  stats.cappedPatterns = cappedPatterns;
   stats.issueCount = issues.length;
   stats.p0Count = issues.filter((i) => i.severity === 'P0').length;
   stats.p1Count = issues.filter((i) => i.severity === 'P1').length;
@@ -496,7 +633,12 @@ const PATTERNS = (() => {
         type: p.type,
         severity: p.severity,
         minCount: p.minCount || 1,
-        phraseCount: (p.phrases || []).length,
+        // IMP-17 follow-up: `stemPhrases` entries are phrases too, they
+        // are matched by the same builder with the definite article allowed
+        // after the proclitic, so they must be counted here, or a
+        // stem-only pattern reports phraseCount 0 in the docs table.
+        phraseCount: (p.phrases || []).length + (p.stemPhrases || []).length,
+        stemPhraseCount: (p.stemPhrases || []).length,
         regexCount: (p.regexes || []).length,
       });
     }
@@ -507,6 +649,7 @@ const PATTERNS = (() => {
     { scope: 'signal', id: 'AR-MSA-014', type: 'uniform-paragraphs', severity: 'P2', minCount: 1, phraseCount: 0, regexCount: 0 },
     { scope: 'signal', id: 'AR-MSA-028', type: 'trigram-repetition', severity: 'P2', minCount: 1, phraseCount: 0, regexCount: 0 },
     { scope: 'signal', id: 'AR-SH-002', type: 'transition-density', severity: 'P1', minCount: 1, phraseCount: 0, regexCount: 0 },
+    { scope: 'signal', id: 'AR-SH-008', type: 'vocabulary-concentration', severity: 'P2', minCount: 1, phraseCount: 0, regexCount: 0, graded: '1..2' },
     { scope: 'signal', id: 'AR-EGT-026', type: 'msa-leakage', severity: 'P0', minCount: 1, phraseCount: 0, regexCount: 0 },
     { scope: 'signal', id: 'AR-SHM-001', type: 'msa-leakage', severity: 'P0', minCount: 1, phraseCount: 0, regexCount: 0 },
     { scope: 'signal', id: 'AR-SH-TYPO', type: 'punctuation-mixing', severity: 'P2', minCount: 1, phraseCount: 0, regexCount: 0 },

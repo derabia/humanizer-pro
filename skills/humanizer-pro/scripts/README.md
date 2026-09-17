@@ -31,6 +31,63 @@ code-switching into English is a documented dialect feature
 (`AR-EGT-016`, `AR-SHM-017`), not a tell. Latin-script terms are left alone
 by the Arabic engine. `en` and `unknown` go to `lib/en-detector`.
 
+### Dialect-evidence guard (IMP-27)
+
+Two filters stand between a marker hit and a dialect verdict. Both were added
+after the 300-document human corpus measurement in `corpus/RESULTS.md`, which
+found that **four of its five false positives were plain MSA Wikipedia
+articles being measured against the Egyptian lexicon**.
+
+**1. Ambiguous markers are not dialect evidence.** Nine of `lib/lang.js`'s
+markers fired on ordinary pre-2022 human Arabic prose, because each is also an
+ordinary MSA word or a fragment of a transliterated foreign name. Measured
+firings (`docs/evidence/round1-wave2F-marker-homographs.txt`):
+
+| marker | docs / hits | what it actually was |
+|---|---|---|
+| دي | 18 / 29 | the Latin particle "de" and the letter D in names (بيريس دي ترافا، بي اس دي) |
+| يعني | 21 / 22 | plain MSA "means / that is" |
+| دول | 15 / 18 | plain MSA plural of دولة, "states/countries" |
+| ايه | 3 / 17 | the letter A in transliterated acronyms (سي آي إيه = CIA، انتونوف ايه ان) |
+| بقى | 7 / 8 | MSA بقي "remained" (normalization collapses ى and ي) |
+| والله | 3 / 3 | the MSA oath, in quoted classical text |
+| طب | 2 / 3 | MSA "medicine" (طب الأسنان) |
+| روح | 1 / 1 | MSA "spirit/soul" |
+| هاي | 1 / 1 | a syllable of a transliterated name |
+
+**Zero true dialect hits appeared in 300 documents.** These markers are now
+reported as `dialectEvidence[variety].ambiguousDistinct` /
+`ambiguousHits` and never as `distinct` / `hits`. They still appear in
+`evidence[]`, so nothing is hidden. Because `distinct` is what the register-mix
+gate below reads, an MSA article whose only "dialect" words are name
+transliterations no longer has standing to be promoted to a dialect verdict.
+
+*Stated trade-off:* genuine Egyptian or Levantine text whose **only** dialect
+markers are on that list now routes to `msa`. No fixture regresses (every
+Arabic dialect fixture carries at least two strong markers), but it is a real
+narrowing and is queued for native review.
+
+**2. MSA-dominance guard.** A dialect verdict additionally requires that
+marker evidence not be swamped by MSA-only function-word evidence:
+
+```
+strongHits * 3 >= msaHits       OR       strongHits per 100 words >= 3
+```
+
+`msaHits` counts `MSA_ANCHOR_WORDS`, relatives الذي/التي/الذين، negation
+لم/لن/ليس، the future particle سوف، and كذلك/حيث/إذ, taken from the MSA ->
+Egyptian leakage checklist in `references/ar-egyptian.md` (`AR-EGT-026`) and
+its Levantine twin (`AR-SHM-001`). That list is deliberately **narrower** than
+`lexicons.js`'s `MSA_FUNCTION_WORDS`, which is built for the leakage *scoring*
+signal and includes items (جدا، فقط، كيف، أيضا) that appear freely in written
+dialect. The escape hatch exists because dialect writing does reach for الذي
+and لم on occasion, and dense marker evidence should not be overridden by it.
+
+`dialectEvidence` exposes `msaHits`, `msaHitsPer100` and a per-variety
+`guardPassed`, so a caller can see exactly which filter a verdict turned on.
+The guard governs `identify()`'s own verdict; `detect.js`'s register-mix gate
+reads `distinct`/`hits` and could consume `guardPassed` as well.
+
 ### Register-mix detection (auto-routing only)
 
 `identify()` picks a single `variety` for the whole document from dialect
@@ -419,14 +476,15 @@ numbers, and an unrecognized value falls back to `default` with
 
 | # | signal | pattern id(s) | tier | gate |
 |---|---|---|---|---|
-| a | phrase-lexicon hits, matched on the normalized string and mapped back to original offsets | `AR-SH-001/002/003/006/007`, `AR-MSA-002/006/007/008/012`, `AR-EGT-001/003/005/007/013/014/024`, `AR-SHM-001/004/005/006/007/022` | per pattern | some patterns carry a `minCount` (passive voice 2, تم/يتم 2, MSA-vocabulary runs 2, syntactic template 3) — below it they report nothing |
-| b | weighted tiers `P0 > P1 > P2` with per-pattern diminishing returns | — | — | — |
+| a | phrase-lexicon hits, matched on the normalized string and mapped back to original offsets | `AR-SH-001/002/003/006/007`, `AR-MSA-002/006/007/008/012/031/032`, `AR-EGT-001/003/005/007/013/014/024`, `AR-SHM-001/004/005/006/007/022` | per pattern | some patterns carry a `minCount` (passive voice 2, تم/يتم 2, MSA-vocabulary runs 2, syntactic template 3, light-verb calques `AR-MSA-031` 2), below it they report nothing |
+| b | weighted tiers `P0 > P1 > P2` with per-pattern diminishing returns **and a per-pattern contribution cap of 24** | n/a | n/a | no single `patternId` can contribute more than 24 points in total, so none can reach `MIXED` alone (see "Per-pattern contribution cap" below) |
 | c | sentence-length burstiness (coefficient of variation; split on `.` `؟` `!` `؛` and newlines) | `AR-SH-004` | `P0` | ≥ 5 sentences; fires below CV 0.35 (`register: 'formal'` → 0.22 — the only register-conditional gate) |
 | d | paragraph-length uniformity | `AR-MSA-014` | `P2` | ≥ 4 paragraphs; fires below CV 0.22 |
 | e | word-trigram repetition | `AR-MSA-028` | `P2` | ≥ 40 words; fires above a 0.04 repeat ratio |
 | f | transition-phrase density per 100 words | `AR-SH-002` | `P1` | ≥ 60 words; fires above 2 per 100 words (`ar-levantine.md` `AR-SHM-012`, shm:509-510 — kept because that reference explicitly retains it as an editing rule, not as a claim about AI behaviour) |
 | g | MSA-leakage ratio — **dialect varieties only** | `AR-EGT-026` / `AR-SHM-001` | `P0` at ratio ≥ 0.75, `P1` at ≥ 0.5 | ≥ 4 total function-word hits |
 | h | punctuation profile: Latin `,` `;` `?` used directly after an Arabic letter, and Arabic-Indic/Western digits mixed in one document | `AR-SH-TYPO` (`ar-shared.md`, "Typography and numbers") | `P2` only, never weighted heavily | — |
+| i | vocabulary concentration: top-word share among content tokens, and type-token ratio over the first 200 content tokens | `AR-SH-008` | `P2`, **graded 1..2** | ≥ 80 content tokens for the share; ≥ 200 for the TTR. Fires above a top-word share of `0.0629` or below a TTR of `0.6455` (see "Vocabulary concentration" below) |
 | — | tanwin present in Egyptian-target text (measured before normalization) | `AR-EGT-002` | `P1` | variety `egt` |
 | — | tashkeel other than shadda in Levantine-target text (measured before normalization) | `AR-SHM-018` | `P0` | variety `shami` |
 
@@ -440,6 +498,101 @@ particle, and bare لا is excluded from the MSA side for the same reason (it
 is retained for prohibition in every dialect). `stats.msaLeakage` is
 **absent** (not `null`) for `variety: 'msa'`: MSA text leaking MSA is not a
 concept.
+
+### Per-pattern contribution cap
+
+The summed, repeat-discounted contribution of any one `patternId` is capped at
+`THRESHOLDS.PATTERN_CONTRIBUTION_CAP` = **24**, one point below the `MIXED`
+threshold of 25. **No single pattern can reach `MIXED` on its own, however
+often it fires.**
+
+Why, measured rather than argued: the repeat discount (`1.0`, `0.5`, then
+`0.25` for every later hit) slows a repeated pattern down but never stops it,
+because the `0.25` tail is linear. A `P0` pattern firing fifteen times still
+reaches `14 + 7 + 13 x 3.5 = 66.5` -> `AI` with no other signal present, and
+`corpus/RESULTS.md` measured exactly that document: score **67**, one issue id,
+`AR-MSA-006` (the تم/يتم periphrastic passive) fifteen times and nothing else.
+Across the same 300-document human corpus `AR-MSA-006` fired in 45 of the 49
+documents that reached `MIXED`, with 210 hits, far ahead of the next id. The
+periphrastic passive is simply how Arabic encyclopedic prose reports agentless
+events (تم بناؤه عام كذا), so its density is a feature of the register, not
+evidence of generation.
+
+The cap applies to **every** tier, `P0` included. That is a deliberate
+deviation from the improvement brief, which exempted `P0`: `AR-MSA-006` is
+itself `P0`, so a `P0` exemption would have left the one measured
+single-pattern false positive untouched. What a `P0` keeps is its *weight*:
+one `P0` hit is still 14 points against a `P1`'s 6 and a `P2`'s 2, so a `P0`
+pattern reaches the cap in three hits where a `P1` needs six and a `P2`
+seventeen. Corroboration between **different** patterns is untouched: two
+capped patterns still sum to 48, and every `ai-NN.md` AI fixture stacks four or
+more distinct patterns.
+
+Measured effect on a synthetic MSA text of 20 تم/يتم passives in
+varied-length sentences, so `AR-MSA-006` is the only id that fires:
+
+| | uncapped | capped |
+|---|---|---|
+| `AR-MSA-006` contribution | `84` | `24` |
+| score / label | `84` / `AI` | **`24` / `HUMAN`** |
+
+`stats.patternContributionCap` echoes the cap and `stats.cappedPatterns` lists
+every `patternId` whose uncapped subtotal exceeded it, with both values.
+
+### Vocabulary concentration (`AR-SH-008`, IMP-23)
+
+The engine's only **graded** signal. `signals.vocabularyConcentration(tokens)`
+computes two length-robust lexical-variety statistics over *content* tokens,
+tokens left after an Arabic function-word stoplist is applied, on the
+**normalized** forms, so alef-form and tashkeel variation never splits a type
+in two:
+
+- **top-word share**: the share of the single most frequent content token.
+  Applicable from **80** content tokens: it is a ratio, not a window-bound
+  count.
+- **type-token ratio (TTR)**: distinct types over tokens across the **first
+  200** content tokens. TTR falls monotonically as a text grows, so it is only
+  comparable inside a fixed window; `stats.vocabularyConcentration.ttr` is
+  `null` below 200 content tokens rather than reported over a shorter one.
+
+The weight is the number of gates tripped, **1** for either, **2** for both,
+carried on `issue.weight`, which the scoring pass prefers over the tier weight.
+`severity` stays `P2`, and a graded weight may never exceed its tier weight, so
+the invariant that no signal costs more than its severity says still holds.
+
+**Both gates are corpus-derived, not chosen.** Measured over the 300-document
+pre-2022 human control corpus (full distribution in
+`docs/evidence/round1-wave2F-vocab-distribution.txt`):
+
+| gate | value | percentile | corpus distribution |
+|---|---|---|---|
+| `VOCAB_TOP_SHARE_GATE` | `0.0629` | p97.5 of top-word share (n=300) | median `0.0331`, p95 `0.0560`, max `0.0829` |
+| `VOCAB_TTR_GATE` | `0.6455` | p2.5 of TTR (n=243 long enough for the window) | median `0.8000`, p5 `0.6955`, min `0.5200` |
+
+The brief asked for p95 and p5. Measured, that pair puts **9.33%** of human
+documents in contention rather than 5%, because the two tails are disjoint:
+15 documents trip the share gate, 13 trip the TTR gate, and **no document
+trips both**. The binding requirement is that at most 5% of human documents
+receive *any* contribution, so the gates sit at the tightest measured
+percentile pair that satisfies it: p97.5/p2.5 gives a union of exactly **15 of
+300 = 5.00%**. Both per-axis percentiles are recorded so the deviation is
+auditable.
+
+The stoplist covers prepositions, conjunctions, pronouns, demonstratives,
+relatives, interrogatives, negators and the كان/ليس copula families, plus two
+groups the corpus forced in:
+
+- **name-chain connectors and bare numerals** (بن، ابن، آل، ألف، مليون …). بن
+  was the most frequent "content" token in six of the twelve
+  highest-concentration human documents, at up to 55 occurrences. Left in, the
+  signal would have been a detector of Arabic biographies.
+- **dialect function words** (اللي، عم، مش، مو، رح، انو، شو، وين، ده/دي، عشان …).
+  Left out, the signal would have been a detector of Egyptian and Levantine
+  *grammar*: عم, the Levantine progressive particle, was the top "content"
+  token in `tests/fixtures/ar-shami/human-02.md` at 7 occurrences.
+
+تم/يتم is deliberately **left in** the content set: it is `AR-MSA-006`'s
+business, and stoplisting it here would hide a real concentration.
 
 ### Offsets
 
@@ -495,8 +648,9 @@ Masked in **both** modes, because the engine must never flag inside them:
   Between 20 and about 60 words, burstiness is the only stylometric signal
   that can fire. Treat anything shorter than a paragraph as unscoreable.
 - **Dialect ID on short texts.** Routing depends on `lib/lang.js`, which
-  needs at least two distinct dialect markers at a density of one per 100
-  Arabic words before it leaves the `msa` default. A short Egyptian or
+  needs at least two distinct **strong** dialect markers at a density of one
+  per 100 Arabic words, plus the MSA-dominance guard (see "Dialect-evidence
+  guard" above), before it leaves the `msa` default. A short Egyptian or
   Levantine snippet will usually be analysed as MSA, which suppresses the
   MSA-leakage signal entirely. `detect.js`'s `analyze()` (not
   `ar-detector.analyzeText()` called directly) mitigates the common case of
@@ -514,10 +668,11 @@ Masked in **both** modes, because the engine must never flag inside them:
 - **Single-pattern shortcuts are not honoured.** `ar-shared.md` `AR-SH-002`
   says three instances of علاوة على ذلك alone is enough to suspect AI
   authorship. Under diminishing returns three hits of that one `P0` pattern
-  score 24.5 → `HUMAN`. This is deliberate: the engine requires
-  corroboration from an independent signal rather than trusting any single
-  phrase. All three hits are still reported as `P0` issues even when the
-  score stays low.
+  score 24.5 → `HUMAN`, and under the per-pattern contribution cap any
+  number of hits of one pattern scores at most 24 → `HUMAN`. This is
+  deliberate: the engine requires corroboration from an independent signal
+  rather than trusting any single phrase. Every hit is still reported as a
+  `P0` issue even when the score stays low.
 - **Wrong-dialect text is not detected.** The engine checks a document
   against the variety it was *told* to use; it does not verify that the
   document is in that variety. Egyptian prose analysed as `shami` (or the
@@ -528,11 +683,23 @@ Masked in **both** modes, because the engine must never flag inside them:
   `tests/fixtures/ar-*/human-*.md` was written by this project, not sampled
   from native writing. They are marked `synthetic-human` and listed for
   review in `docs/native-review/fixtures.md`.
-- **No corpus calibration.** The weights and thresholds above were tuned
-  against this repository's 30 Arabic fixtures and 5 Arabic false-positive
-  fixtures. They are not calibrated against a measured corpus, and none of
-  the upstream numeric thresholds (which the references dropped as uncited)
-  were reintroduced.
+- **Partial corpus calibration.** The tier weights (`P0`/`P1`/`P2`), the
+  label thresholds and the stylometric gates (c-h) were tuned against this
+  repository's 30 Arabic fixtures and 5 Arabic false-positive fixtures, not
+  against a measured corpus, and none of the upstream numeric thresholds
+  (which the references dropped as uncited) were reintroduced. Three numbers
+  **are** corpus-derived: the two `AR-SH-008` gates (p97.5 / p2.5 of the
+  300-document human corpus) and the ambiguous-marker list. Everything else
+  in the table above remains uncalibrated, and `stats.calibration` continues
+  to report `uncalibrated-review-signal` for the document as a whole.
+- **Tanwin in sourced Egyptian text.** `AR-EGT-002` fires once on
+  `tests/fixtures/human-sourced/egt-01.md`, a sourced Egyptian Wikipedia
+  article, on وأخيراً and مثلاً. This was investigated and **left as is**: the
+  two words carry genuine tanwin fatha in the source revision, they are not
+  inside a quoted MSA span, and `AR-EGT-002`'s premise (Egyptian colloquial
+  has no case system) holds. The detector is reporting real MSA orthography
+  in Egyptian-target prose, which is the pattern's job. Score impact is one
+  `P1` hit; the fixture scores **8** / `HUMAN`.
 
 ---
 

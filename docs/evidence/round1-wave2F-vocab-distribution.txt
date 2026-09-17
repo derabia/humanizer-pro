@@ -1,0 +1,86 @@
+round-1 wave 2F, IMP-23 / AR-SH-008 vocabulary-concentration distribution
+
+Measured over the 300-document pre-2022 human Arabic control corpus
+(corpus/manifest.json + corpus/raw), using
+lib/ar-detector/signals.js vocabularyConcentration() with the stoplist as
+committed, sourceMode 'plain'. Both gates in signals.js GATES are copied
+from this run.
+
+engine: 949da07 (working tree:  4 files changed, 545 insertions(+), 61 deletions(-))
+date: 2026-09-17T20:24:34Z
+
+applicable (share): 300 of 300   with TTR: 243
+
+top-word share percentiles (n=300)
+  p  5.0 = 0.0199
+  p 25.0 = 0.0262
+  p 50.0 = 0.0331
+  p 75.0 = 0.0401
+  p 90.0 = 0.0504
+  p 95.0 = 0.0560
+  p 97.5 = 0.0629
+  p 98.0 = 0.0639
+  p 99.0 = 0.0652
+  p100.0 = 0.0829
+  mean = 0.0345
+
+TTR percentiles over the first 200 content tokens (n=243)
+  p  0.0 = 0.5200
+  p  1.0 = 0.5992
+  p  2.0 = 0.6142
+  p  2.5 = 0.6455
+  p  5.0 = 0.6955
+  p 10.0 = 0.7200
+  p 25.0 = 0.7600
+  p 50.0 = 0.8000
+  p 75.0 = 0.8350
+  p 95.0 = 0.8845
+  mean = 0.7940
+
+Union of the two tails over all 300 applicable documents
+  pair          TOP_SHARE  TTR      share-trips ttr-trips  union  union%
+  p95.0/p5.0    0.0560     0.6955   15          13         28     9.33%
+  p96.0/p4.0    0.0590     0.6786   12          10         22     7.33%
+  p97.0/p3.0    0.0615     0.6550   9           7          16     5.33%
+  p97.5/p2.5    0.0629     0.6455   8           7          15     5.00%
+  p98.0/p2.0    0.0639     0.6142   6           5          11     3.67%
+  p99.0/p1.0    0.0652     0.5992   3           3          6      2.00%
+
+Highest top-share documents (after stoplisting)
+  topShare=0.0829 ttr=  n/a  content= 193 top=المستطيلx16 encyclopedic-39182.txt
+  topShare=0.0801 ttr=0.7900 content= 437 top=بايثونx35 encyclopedic-12669.txt
+  topShare=0.0672 ttr=  n/a  content= 119 top=الطائرةx8 news-7903.txt
+  topShare=0.0652 ttr=0.7350 content= 399 top=حفصونx26 encyclopedic-499761.txt
+  topShare=0.0649 ttr=  n/a  content= 185 top=الملكx12 encyclopedic-1247236.txt
+  topShare=0.0641 ttr=0.8050 content= 390 top=الارضx25 encyclopedic-1876816.txt
+  topShare=0.0639 ttr=0.7200 content= 360 top=المرارةx23 encyclopedic-4389666.txt
+  topShare=0.0635 ttr=0.7000 content= 252 top=ادلمينوx16 encyclopedic-8021685.txt
+  topShare=0.0622 ttr=0.7050 content= 386 top=الفرجيx24 encyclopedic-6288665.txt
+  topShare=0.0615 ttr=0.7250 content= 374 top=الغددx23 encyclopedic-4225423.txt
+
+Lowest TTR documents (after stoplisting)
+  ttr=0.5200 topShare=0.0404 content= 446 top=تمثيلx18 encyclopedic-5071586.txt
+  ttr=0.5400 topShare=0.0510 content= 255 top=الاهليx13 encyclopedic-8409123.txt
+  ttr=0.5950 topShare=0.0369 content= 352 top=نسبةx13 encyclopedic-1994739.txt
+  ttr=0.6050 topShare=0.0399 content= 376 top=نسبةx15 encyclopedic-1972800.txt
+  ttr=0.6100 topShare=0.0400 content= 375 top=نسبةx15 encyclopedic-1960603.txt
+  ttr=0.6150 topShare=0.0318 content= 314 top=وقيلx10 encyclopedic-31924.txt
+  ttr=0.6450 topShare=0.0410 content= 390 top=نسبةx16 encyclopedic-355490.txt
+  ttr=0.6550 topShare=0.0262 content= 343 top=الانترنتx9 encyclopedic-278233.txt
+  ttr=0.6550 topShare=0.0282 content= 425 top=الولاياتx12 encyclopedic-7486318.txt
+  ttr=0.6650 topShare=0.0468 content= 406 top=ولدx19 encyclopedic-2333477.txt
+
+GATES ADOPTED
+  VOCAB_TOP_SHARE_GATE = 0.0629  (p97.5 of top-word share)
+  VOCAB_TTR_GATE       = 0.6455  (p2.5 of TTR over the first 200 content tokens)
+  union = 15 of 300 human documents = 5.00% receive any contribution
+
+The brief asked for p95/p5. Measured, that pair yields a 9.33% union
+because the two tails are disjoint (share-trips + ttr-trips == union in
+every row of the table above, so no document trips both gates), and the
+binding requirement is <= 5% of human documents receiving any contribution.
+97.5/2.5 is the tightest measured pair that satisfies it.
+
+Verified against the committed engine: AR-SH-008 fires on 15 of the 300
+human documents (5.00%), all 15 at weight 1, and only 1 of those 15 is
+among the 31 documents scoring >= 25.
