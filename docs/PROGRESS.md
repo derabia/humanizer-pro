@@ -3,7 +3,7 @@
 Read `docs/BUILD-PROMPT.md` first, then this file. Resume from **Next step**.
 
 ## Current phase
-Phase 4/6 in progress (Checkpoint A approved 2026-09-17)
+Phase 6b fix (auto-routing register-mix) + Phase 10 README in progress; then Phase 9 evals, Phase 11 handoff
 
 ## Completed steps
 | Step | Commit |
@@ -17,7 +17,9 @@ Phase 4/6 in progress (Checkpoint A approved 2026-09-17)
 | Phase 4: en-patterns.md (55 entries), en-vocabulary.md — verified id coverage. NOTE: these plus the ar-*.md drafts were swept into 0cc89d1 by a broad `git add -A`; ar-*.md verification recorded below when done | 0cc89d1 |
 
 ## Next step
-Verify ar-shared/ar-msa/ar-egyptian/ar-levantine (agents reporting); reconcile cross-refs; merge docs/{provenance,dedup-log,native-review,discrepancies}/* fragments into docs/PROVENANCE.md, DEDUP-LOG.md, NATIVE-REVIEW.md, DISCREPANCIES.md; then Phase 6b (ar-detector, detect.js, validate.js, scripts/README.md).
+Verify auto-routing fix (agent running), commit. Verify README/zip (agent running), commit. Then Phase 9 evals (evals.json ≥16, iteration-1 runs, SELF-ASSESSMENT.md), Phase 11 REVIEW-HANDOFF.md, tag v0.1.0-build.
+
+Commits so far: 626d4b7 (phase 3/4/5 refs), e845dc4+0cc89d1 (6a), f7086e1 (Arabic refs + merged docs), 88e5dd4 (10a), 56615dd (7), 74253a7 (validate.js), e90dc73 (ar-detector).
 
 ## Open questions
 - None.
