@@ -1,0 +1,37 @@
+Commands: node --version; git --version; git -C _sources/<repo> rev-parse HEAD; Get-FileHash source/destination LICENSE
+v25.2.1
+git version 2.52.0.windows.1
+blader
+9862685f575c65a8247f90369951df1b3416e3d6
+
+Algorithm : SHA256
+Hash      : CAA1BE9CBA41C1AFB88FE730AB1A4E04728295EA5B29AC2EE9F003A4FFBE3A77
+Path      : D:\Dev\htdocs\humanizer-pro\_sources\blader\LICENSE
+
+avoid-ai-writing
+7a2c7d11d4a74d90c6be41fbed8402d972543798
+
+Algorithm : SHA256
+Hash      : 6DF1A0ED4216D044D6AB8475C8FD46B46C78AB5EAED653EAF8E4232996A87500
+Path      : D:\Dev\htdocs\humanizer-pro\_sources\avoid-ai-writing\LICENSE
+
+semitic
+2c9d4fbe3e0086d373b59bfebc9556082275cf62
+
+Algorithm : SHA256
+Hash      : 6A13F346F8C58736A4AC09B43E38A191ECB13130993AE562E3147919D18FAC5F
+Path      : D:\Dev\htdocs\humanizer-pro\_sources\semitic\LICENSE
+
+
+Algorithm : SHA256
+Hash      : 6DF1A0ED4216D044D6AB8475C8FD46B46C78AB5EAED653EAF8E4232996A87500
+Path      : D:\Dev\htdocs\humanizer-pro\skills\humanizer-pro\LICENSES\avoid-ai-writing.MIT.txt
+
+Algorithm : SHA256
+Hash      : CAA1BE9CBA41C1AFB88FE730AB1A4E04728295EA5B29AC2EE9F003A4FFBE3A77
+Path      : D:\Dev\htdocs\humanizer-pro\skills\humanizer-pro\LICENSES\blader-humanizer.MIT.txt
+
+Algorithm : SHA256
+Hash      : 6A13F346F8C58736A4AC09B43E38A191ECB13130993AE562E3147919D18FAC5F
+Path      : D:\Dev\htdocs\humanizer-pro\skills\humanizer-pro\LICENSES\humanizer-semitic.MIT.txt
+
