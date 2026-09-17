@@ -1,0 +1,54 @@
+{
+  "lang": "ar",
+  "variety": "shami",
+  "confidence": 1,
+  "engine": "ar",
+  "arabicRatio": null,
+  "score": 14,
+  "label": "HUMAN",
+  "issues": [
+    {
+      "type": "tashkeel-present",
+      "patternId": "AR-SHM-018",
+      "start": 168,
+      "end": 172,
+      "excerpt": "بداً",
+      "severity": "P0",
+      "suggestion": "انزع كل التشكيل عدا الشدّة في النص الشامي غير التعليمي وغير القرآني (AR-SHM-018)."
+    }
+  ],
+  "stats": {
+    "wordCount": 148,
+    "sentenceCount": 22,
+    "paragraphCount": 8,
+    "variety": "shami",
+    "sourceMode": "plain",
+    "maskedFrontmatter": 0,
+    "maskedHtmlComments": 0,
+    "maskedCodeFences": 0,
+    "maskedUrls": 0,
+    "maskedInlineCode": 0,
+    "hasArabic": true,
+    "sentenceLengthCv": 0.6404321951931234,
+    "paragraphLengthCv": 0.45386096280396393,
+    "trigramRepeatRatio": 0,
+    "transitionsPer100Words": 0,
+    "msaLeakage": {
+      "ratio": 0.3,
+      "msaHits": 3,
+      "dialectHits": 7,
+      "applicable": true
+    },
+    "westernPunctuationCount": 0,
+    "mixedDigitSystems": false,
+    "tanwinCount": 3,
+    "tashkeelCount": 5,
+    "tooShort": false,
+    "rawScore": 14,
+    "scoreWithoutLeakage": 14,
+    "issueCount": 1,
+    "p0Count": 1,
+    "p1Count": 0,
+    "p2Count": 0
+  }
+}

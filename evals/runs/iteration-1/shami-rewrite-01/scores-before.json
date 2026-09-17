@@ -1,0 +1,117 @@
+{
+  "lang": "ar",
+  "variety": "shami",
+  "confidence": 1,
+  "engine": "ar",
+  "arabicRatio": null,
+  "score": 57,
+  "label": "AI",
+  "issues": [
+    {
+      "type": "tashkeel-present",
+      "patternId": "AR-SHM-018",
+      "start": 106,
+      "end": 110,
+      "excerpt": "\n\nيُ",
+      "severity": "P0",
+      "suggestion": "انزع كل التشكيل عدا الشدّة في النص الشامي غير التعليمي وغير القرآني (AR-SHM-018)."
+    },
+    {
+      "type": "msa-leakage",
+      "patternId": "AR-SHM-001",
+      "start": 108,
+      "end": 113,
+      "excerpt": "يُريد",
+      "severity": "P0",
+      "suggestion": "أدوات الفصحى الوظيفية تطغى على نظيراتها الشامية. طبّق قائمة التحقق: بـ على المضارع، رح للمستقبل، ما/مش/مو للنفي، شو/وين/ليش/هلق، اللي لا الذي/التي، بدّي لا أريد (AR-SHM-001)."
+    },
+    {
+      "type": "msa-future",
+      "patternId": "AR-SHM-004",
+      "start": 194,
+      "end": 197,
+      "excerpt": "سوف",
+      "severity": "P0",
+      "suggestion": "استبدل سوف/سـ بـ «رح» واحذف الباء من الفعل التالي: سأذهب→رح روح (AR-SHM-004)."
+    },
+    {
+      "type": "msa-question-word",
+      "patternId": "AR-SHM-006",
+      "start": 230,
+      "end": 234,
+      "excerpt": "التي",
+      "severity": "P1",
+      "suggestion": "استبدل أدوات الاستفهام والإشارة الفصحى: ماذا→شو/إيش، أين→وين، متى→إيمتا، لماذا→ليش، هذا→هاد/هيدا، الذي/التي→اللي (AR-SHM-006)."
+    },
+    {
+      "type": "msa-question-word",
+      "patternId": "AR-SHM-006",
+      "start": 375,
+      "end": 379,
+      "excerpt": "الذي",
+      "severity": "P1",
+      "suggestion": "استبدل أدوات الاستفهام والإشارة الفصحى: ماذا→شو/إيش، أين→وين، متى→إيمتا، لماذا→ليش، هذا→هاد/هيدا، الذي/التي→اللي (AR-SHM-006)."
+    },
+    {
+      "type": "msa-question-word",
+      "patternId": "AR-SHM-006",
+      "start": 414,
+      "end": 419,
+      "excerpt": "أيضًا",
+      "severity": "P1",
+      "suggestion": "استبدل أدوات الاستفهام والإشارة الفصحى: ماذا→شو/إيش، أين→وين، متى→إيمتا، لماذا→ليش، هذا→هاد/هيدا، الذي/التي→اللي (AR-SHM-006)."
+    },
+    {
+      "type": "msa-question-word",
+      "patternId": "AR-SHM-006",
+      "start": 446,
+      "end": 450,
+      "excerpt": "التي",
+      "severity": "P1",
+      "suggestion": "استبدل أدوات الاستفهام والإشارة الفصحى: ماذا→شو/إيش، أين→وين، متى→إيمتا، لماذا→ليش، هذا→هاد/هيدا، الذي/التي→اللي (AR-SHM-006)."
+    },
+    {
+      "type": "msa-conjugation",
+      "patternId": "AR-SHM-001",
+      "start": 587,
+      "end": 596,
+      "excerpt": "يستطيع أن",
+      "severity": "P1",
+      "suggestion": "أعد بناء الجملة بالكامل بالقواعد الشامية، لا باستبدال المفردات فقط (AR-SHM-001)."
+    }
+  ],
+  "stats": {
+    "wordCount": 151,
+    "sentenceCount": 16,
+    "paragraphCount": 6,
+    "variety": "shami",
+    "sourceMode": "plain",
+    "maskedFrontmatter": 0,
+    "maskedHtmlComments": 0,
+    "maskedCodeFences": 0,
+    "maskedUrls": 0,
+    "maskedInlineCode": 0,
+    "hasArabic": true,
+    "sentenceLengthCv": 0.40168715719525167,
+    "paragraphLengthCv": 0.33356715919107355,
+    "trigramRepeatRatio": 0.038461538461538464,
+    "transitionsPer100Words": 0,
+    "msaLeakage": {
+      "ratio": 1,
+      "msaHits": 8,
+      "dialectHits": 0,
+      "applicable": true
+    },
+    "westernPunctuationCount": 0,
+    "mixedDigitSystems": false,
+    "tanwinCount": 5,
+    "tashkeelCount": 7,
+    "tooShort": false,
+    "rawScore": 57,
+    "scoreWithoutLeakage": 46,
+    "issueCount": 8,
+    "p0Count": 3,
+    "p1Count": 5,
+    "p2Count": 0
+  }
+}

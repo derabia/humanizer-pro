@@ -1,0 +1,108 @@
+{
+  "lang": "ar",
+  "variety": "shami",
+  "confidence": 1,
+  "engine": "ar",
+  "arabicRatio": null,
+  "score": 71,
+  "label": "AI",
+  "issues": [
+    {
+      "type": "trigram-repetition",
+      "patternId": "AR-MSA-028",
+      "start": 4,
+      "end": 41,
+      "excerpt": "title: تطبيق لتعلم اللغات بطريقة سهلة",
+      "severity": "P2",
+      "suggestion": "تتكرر التراكيب نفسها حرفيًا عبر النص. أبقِ أقوى جملة وحوِّل البقية إلى دليل أو تقييد أو مثال مختلف (AR-MSA-028)."
+    },
+    {
+      "type": "tashkeel-present",
+      "patternId": "AR-SHM-018",
+      "start": 240,
+      "end": 244,
+      "excerpt": "\n\nيُ",
+      "severity": "P0",
+      "suggestion": "انزع كل التشكيل عدا الشدّة في النص الشامي غير التعليمي وغير القرآني (AR-SHM-018)."
+    },
+    {
+      "type": "msa-leakage",
+      "patternId": "AR-SHM-001",
+      "start": 242,
+      "end": 247,
+      "excerpt": "يُريد",
+      "severity": "P0",
+      "suggestion": "أدوات الفصحى الوظيفية تطغى على نظيراتها الشامية. طبّق قائمة التحقق: بـ على المضارع، رح للمستقبل، ما/مش/مو للنفي، شو/وين/ليش/هلق، اللي لا الذي/التي، بدّي لا أريد (AR-SHM-001)."
+    },
+    {
+      "type": "transition",
+      "patternId": "AR-SH-002-A",
+      "start": 322,
+      "end": 335,
+      "excerpt": "علاوة على ذلك",
+      "severity": "P0",
+      "suggestion": "استبدلها بـ «إضافة إلى ذلك» أو «فضلًا عن ذلك» أو احذفها إن كان الربط واضحًا من المحتوى (AR-SH-002 / AR-MSA-003)."
+    },
+    {
+      "type": "msa-future",
+      "patternId": "AR-SHM-004",
+      "start": 472,
+      "end": 475,
+      "excerpt": "سوف",
+      "severity": "P0",
+      "suggestion": "استبدل سوف/سـ بـ «رح» واحذف الباء من الفعل التالي: سأذهب→رح روح (AR-SHM-004)."
+    },
+    {
+      "type": "hedge-opener",
+      "patternId": "AR-SH-001",
+      "start": 645,
+      "end": 662,
+      "excerpt": "من المهم أن نلاحظ",
+      "severity": "P1",
+      "suggestion": "احذف التحوّط وابدأ بالدعوى نفسها (AR-SH-001). إن كان الشك حقيقيًا فسمِّ مصدره ودرجته بدل المُلطِّف الجاهز."
+    },
+    {
+      "type": "transition",
+      "patternId": "AR-SH-002-A",
+      "start": 762,
+      "end": 775,
+      "excerpt": "علاوة على ذلك",
+      "severity": "P0",
+      "suggestion": "استبدلها بـ «إضافة إلى ذلك» أو «فضلًا عن ذلك» أو احذفها إن كان الربط واضحًا من المحتوى (AR-SH-002 / AR-MSA-003)."
+    }
+  ],
+  "stats": {
+    "wordCount": 159,
+    "sentenceCount": 21,
+    "paragraphCount": 6,
+    "variety": "shami",
+    "sourceMode": "plain",
+    "maskedFrontmatter": 0,
+    "maskedHtmlComments": 0,
+    "maskedCodeFences": 0,
+    "maskedUrls": 0,
+    "maskedInlineCode": 0,
+    "hasArabic": true,
+    "sentenceLengthCv": 0.4968155385693459,
+    "paragraphLengthCv": 0.40803022851090803,
+    "trigramRepeatRatio": 0.04938271604938271,
+    "transitionsPer100Words": 1.257861635220126,
+    "msaLeakage": {
+      "ratio": 1,
+      "msaHits": 8,
+      "dialectHits": 0,
+      "applicable": true
+    },
+    "westernPunctuationCount": 0,
+    "mixedDigitSystems": false,
+    "tanwinCount": 7,
+    "tashkeelCount": 11,
+    "tooShort": false,
+    "rawScore": 71,
+    "scoreWithoutLeakage": 57,
+    "issueCount": 7,
+    "p0Count": 5,
+    "p1Count": 1,
+    "p2Count": 1
+  }
+}
