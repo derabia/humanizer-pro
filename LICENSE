@@ -1,0 +1,34 @@
+MIT License
+
+Copyright (c) 2026 humanizer-pro contributors
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+Third-party notices
+--------------------
+
+humanizer-pro is built by merging and adapting material from three upstream
+MIT-licensed projects (see UPSTREAM.md and CREDITS.md for details on what was
+taken from each). The original MIT license text for each upstream project is
+preserved verbatim in skills/humanizer-pro/LICENSES/ and must be included
+alongside any redistribution of this software:
+
+  - skills/humanizer-pro/LICENSES/blader-humanizer.MIT.txt
+  - skills/humanizer-pro/LICENSES/avoid-ai-writing.MIT.txt
+  - skills/humanizer-pro/LICENSES/humanizer-semitic.MIT.txt

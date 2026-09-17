@@ -1,0 +1,24 @@
+# tools/check-upstream.js — phase 10 run
+# Command: node tools/check-upstream.js
+# Date: 2026-09-17
+# Network: available (git ls-remote succeeded for all three repos)
+
+
+blader  (https://github.com/blader/humanizer)
+  recorded SHA: 9862685f575c65a8247f90369951df1b3416e3d6  (version 3.0.0)
+  remote HEAD:  9862685f575c65a8247f90369951df1b3416e3d6
+  status:       unchanged
+
+avoid-ai-writing  (https://github.com/conorbronsdon/avoid-ai-writing)
+  recorded SHA: 7a2c7d11d4a74d90c6be41fbed8402d972543798  (version 3.35.0)
+  remote HEAD:  7a2c7d11d4a74d90c6be41fbed8402d972543798
+  status:       unchanged
+
+semitic  (https://github.com/OthmanAdi/humanizer-semitic)
+  recorded SHA: 2c9d4fbe3e0086d373b59bfebc9556082275cf62  (version 1.0.0)
+  remote HEAD:  2c9d4fbe3e0086d373b59bfebc9556082275cf62
+  status:       unchanged
+
+Result: all upstream repositories are unchanged since they were pinned.
+
+Exit code: 0
