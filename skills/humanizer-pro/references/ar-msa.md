@@ -814,3 +814,275 @@ genre — ask if it isn't already given, rather than guessing.
 reflect the speaker's actual register (dialect or reduced-formality MSA),
 even inside an otherwise fully formal MSA piece — this is the one place
 where switching out of MSA register mid-document is correct, not a defect.
+
+---
+
+## Classical-rhetoric layer (AR-MSA-029 … AR-MSA-033)
+
+Added in improvement round 1 (IMP-12). Everything above this heading
+diagnoses MSA AI text **lexically**: a phrase, a word family, a measurable
+distribution. The five entries below come from a different tradition, the
+classical Arabic sciences of البلاغة (المعاني، البيان، البديع) and
+الفصاحة, and they diagnose **structure**: what the text does with sentence
+mood, with person and tense, and with the verb-plus-object pairings Arabic
+has already settled on.
+
+Idea and structure adapted from `hazemshan1-rgb/humanizer-ar`
+(`skills/humanizer-ar/references/patterns.md` items 21, 24, 26 and 27, plus
+the عيوب الفصاحة checklist in item 25), MIT licence, credited in
+`docs/provenance/ar-shared-msa.md`. The prose here is written for this
+reference and is not a translation of theirs. Two of the five are scored by
+the engine (AR-MSA-031, AR-MSA-032); the other three are review guidance
+and are deliberately not scored, for the reason each entry gives.
+
+Items 22 and 23 of that source are not given ids here: item 22
+(context-free emphatic particles) is already AR-SH-001 plus the
+لا شك / بالتأكيد entries in its phrase list, and item 23 (الإطناب against
+الإيجاز) is already AR-MSA-028 with a classical name attached. Adding ids
+for them would duplicate rules the engine already carries.
+
+---
+
+## AR-MSA-029 — Declarative Rigidity (خبر with no إنشاء) | جمود الخبر وغياب تنويع الإنشاء
+
+**Severity:** P2 (informational; not scored by the engine)
+
+**Provenance:** adapted from
+`_sources/competitors/hazemshan1-rgb_humanizer-ar/skills/humanizer-ar/references/patterns.md:235-241`
+(MIT), which builds it on the "ترتيب الكلام" domain of Marathe (2022).
+MSA-only. Not implemented in `lib/ar-detector`: see "Why this is not
+scored" below.
+
+**What it looks like:** Page after page of الجملة الخبرية, the declarative
+sentence that reports a fact, with no إنشاء anywhere: no استفهام إنكاري or
+تقريري, no نداء, no تعجب, no أمر addressed to the reader, no تمنٍّ. Every
+sentence has the same illocutionary shape, so the reader is never once
+positioned as an interlocutor.
+
+**Why it reads as AI:** Skilled Arabic prose moves between خبر and إنشاء on
+purpose, and the movement is where the rhythm and the reader-contact come
+from. A model asked for an informative passage optimizes for reported
+content and produces a flat run of خبر. The tell is total absence of
+variation across a long passage, not the presence of any one mood.
+
+**Fix:** Where the argument actually turns, let the sentence mood turn with
+it: an استفهام إنكاري that names the objection you are about to answer, a
+نداء or an أمر where you genuinely address the reader, a تعجب where the
+finding is genuinely surprising. One or two well-placed shifts across a
+long piece is the target, not a quota.
+
+**Before / after** (written for this reference):
+<!-- NATIVE-REVIEW: msa -->
+- ❌ تُظهر البيانات أن الإنفاق ارتفع. ويُظهر التحليل أن الأثر كان محدودًا.
+  وتُظهر المقارنة أن النتيجة لم تتغير.
+- ✓ ارتفع الإنفاق. فأين ذهب؟ التحليل يقول إن الأثر كان محدودًا، والمقارنة
+  مع العام السابق لا تُظهر فرقًا يُذكر.
+
+**Why this is not scored:** The pattern is an **absence**, and
+`scripts/README.md` ("Conservative by default") states that absence signals
+are not scored in this engine because they fire on every short or technical
+text. There is a second reason specific to this one: `ar-shared.md`
+("Rhetorical devices that are NOT tells in Arabic") records that rhetorical
+questions are never treated as a signal in Arabic, and a scored
+"too few rhetorical questions" check would invert that rule by the back
+door. Treat AR-MSA-029 as a rewrite prompt, not a detection.
+
+**Carve-outs:** Reference entries, technical documentation, legal text and
+abstracts are legitimately all-خبر. The pattern only says something about
+discursive prose long enough to have a shape.
+
+---
+
+## AR-MSA-030 — Missing iltifat (no shift of person or tense) | غياب الالتفات
+
+**Severity:** P2 (informational; not scored by the engine)
+
+**Provenance:** adapted from
+`_sources/competitors/hazemshan1-rgb_humanizer-ar/skills/humanizer-ar/references/patterns.md:261-265`
+(MIT). MSA-only. Not implemented in `lib/ar-detector`.
+
+**What it looks like:** One grammatical person and one tense held for the
+whole document without a single deliberate shift. Usually third person plus
+either an unbroken المضارع or an unbroken الماضي. الالتفات, the intentional
+move between غائب, مخاطب and متكلم, or between الماضي and المضارع inside
+one passage, is absent.
+
+**Why it reads as AI:** الالتفات is a marked, high-skill device: a writer
+uses it to pull a reader into a scene, or to make a past event present. A
+model has no reason to reach for it, so generated prose is uniformly
+consistent in a way that skilled Arabic writing usually is not.
+
+**Fix:** Nothing, in most cases. Where the passage has a genuine turn (a
+result the reader is meant to feel, a past event whose consequences are
+live), shift into المضارع for that stretch, or address the reader directly
+for one sentence, then return.
+
+**Before / after** (written for this reference):
+<!-- NATIVE-REVIEW: msa -->
+- ❌ خرج السكان من البيوت في الليلة نفسها، ووقفوا في الساحة حتى الفجر،
+  ولم يعودوا إلا بعد أن هدأ كل شيء.
+- ✓ خرج السكان من البيوت في الليلة نفسها. وها هم يقفون في الساحة حتى
+  الفجر، لا يعودون إلا بعد أن يهدأ كل شيء.
+
+**Confidence: low, and lower than any other entry in this file.** The
+source itself calls it a low-confidence indicator. Most competent, entirely
+human practical writing (a manual, a report, a news item) contains no
+الالتفات at all, so its absence is close to uninformative. The useful
+direction is one-way: **presence** of well-placed الالتفات is weak evidence
+of a human writer; absence is evidence of nothing. That asymmetry is why no
+score attaches to it here.
+
+**Carve-outs:** Do not insert الالتفات into text that has no rhetorical
+turn to justify it. A mechanical person or tense shift is a grammar error,
+not a device, and it reads worse than the uniformity it replaced.
+
+---
+
+## AR-MSA-031 — Light-Verb Calques (قام بـ + مصدر) | الأفعال المساعدة الفارغة بدل الفعل المباشر
+
+**Severity:** P2, fires from the second occurrence
+
+**Provenance:** adapted from
+`_sources/competitors/hazemshan1-rgb_humanizer-ar/skills/humanizer-ar/references/patterns.md:279-291`
+(MIT), which grounds it in the Arabic collocation-extraction literature
+(Brashi, *Arabic Collocations: Implications for Translation*, and the
+Musaheb collocation tooling). MSA-only. Implemented in
+`lib/ar-detector/lexicons.js` as pattern id `AR-MSA-031`.
+
+**What it looks like:** The verb slot is filled by an empty light verb,
+قام / قامت / يقوم / تقوم / القيام, and the actual action is demoted to a
+verbal noun after بـ: قام بإجراء الدراسة instead of أجرى الدراسة,
+قام بتقديم الطلب instead of قدّم الطلب, تم القيام بتحليل البيانات instead
+of حلّل الباحث البيانات.
+
+**Why it reads as AI:** English forms a large share of its verbs this way
+(*make a decision*, *conduct a study*, *provide support*), and text
+generated or translated under English influence carries the construction
+across even though Arabic has the direct verb available in nearly every
+case. It is not a grammatical error, which is exactly why it survives a
+proofread; it is a register and naturalness defect, and its repetition as a
+default choice is the tell.
+
+**Fix:** Recover the direct verb from the verbal noun and drop the light
+verb: إجراء to أجرى, تقديم to قدّم, اتخاذ to اتخذ, تنفيذ to نفّذ,
+إعداد to أعدّ. If the verbal noun carries a long definite modifier chain
+that resists conversion, keep the periphrasis and fix the others.
+
+**Before / after** (written for this reference; the shape of the example
+follows patterns.md:288-291):
+<!-- NATIVE-REVIEW: msa -->
+- ❌ قامت اللجنة بإجراء مراجعة شاملة للملفات، ثم قامت بتقديم توصياتها،
+  وبعد ذلك تم القيام باتخاذ القرار النهائي.
+- ✓ راجعت اللجنة الملفات كلها، وقدّمت توصياتها، ثم اتخذت قرارها.
+
+**How the detector avoids the obvious false positive:** A bare قام بـ
+regex is unusable, because قام بسرعة (adverbial), قام بدور (idiomatic),
+قام بزيارة and قام بنفسه are all ordinary Arabic. The implementation
+therefore requires **both** a curated light-verb host and a curated verbal
+noun whose direct verb always exists, with the بـ attached to the verbal
+noun as Arabic writes it. There is no bare قام بـ branch at all, so
+قام بسرعة cannot match; this is covered by a regression test in
+`tests/ar-detector.test.js`.
+
+**Carve-outs:** قام بدور, قام بزيارة, قام بجولة, قام بواجبه and
+قام بمحاولة are idiomatic and are excluded from the verbal-noun list.
+A single occurrence is not scored either: `minCount` is 2, because one
+periphrastic construction is a stylistic choice and a run of them is the
+calque.
+
+---
+
+## AR-MSA-032 — Collocation Calques (أخذ قرارًا, أخذ بعين الاعتبار) | التصادفات اللفظية المُقحمة من الإنجليزية
+
+**Severity:** P2
+
+**Provenance:** adapted from
+`_sources/competitors/hazemshan1-rgb_humanizer-ar/skills/humanizer-ar/references/patterns.md:293-299`
+(MIT), same collocation literature as AR-MSA-031. MSA-only. Implemented in
+`lib/ar-detector/lexicons.js` as pattern id `AR-MSA-032`, restricted to the
+two collocations the source documents as attested.
+
+**What it looks like:** Every word in the phrase is correct Arabic, and the
+pairing is not: أخذ قرارًا, a word-for-word rendering of *take a decision*,
+where Arabic has اتخذ قرارًا; أخذ بعين الاعتبار for *take into
+consideration*, where راعى or وضع في الحسبان is the settled form.
+
+**Why it reads as AI:** Collocation is the part of a language that is
+learned by exposure rather than by rule, so it is also the part that a
+word-level mapping from English gets wrong while staying grammatical. The
+text passes every grammar check and still reads as translated.
+
+**Fix:** Ask which verb an Arabic writer actually uses with that specific
+noun, and use it: قرار takes اتخذ, اعتبار takes راعى or أخذ في الحسبان,
+نتيجة takes خلص إلى or توصّل إلى.
+
+**Before / after** (written for this reference):
+<!-- NATIVE-REVIEW: msa -->
+- ❌ أخذت قرارًا متأخرًا بعد أن أخذت بعين الاعتبار كل الملاحظات.
+- ✓ اتخذت قرارًا متأخرًا بعد أن راعت كل الملاحظات.
+
+**Why the engine list is short, on purpose:** The full inventory of Arabic
+collocations is a lexicographic project, not a phrase list, and the source
+says as much: it treats the class as a review judgment rather than a match.
+Only the two attested pairs above are scored here. The general check
+belongs in review: for each verb-plus-noun pair, ask whether it is the pair
+a native writer uses with that noun, or a grammatical stand-in borrowed
+from an English template. That question is worth asking even when the
+sentence contains no English word at all.
+
+**Carve-outs:** أخذ in its ordinary senses (أخذ الكتاب, أخذ يقرأ,
+أخذ مكانه) is untouched; only the two calqued pairings are listed. The
+engine also matches the **adjacent** pairing only: أخذت قرارًا is flagged,
+أخذت الإدارة قرارًا with the subject between the verb and its object is
+not. Widening that to allow an intervening constituent would require
+parsing, which this engine does not do, so the split pairing stays a review
+judgment like the rest of the class.
+
+---
+
+## AR-MSA-033 — Classical Fluency Defects (عيوب الفصاحة) | عيوب الفصاحة الكلاسيكية
+
+**Severity:** varies by item (review checklist; not scored by the engine)
+
+**Provenance:** adapted from
+`_sources/competitors/hazemshan1-rgb_humanizer-ar/skills/humanizer-ar/references/patterns.md:267-277`
+(MIT), where the category is drawn from the traditional عيوب الفصاحة and
+from the negative-scoring category in Marathe (2022). MSA-only. Not
+implemented in `lib/ar-detector`.
+
+**What it looks like:** Five defects that classical فصاحة names, each of
+which machine-influenced Arabic commits readily:
+
+1. **الدخيل / التعريب غير الموفق.** A foreign word transliterated straight
+   in where a natural Arabic term exists.
+2. **سوء استخدام المصطلح (catachresis).** A word used slightly outside its
+   precise sense, typically because an English concept was mapped to an
+   Arabic term that only partly overlaps it.
+3. **أخطاء صرفية أو نحوية.** Concentrated, in generated text, in
+   passive-voice conjugation and in gender or number agreement across long
+   clauses.
+4. **تنافر الحروف والكلمات.** Adjacent words that are awkward to
+   pronounce. A generator does not hear what it writes, so it has no reason
+   to avoid this.
+5. **غرابة الاستعمال.** A word that is correct and eloquent in general but
+   unusual in this particular context.
+
+**Why it reads as AI:** Each defect is invisible to a grammar check and
+audible to a reader. Together they produce the specific impression of text
+that is correct and still not written by anyone.
+
+**Fix:** Read the passage aloud. Replace the transliteration if a natural
+term exists, tighten any term used loosely, check agreement across the long
+clauses specifically, and re-order any sequence that is hard to say.
+
+**Why this is not scored:** None of the five is a string match. Items 1, 2
+and 5 need to know the intended sense; item 3 needs a parser this engine
+does not have; item 4 needs a phonological model. `minCount`-style
+heuristics for any of them would fire on ordinary technical Arabic, which
+is exactly the false-positive class this engine is built to avoid. It is a
+checklist for the rewrite pass and for native review, not a detection.
+
+**Carve-outs:** Established loanwords with no natural Arabic equivalent in
+the target register (تلفزيون, راديو, إنترنت, and most standardized
+technical vocabulary) are not الدخيل. The defect is the avoidable
+transliteration, not the settled loan.

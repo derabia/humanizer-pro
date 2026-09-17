@@ -1,0 +1,82 @@
+Arabic false-positive measurement (IMP-01)
+
+date            : 2026-09-17
+label           : baseline: lexicons.js as committed at round-1 start (no AR-MSA-031/032, no IMP-17 stem)
+engine version  : ccf1441+dirty(1 file(s) under skills/humanizer-pro/scripts)
+  dirty         : kills/humanizer-pro/scripts/lib/ar-detector/lexicons.js
+corpus cutoff   : 2022-11-30T00:00:00Z
+corpus fetched  : 2026-09-17
+doc length      : >= 150 and <= 600 Arabic words
+thresholds      : MIXED >= 25, AI >= 55
+documents       : 300 measured of 300 in manifest
+
+Per register
+
+register      n    flagged  mixed  human  mean   median  max  FP rate  Wilson 95%    
+------------  ---  -------  -----  -----  -----  ------  ---  -------  --------------
+encyclopedic  230  5        38     187    12.00  2       83   2.17%    0.93% .. 4.99%
+news          70   0        6      64     7.34   2       42   0.00%    0.00% .. 5.20%
+ALL           300  5        44     251    10.92  2       83   1.67%    0.71% .. 3.84%
+
+Per register and provenance class
+
+  encyclopedic/featured: n=25 flagged=0 mixed=3 mean=9.96 FP=0.00% [0.00% .. 13.32%]
+  encyclopedic/good: n=105 flagged=2 mixed=15 mean=10.50 FP=1.90% [0.52% .. 6.68%]
+  encyclopedic/random: n=100 flagged=3 mixed=20 mean=14.09 FP=3.00% [1.03% .. 8.45%]
+  news/random: n=70 flagged=0 mixed=6 mean=7.34 FP=0.00% [0.00% .. 5.20%]
+
+Not-HUMAN rate (flagged + mixed): 16.33% [12.58% .. 20.94%]
+
+Top 10 scoring documents
+
+   83 AI     encyclopedic/random egt 598w  AR-EGT-001x9 AR-EGT-005x3 AR-EGT-007x3 AR-EGT-002x1 AR-EGT-003x1
+      غاري بيرنتسن
+      https://ar.wikipedia.org/w/index.php?oldid=56648280
+   72 AI     encyclopedic/good egt 598w  AR-EGT-001x12 AR-EGT-005x4 AR-EGT-002x1 AR-EGT-026x1
+      أنغكور وات
+      https://ar.wikipedia.org/w/index.php?oldid=58135491
+   71 AI     encyclopedic/good egt 592w  AR-EGT-001x10 AR-EGT-005x2 AR-SH-007x2 AR-EGT-002x1 AR-EGT-026x1
+      البرتغال
+      https://ar.wikipedia.org/w/index.php?oldid=59899008
+   68 AI     encyclopedic/random egt 526w  AR-EGT-001x5 AR-EGT-005x4 AR-EGT-002x1 AR-EGT-026x1 AR-SH-002-Cx1
+      القافلة الثقافية السورية
+      https://ar.wikipedia.org/w/index.php?oldid=57222131
+   67 AI     encyclopedic/random msa 600w  AR-MSA-006x15
+      وندسور (أونتاريو)
+      https://ar.wikipedia.org/w/index.php?oldid=58688610
+   53 MIXED  encyclopedic/good msa 540w  AR-MSA-006x6 AR-MSA-014x1 AR-MSA-028x1 AR-SH-004x1
+      برج العرب الجديدة
+      https://ar.wikipedia.org/w/index.php?oldid=59888074
+   51 MIXED  encyclopedic/random msa 576w  AR-MSA-006x9 AR-SH-002-Bx3 AR-MSA-028x1
+      تدريب التكامل السمعي
+      https://ar.wikipedia.org/w/index.php?oldid=55809342
+   51 MIXED  encyclopedic/good msa 544w  AR-MSA-006x8 AR-SH-007x2
+      أركيامفورا لونجيسيرفيا
+      https://ar.wikipedia.org/w/index.php?oldid=57521086
+   51 MIXED  encyclopedic/random msa 809w  AR-MSA-006x4 AR-SH-007x2 AR-SH-002-Ax1
+      التبسيط الإلهي
+      https://ar.wikipedia.org/w/index.php?oldid=59940628
+   51 MIXED  encyclopedic/featured msa 554w  AR-MSA-006x9 AR-SH-002-Bx2 AR-MSA-028x1
+      سمنة
+      https://ar.wikipedia.org/w/index.php?oldid=59838445
+
+Issue ids over the 49 documents scoring >= 25
+
+  AR-MSA-006       docs=  45 hits=210
+  AR-SH-007        docs=  16 hits=39
+  AR-SH-002-B      docs=  10 hits=27
+  AR-MSA-028       docs=   6 hits=6
+  AR-EGT-001       docs=   4 hits=36
+  AR-EGT-005       docs=   4 hits=13
+  AR-EGT-002       docs=   4 hits=4
+  AR-SH-004        docs=   4 hits=4
+  AR-EGT-026       docs=   3 hits=3
+  AR-SH-002-A      docs=   2 hits=2
+  AR-MSA-012       docs=   2 hits=2
+  AR-EGT-007       docs=   1 hits=3
+  AR-MSA-014       docs=   1 hits=1
+  AR-SH-003        docs=   1 hits=1
+  AR-EGT-003       docs=   1 hits=1
+  AR-SH-001        docs=   1 hits=1
+  AR-SH-002-C      docs=   1 hits=1
+  AR-MSA-002       docs=   1 hits=1

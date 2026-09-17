@@ -6,7 +6,7 @@
  * Every list below cites the pattern ID it implements. Pattern IDs are the
  * ones defined in this skill's reference files:
  *   references/ar-shared.md    AR-SH-001 … AR-SH-007 + typography
- *   references/ar-msa.md       AR-MSA-001 … AR-MSA-028
+ *   references/ar-msa.md       AR-MSA-001 … AR-MSA-033
  *   references/ar-egyptian.md  AR-EGT-001 … AR-EGT-026
  *   references/ar-levantine.md AR-SHM-001 … AR-SHM-025
  *
@@ -63,8 +63,26 @@ function normalizePhrase(phrase) {
  *   NOT captured into the reported span, so the excerpt stays the phrase;
  * - the left boundary forbids a preceding Arabic letter (beyond the
  *   proclitic) and the right boundary forbids a following Arabic letter.
+ *
+ * `options.stem` (IMP-17) additionally allows the definite article ال
+ * between the proclitic and the phrase, so a lexicon entry stored as a bare
+ * noun or adjective stem also matches its ال-prefixed and
+ * proclitic-plus-ال-prefixed forms: جدير بالذكر then also matches
+ * الجدير بالذكر, والجدير بالذكر and بالجدير بالذكر. It is opt-in per
+ * lexicon entry (`stemPhrases`, never `phrases`) because widening it
+ * everywhere would let a verb or particle entry match an unrelated
+ * ال-initial noun that merely starts with the same letters, and because the
+ * MSA-leakage word sets reuse this same builder. The لام-plus-article
+ * contraction للـ is accepted as its written form لل.
+ *
+ * Not handled by the stem form: a noun whose ال is followed by a
+ * sun-letter assimilation in *pronunciation* only is unaffected (Arabic
+ * orthography still writes ال), but an entry beginning with a ال that is
+ * part of the word itself (الآن, الذي) must NOT be declared a stem, or the
+ * optional ال would match nothing and the entry would behave as before.
  */
-function buildPhraseRegex(phrases) {
+function buildPhraseRegex(phrases, options) {
+  const stem = Boolean(options && options.stem);
   const alts = phrases
     .map(normalizePhrase)
     .filter((p) => p.length > 0)
@@ -72,8 +90,10 @@ function buildPhraseRegex(phrases) {
     .sort((a, b) => b.length - a.length)
     .map((p) => escapeRegExp(p).replace(/\s+/g, '\\s+'));
   if (alts.length === 0) return null;
+  // Both forms are fully optional, so an unprefixed phrase still matches.
+  const prefix = stem ? '(?:لل|[وفبلك]?(?:ال)?)' : '[وفبلك]?';
   return new RegExp(
-    `(?<![${AR_LETTER}])[وفبلك]?(${alts.join('|')})(?![${AR_LETTER}])`,
+    `(?<![${AR_LETTER}])${prefix}(${alts.join('|')})(?![${AR_LETTER}])`,
     'gu',
   );
 }
@@ -100,13 +120,17 @@ const SHARED_PATTERNS = [
       'لا بد من التنويه',
       'ومما لا شك فيه',
       'مما لا شك فيه',
-      'جدير بالذكر',
       'من الجدير بالذكر',
       'من الجدير بالإشارة', // eval msa-edit-01 finding: common variant missing
       'يجدر بالإشارة',
       'لا شك أن',
       'من الواضح أن',
     ],
+    // IMP-17: جدير and its ال-prefixed forms. Stored as a stem so
+    // الجدير بالذكر and والجدير بالذكر hit too; before IMP-17 only the bare
+    // جدير بالذكر did, because the proclitic slot accepted one letter and
+    // the ل and ا of والجدير both count as Arabic letters at the boundary.
+    stemPhrases: ['جدير بالذكر', 'جدير بالإشارة'],
     suggestion:
       'احذف التحوّط وابدأ بالدعوى نفسها (AR-SH-001). إن كان الشك حقيقيًا فسمِّ مصدره ودرجته بدل المُلطِّف الجاهز.',
   },
@@ -251,6 +275,59 @@ const SHARED_PATTERNS = [
 // MSA-only patterns (references/ar-msa.md)
 // ─────────────────────────────────────────────────────────────────────────
 
+// IMP-12 / AR-MSA-031: the light-verb (فعل مساعد فارغ + مصدر) calque.
+//
+// A bare `قام بـ` regex is unusable: قام بسرعة, قام بدور, قام بزيارة and
+// قام بنفسه are all ordinary Arabic. The tell is specifically قام/يقوم بـ
+// followed by a *verbal noun that has a direct verb of its own*: قام
+// بإجراء الدراسة for أجرى الدراسة, قام بتقديم الطلب for قدّم الطلب. Both
+// halves are therefore curated: a closed list of light-verb hosts and a
+// closed list of verbal nouns whose direct verb is always available.
+//
+// The lists are written in ordinary spelling and pushed through
+// normalizePhrase() before they enter the regex source, because a
+// `regexes: [{source}]` entry is compiled raw by compilePattern() and the
+// document it runs against has already been normalized (إ -> ا, ى -> ي,
+// tashkeel stripped). Writing إجراء here and matching اجراء in the
+// document therefore works, but only through this mapping.
+const LIGHT_VERB_HOSTS = [
+  'قام', 'قامت', 'قاموا', 'قمنا', 'قمت',
+  'يقوم', 'تقوم', 'نقوم', 'أقوم', 'يقومون',
+  'سيقوم', 'ستقوم', 'سنقوم',
+  'القيام', 'قيام',
+];
+
+// Verbal nouns that always have a direct verb: إجراء -> أجرى,
+// تقديم -> قدّم, اتخاذ -> اتخذ, تنفيذ -> نفّذ, and so on. Deliberately
+// excluded because the periphrasis is idiomatic rather than calqued:
+// زيارة (قام بزيارة), دور (قام بدور), رحلة, جولة, واجب, محاولة.
+const LIGHT_VERB_MASDARS = [
+  'إجراء', 'تقديم', 'تنفيذ', 'تطوير', 'تحليل', 'إعداد', 'اتخاذ', 'توفير',
+  'تحديد', 'إنشاء', 'تصميم', 'مراجعة', 'تقييم', 'قياس', 'تحسين', 'إطلاق',
+  'تنظيم', 'مناقشة', 'معالجة', 'كتابة', 'دراسة', 'بناء', 'شرح', 'وصف',
+  'تسجيل', 'اختيار', 'توزيع', 'جمع', 'حذف', 'إضافة', 'تعديل', 'ترجمة',
+];
+
+function alternation(words) {
+  return words
+    .map(normalizePhrase)
+    .filter((w) => w.length > 0)
+    .sort((a, b) => b.length - a.length)
+    .map(escapeRegExp)
+    .join('|');
+}
+
+/**
+ * قام/يقوم/القيام + بـ (optionally with ال) + a curated verbal noun.
+ *
+ * The ب is required to be attached to the verbal noun, which is how Arabic
+ * writes it; there is no bare `قام بـ` branch, so the negative case
+ * قام بسرعة cannot match, because سرعة is not in the verbal-noun list.
+ */
+const LIGHT_VERB_REGEX_SOURCE =
+  `(?<![${AR_LETTER}])[وفبلك]?((?:${alternation(LIGHT_VERB_HOSTS)})` +
+  `\\s+ب(?:ال)?(?:${alternation(LIGHT_VERB_MASDARS)}))(?![${AR_LETTER}])`;
+
 const MSA_PATTERNS = [
   {
     id: 'AR-MSA-002',
@@ -279,7 +356,7 @@ const MSA_PATTERNS = [
     severity: 'P0',
     minCount: 2,
     // ar-msa.md AR-MSA-006: the تم/يتم + verbal-noun periphrastic passive.
-    // minCount 2 — the pattern is a density tell ("repeated within a single
+    // minCount 2, because the pattern is a density tell ("repeated within a single
     // paragraph"), not a single-occurrence one.
     phrases: ['تم', 'تمت', 'يتم', 'يتمّ', 'وتم', 'سيتم'],
     suggestion:
@@ -327,6 +404,42 @@ const MSA_PATTERNS = [
     phrases: ['يعد', 'يُعد', 'يعتبر', 'يشكل', 'يُشكل'],
     suggestion:
       'نوِّع مطالع الجمل بالتقديم والتأخير أو التبئير بدل تكرار القالب نفسه (AR-MSA-012).',
+  },
+  {
+    id: 'AR-MSA-031',
+    type: 'light-verb-calque',
+    severity: 'P2',
+    // Density signal, not a single-occurrence one: one periphrastic
+    // construction is a stylistic choice, a run of them is the calque.
+    minCount: 2,
+    // ar-msa.md AR-MSA-031, adapted from hazemshan1-rgb/humanizer-ar
+    // patterns.md #26 (MIT). See docs/provenance/ar-shared-msa.md.
+    regexes: [{ source: LIGHT_VERB_REGEX_SOURCE }],
+    suggestion:
+      'استبدل التركيب بالفعل المباشر: قام بإجراء الدراسة ← أجرى الدراسة، قام بتقديم الطلب ← قدّم الطلب، تم القيام بتحليل البيانات ← حلّل الباحث البيانات (AR-MSA-031).',
+  },
+  {
+    id: 'AR-MSA-032',
+    type: 'collocation-calque',
+    severity: 'P2',
+    minCount: 1,
+    // ar-msa.md AR-MSA-032, adapted from hazemshan1-rgb/humanizer-ar
+    // patterns.md #27 (MIT). Kept to the two collocations that competitor
+    // documents as attested calques with a single settled Arabic
+    // equivalent; the general class is a review judgment, not a match.
+    phrases: [
+      'أخذ قرارا',
+      'أخذ قرار',
+      'أخذت قرارا',
+      'يأخذ قرارا',
+      'أخذ بعين الاعتبار',
+      'أخذت بعين الاعتبار',
+      'يأخذ بعين الاعتبار',
+      'تأخذ بعين الاعتبار',
+      'الأخذ بعين الاعتبار',
+    ],
+    suggestion:
+      'استعمل التصادف العربي المستقر: أخذ قرارا ← اتخذ قرارا، أخذ بعين الاعتبار ← راعى أو وضع في الحسبان (AR-MSA-032).',
   },
 ];
 
@@ -611,6 +724,12 @@ function compilePattern(pattern) {
   };
   if (pattern.phrases && pattern.phrases.length) {
     const re = buildPhraseRegex(pattern.phrases);
+    if (re) compiled.regexes.push(re);
+  }
+  // IMP-17: entries listed here are bare noun/adjective stems, so the
+  // definite article ال is allowed after the optional proclitic.
+  if (pattern.stemPhrases && pattern.stemPhrases.length) {
+    const re = buildPhraseRegex(pattern.stemPhrases, { stem: true });
     if (re) compiled.regexes.push(re);
   }
   if (pattern.regexes) {

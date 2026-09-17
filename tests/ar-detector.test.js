@@ -313,3 +313,228 @@ test('rhetorical questions are not a signal in Arabic', () => {
   assert.equal(r.issues.filter((i) => /question/i.test(i.type)).length, 0);
   assert.equal(r.label, 'HUMAN');
 });
+
+// ─────────────────────────────────────────────────────────────────────────
+// Round 1: IMP-12 (AR-MSA-031 light-verb calques, AR-MSA-032 collocation
+// calques) and IMP-17 (definite-article clitic in phrase matching).
+// ─────────────────────────────────────────────────────────────────────────
+
+const lexicons = require('../skills/humanizer-pro/scripts/lib/ar-detector/lexicons.js');
+const { normalize } = require('../skills/humanizer-pro/scripts/lib/arabic-normalize.js');
+
+/** The compiled regexes for one pattern id, across every variety bucket. */
+function regexesFor(id) {
+  for (const bucket of Object.values(lexicons.RAW_PATTERNS)) {
+    for (const pat of bucket) {
+      if (pat.id !== id) continue;
+      const out = [];
+      for (const spec of pat.regexes || []) out.push(new RegExp(spec.source, 'gu'));
+      if (pat.phrases && pat.phrases.length) out.push(lexicons.buildPhraseRegex(pat.phrases));
+      if (pat.stemPhrases && pat.stemPhrases.length) {
+        out.push(lexicons.buildPhraseRegex(pat.stemPhrases, { stem: true }));
+      }
+      return out.filter(Boolean);
+    }
+  }
+  throw new Error(`no pattern ${id} in RAW_PATTERNS`);
+}
+
+function matches(id, text) {
+  const normalized = normalize(text, { taMarbuta: false }).normalized;
+  return regexesFor(id).some((re) => {
+    re.lastIndex = 0;
+    return re.test(normalized);
+  });
+}
+
+test('AR-MSA-031: the light-verb regex fires on قام بإجراء الدراسة', () => {
+  assert.ok(matches('AR-MSA-031', 'قام بإجراء الدراسة'), 'expected a light-verb match');
+  // Every host form and the تم القيام بـ periphrasis.
+  for (const t of [
+    'قامت بتقديم الطلب',
+    'يقوم بتحليل البيانات',
+    'تقوم بإعداد التقرير',
+    'سيقوم بتنفيذ الخطة',
+    'تم القيام باتخاذ القرار',
+    'قام بالإعداد للمؤتمر',
+  ]) {
+    assert.ok(matches('AR-MSA-031', t), `expected a light-verb match in: ${t}`);
+  }
+});
+
+test('AR-MSA-031: the light-verb regex does not fire on قام بسرعة', () => {
+  // The documented false positive of a naive قام + بـ regex, plus the
+  // idiomatic periphrases excluded from the verbal-noun list on purpose.
+  for (const t of [
+    'قام بسرعة',
+    'قام بسرعة إلى البيت',
+    'قام بدور مهم في الحكاية',
+    'قام بزيارة إلى المدينة',
+    'قام بنفسه',
+    'قام بواجبه',
+    'قام بجولة في الحي',
+    'قام الرجل من مكانه',
+  ]) {
+    assert.ok(!matches('AR-MSA-031', t), `unexpected light-verb match in: ${t}`);
+  }
+});
+
+test('AR-MSA-031: a light-verb run is reported as an issue on a real document', () => {
+  const text =
+    'قامت اللجنة بإجراء مراجعة شاملة للملفات في مطلع الشهر الماضي، ثم قامت بتقديم ' +
+    'توصياتها إلى الجهة المختصة، وبعد أسبوعين تم القيام باتخاذ القرار النهائي ' +
+    'ونشره في الجريدة الرسمية دون أي تعديل على صيغته الأولى.';
+  const r = analyzeText(text, { variety: 'msa' });
+  const hits = r.issues.filter((i) => i.patternId === 'AR-MSA-031');
+  assert.ok(hits.length >= 2, `expected at least 2 AR-MSA-031 hits, got ${hits.length}`);
+  for (const h of hits) assert.equal(text.slice(h.start, h.end), h.excerpt);
+  // A stylistic periphrasis on its own is not enough to be worth reporting.
+  const single = analyzeText(
+    'قام الباحث بإجراء الدراسة في مدينة صغيرة على ساحل البحر، ثم عاد إلى الجامعة ' +
+      'وكتب ما رآه في دفتر صغير لم يقرأه أحد بعد ذلك، وبقي الدفتر في الدرج سنوات.',
+    { variety: 'msa' },
+  );
+  assert.equal(
+    single.issues.filter((i) => i.patternId === 'AR-MSA-031').length,
+    0,
+    'one light-verb construction must stay below the minCount gate',
+  );
+});
+
+test('AR-MSA-032: the attested collocation calques fire, ordinary أخذ does not', () => {
+  // The list matches the adjacent pairing only; an intervening subject
+  // (أخذت الإدارة قرارا) is left to review, as the reference entry says.
+  for (const t of ['أخذت قرارا متأخرا', 'أخذ قرارا', 'أخذ بعين الاعتبار كل الملاحظات', 'الأخذ بعين الاعتبار']) {
+    assert.ok(matches('AR-MSA-032', t), `expected a collocation-calque match in: ${t}`);
+  }
+  for (const t of ['أخذ الكتاب من الرف', 'أخذ يقرأ في الصباح', 'أخذ مكانه في الصف', 'أخذت الإدارة قرارا']) {
+    assert.ok(!matches('AR-MSA-032', t), `unexpected collocation-calque match in: ${t}`);
+  }
+});
+
+test('IMP-17: a stem entry matches its ال-prefixed and proclitic-plus-ال forms', () => {
+  const re = lexicons.buildPhraseRegex(['اقتصاد'], { stem: true });
+  for (const w of ['اقتصاد', 'الاقتصاد', 'والاقتصاد', 'بالاقتصاد', 'فالاقتصاد', 'كالاقتصاد', 'للاقتصاد']) {
+    re.lastIndex = 0;
+    assert.ok(re.test(w), `stem regex should match ${w}`);
+  }
+  // The right boundary still forbids a following Arabic letter, so a
+  // derived word sharing the stem never matches.
+  for (const w of ['اقتصادي', 'الاقتصادية', 'واقتصاديات']) {
+    re.lastIndex = 0;
+    assert.ok(!re.test(w), `stem regex should not match ${w}`);
+  }
+  // The reported span excludes whatever prefix was consumed.
+  const m = new RegExp(re.source, 'u').exec('والاقتصاد');
+  assert.equal(m[1], 'اقتصاد');
+});
+
+test('IMP-17: the default (non-stem) matching behaviour is unchanged', () => {
+  const re = lexicons.buildPhraseRegex(['اقتصاد']);
+  for (const w of ['اقتصاد', 'واقتصاد', 'باقتصاد']) {
+    re.lastIndex = 0;
+    assert.ok(re.test(w), `plain regex should match ${w}`);
+  }
+  for (const w of ['الاقتصاد', 'والاقتصاد', 'للاقتصاد']) {
+    re.lastIndex = 0;
+    assert.ok(!re.test(w), `plain regex must not match ${w} without opting in`);
+  }
+});
+
+test('IMP-17: AR-SH-001 now fires on والجدير بالذكر and still on the bare form', () => {
+  for (const form of ['جدير بالذكر', 'الجدير بالذكر', 'والجدير بالذكر', 'من الجدير بالذكر']) {
+    const text = `${form} أن الدراسة الأولى لم تتناول هذا الجانب إطلاقا، وأن الفريق الذي تولى المراجعة الثانية عمل على مادة مختلفة تماما عن الأولى.`;
+    const r = analyzeText(text, { variety: 'msa' });
+    const hits = r.issues.filter((i) => i.patternId === 'AR-SH-001');
+    assert.ok(hits.length >= 1, `expected AR-SH-001 to fire on: ${form}`);
+    for (const h of hits) assert.equal(text.slice(h.start, h.end), h.excerpt);
+  }
+});
+
+// ─────────────────────────────────────────────────────────────────────────
+// IMP-02: sourced (non-synthetic) human fixtures.
+//
+// tests/fixtures/human-sourced/*.md is real published Arabic from before
+// the 2022-11-30 pre-model cutoff, reused under CC BY-SA 4.0, with the
+// exact revision recorded in each file's header and in _provenance.md.
+// Unlike every other Arabic human fixture in this repository, nobody on
+// this project wrote them, so they are the one false-positive anchor that
+// cannot have been unconsciously shaped to the detector.
+//
+// These are scored through detect.js's analyze() with **auto-routing**: no
+// lang, no variety. Forcing a variety would test the lexicon in isolation
+// and skip the routing decision, and routing is itself a false-positive
+// source (see corpus/RESULTS.md).
+// ─────────────────────────────────────────────────────────────────────────
+
+const { analyze: autoAnalyze } = require('../skills/humanizer-pro/scripts/detect.js');
+
+const SOURCED_DIR = path.join(FIXTURE_ROOT, 'human-sourced');
+
+function listSourced() {
+  if (!fs.existsSync(SOURCED_DIR)) return [];
+  return fs.readdirSync(SOURCED_DIR)
+    .filter((f) => f.endsWith('.md') && !f.startsWith('_'))
+    .sort()
+    .map((f) => path.join(SOURCED_DIR, f));
+}
+
+test('IMP-02: every sourced human fixture carries a complete provenance header', () => {
+  const files = listSourced();
+  assert.ok(files.length >= 2, `expected at least 2 sourced fixtures, found ${files.length}`);
+  for (const file of files) {
+    const head = readFixture(file).slice(0, 600);
+    const m = /<!--\s*fixture:\s*sourced-human\s*;\s*variety:\s*([a-z]+)\s*;\s*source:\s*(\S+)\s*rev\s*(\d+)\s*;\s*licence:\s*([^;]+);\s*cleanup:\s*([^>]+)-->/.exec(head);
+    assert.ok(m, `${path.basename(file)}: missing or malformed sourced-human header`);
+    assert.ok(['msa', 'egt', 'shami'].includes(m[1]), `${path.basename(file)}: bad variety ${m[1]}`);
+    assert.ok(/^https?:\/\//.test(m[2]), `${path.basename(file)}: source must be a url`);
+    assert.ok(m[4].trim().length > 3, `${path.basename(file)}: licence must be named`);
+    assert.ok(m[5].trim().length > 10, `${path.basename(file)}: cleanup steps must be described`);
+  }
+  // The provenance log has to exist and has to mention every file.
+  const log = path.join(SOURCED_DIR, '_provenance.md');
+  assert.ok(fs.existsSync(log), 'tests/fixtures/human-sourced/_provenance.md is missing');
+  const logText = readFixture(log);
+  for (const file of files) {
+    assert.ok(
+      logText.includes(path.basename(file)),
+      `_provenance.md does not mention ${path.basename(file)}`,
+    );
+  }
+});
+
+test('IMP-02: every sourced human fixture scores below MIXED under auto-routing', () => {
+  const failures = [];
+  for (const file of listSourced()) {
+    const text = readFixture(file);
+    // Auto-routing: no lang and no variety forced, exactly as `detect.js`
+    // would treat the file if a user handed it over with no flags.
+    const r = autoAnalyze(text);
+    if (r.score >= THRESHOLDS.MIXED) {
+      failures.push(`${path.basename(file)} scored ${r.score} (${r.label}) as ${r.lang}/${r.variety}`);
+    }
+    assert.equal(r.label, 'HUMAN', `${path.basename(file)}: label ${r.label}`);
+  }
+  assert.deepEqual(failures, [], `sourced human fixtures at or above MIXED: ${failures.join('; ')}`);
+});
+
+test('IMP-02: the sourced fixtures cover more than one variety, and the header matches the routing', () => {
+  const routed = new Map();
+  for (const file of listSourced()) {
+    const text = readFixture(file);
+    routed.set(path.basename(file), { declared: varietyOf(text, 'msa'), actual: autoAnalyze(text).variety });
+  }
+  assert.ok(routed.size >= 2, 'expected sourced fixtures for at least two varieties');
+  const declared = new Set([...routed.values()].map((v) => v.declared));
+  assert.ok(declared.size >= 2, `expected at least two declared varieties, got ${[...declared].join(',')}`);
+  // A fixture that declares a dialect but routes to msa tests nothing about
+  // that dialect's lexicon. _provenance.md records this reasoning; the test
+  // holds the two apart so a future re-pick cannot quietly lose it.
+  for (const [name, v] of routed) {
+    assert.equal(
+      v.actual,
+      v.declared,
+      `${name}: declared variety ${v.declared} but auto-routing chose ${v.actual}`,
+    );
+  }
+});

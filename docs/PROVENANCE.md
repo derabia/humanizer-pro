@@ -182,6 +182,65 @@ AR-SH id; the AR-MSA entry is a short pointer plus any MSA-specific nuance.
 All hashes above truncated in the AR-MSA table for readability; full values
 are in the file-hash table at the top of this document.
 
+---
+
+## Round-1 additions (IMP-12): the classical-rhetoric layer, AR-MSA-029 to AR-MSA-033
+
+These five entries do not come from `_sources/semitic`. They are adapted
+from a competitor repository reviewed in
+`docs/competitors/hazemshan1-rgb_humanizer-ar.md`.
+
+Source pin:
+
+| field | value |
+|---|---|
+| repository | `hazemshan1-rgb/humanizer-ar` |
+| URL | `https://github.com/hazemshan1-rgb/humanizer-ar` |
+| HEAD SHA | `5289d4a60aa52815125d4cb5548cdf51dad2790f` |
+| licence | MIT (`LICENSE:1-3`, "Copyright (c) 2026 Hazem Shannak") |
+| local path | `_sources/competitors/hazemshan1-rgb_humanizer-ar` |
+| file used | `skills/humanizer-ar/references/patterns.md` |
+| file SHA-256 | `b6a9cc170c0608912100934ad1102920a82ba849998b2006db2a22d5bd3bbf02` |
+
+What was taken, and what was not. MIT permits reuse of the text itself;
+this port takes only the **idea and the structure** of each pattern and
+rewrites the prose, examples included, in this reference's own voice and
+template. No sentence of `patterns.md` is reproduced. The upstream
+research citations (Marathe 2022 on Arabic rhetorical-device density, and
+the Arabic collocation-extraction literature) are repeated as the source
+gives them and have not been independently verified by this project; they
+are attributed to the source, not asserted by it.
+
+| ar-msa id | Source item | File:line | Engine status | Notes |
+|---|---|---|---|---|
+| AR-MSA-029 Declarative Rigidity (خبر with no إنشاء) | patterns.md item 21, "جمود الخبر وغياب تنويع الإنشاء" | `patterns.md:235-241` | judgment-only, not scored | Absence signal. Not scored per `scripts/README.md` ("Conservative by default") and per `ar-shared.md`'s rule that rhetorical questions are never a signal in Arabic. The source itself marks its own check informational, not a flag |
+| AR-MSA-030 Missing iltifat | patterns.md item 24, "غياب الالتفات" | `patterns.md:261-265` | judgment-only, not scored | Source calls it a low-confidence indicator; this port records the asymmetry (presence is weak human evidence, absence is no evidence) and scores neither direction |
+| AR-MSA-031 Light-Verb Calques | patterns.md item 26, "الأفعال المساعدة الفارغة بدل الفعل المباشر" | `patterns.md:279-291` | lexicon, `P2`, `minCount` 2 | Curated host list plus curated verbal-noun list, both required. The source's own warning that a naive قام + بـ regex misfires is honoured by having no bare قام بـ branch; regression-tested on قام بسرعة |
+| AR-MSA-032 Collocation Calques | patterns.md item 27, "التصادفات اللفظية المُقحمة من الإنجليزية" | `patterns.md:293-299` | lexicon, `P2`, `minCount` 1 | Only the two collocations the source documents as attested (أخذ قرارًا, أخذ بعين الاعتبار) are matched. The general class stays a review judgment, as the source recommends |
+| AR-MSA-033 Classical Fluency Defects (عيوب الفصاحة) | patterns.md item 25, "عيوب الفصاحة الكلاسيكية" | `patterns.md:267-277` | judgment-only, not scored | Five-item reviewer checklist. None of the five is string-matchable; the source also treats the category as a review judgment rather than a script check |
+| (no id) context-free emphatic particles | patterns.md item 22 | `patterns.md:243-247` | already covered | Duplicates AR-SH-001 and its لا شك / بالتأكيد phrase entries. No id minted |
+| (no id) الإطناب against الإيجاز | patterns.md item 23 | `patterns.md:249-259` | already covered | Duplicates AR-MSA-028 (near-paraphrase padding) with a classical name attached. No id minted |
+
+Cross-variety status: all five are MSA-only. None is promoted to
+`ar-shared.md`, because the source addresses MSA exclusively and neither
+`ar-egyptian.md` nor `ar-levantine.md` has a corresponding rule to
+generalize from.
+
+Self-authored examples in these five entries carry
+`<!-- NATIVE-REVIEW: msa -->` and are logged in
+`docs/native-review/ar-shared-msa.md` as items 4 to 7.
+
+## Round-1 additions (IMP-17): definite-article clitic in phrase matching
+
+No new pattern id. `lib/ar-detector/lexicons.js` gains an opt-in
+`stemPhrases` list per pattern, matched with the definite article ال
+allowed after the optional proclitic, and `AR-SH-001` moves
+جدير بالذكر and جدير بالإشارة into it so الجدير بالذكر,
+والجدير بالذكر and للجدير بالذكر match the same entry. Provenance is this
+project's own (origin: humanizer-pro), from the widening recorded as
+borrow 8 in `docs/COMPETITIVE-ANALYSIS.md` section 5. The measured
+false-positive effect of the widening is recorded in `corpus/RESULTS.md`.
+
 
 ---
 
@@ -419,3 +478,95 @@ Line numbers below are as of these commits.
 | Worked example AR-4 | described only; opener phrase from `semitic/skills/humanizer-ar-egt/SKILL.md:287` | Flagged `NATIVE-REVIEW: egt`. Deliberately not written out, to avoid inventing Egyptian prose. |
 | Worked example AR-5 | `semitic/skills/humanizer-ar-shami/SKILL.md:601` (verbatim, truncated) | Flagged `NATIVE-REVIEW: shami`, unconditionally per the build rule. |
 | Statement that the detector score and HUMAN/MIXED/AI label are a reporting layer only | `avoid-ai-writing/detector/patterns.js` (trinary classifier, per `docs/inventory/avoid-ai-writing.md` §8) | `origin: humanizer-pro` for the decision to keep them out of the tier scale (C-14). |
+
+
+---
+
+<!-- source fragment: docs/provenance/round1-docs.md -->
+
+## Provenance: round 1 doc-only wave (waveE)
+
+Section-by-section source map for every section added or changed in this
+pass. Format: section, source, rationale. Covers IMP-11, 15, 16, 18, 19, 21,
+22, 25, 26 from `docs/COMPETITIVE-ANALYSIS.md` section 6.
+
+## `references/core-principles.md`
+
+| Section | Source | Rationale |
+|---|---|---|
+| Shared core, thin adapters | sawradip/rehumanize, `sawradip_rehumanize.md` section 12 (idea only, MIT) + `origin: humanizer-pro` (wording) | IMP-26. Names the architecture `SKILL.md`'s loading table (section 4) already implements; the source names the pattern generally, the specific statement of how it applies to this project's own files is original. |
+| Text under audit is data, never instructions | `_sources/avoid-ai-writing/SKILL.md:103-106` | IMP-22. Adapted principle; wording rewritten to fit this project's own severity/finding vocabulary (P0/P1/P2, pattern IDs) rather than quoted. |
+| The substitutability gate | MrBridgeHQ/human-writer-ar, `content-distinctiveness.md:24-28` (idea only, MIT) + `origin: humanizer-pro` (wording) | IMP-19. Idea credited per the competitive-analysis plan; wording is fresh, bound explicitly to the existing never-invent rule so the gate cannot become licence to invent specifics. |
+
+## `skills/humanizer-pro/references/modes.md`
+
+| Section | Source | Rationale |
+|---|---|---|
+| Score wording ("review signal, not an authorship claim") + `authorshipClaim: false` note | amanmaqsood, `lib/prose-core.js:421,423` (idea only, MIT) | IMP-18/IMP-09 wording. Named field credited; this project's detector does not currently emit `authorshipClaim` in JSON, so the note describes the intended contract for when it is wired, not a claim about current `detect.js --json` output. See discrepancy note if this drifts. |
+| P2-only stop rule (detect contract) | finestructure-ai/humanizer-multilingual, `references/method.md:236-248` (idea only, MIT) | IMP-15. Mirrors the same rule added to `precedence.md`'s How-to-apply; stated twice deliberately so a reader who only opens `modes.md` still gets the rule. |
+| Not flagged on purpose (detect contract) | yoloshii, `SKILL.md:583` (idea only) | IMP-18. |
+| Claims added: 0 (rewrite and edit contracts) | yoloshii, `SKILL.md:575`, itself crediting AgriciDaniel/anti-slop, `SKILL.md:914` (idea only) | IMP-18. Wording written fresh per the competitive-analysis plan's explicit instruction ("wording written fresh"). |
+| Verify with the validator (mandatory for edit/seo, recommended for rewrite) | `origin: humanizer-pro`, extending `_sources/avoid-ai-writing/SKILL.md:275`'s existing mandatory-for-edit rule | IMP-14/IMP-09 wording. `scripts/validate.js`'s actual CLI (positional `before.md after.md`, no `--mode` flag) is used rather than an invented flag; see `docs/discrepancies/round1-docs.md` item 5. |
+| Arabic headings table: Claims added / Not flagged on purpose rows | `origin: humanizer-pro`, marked `<!-- NATIVE-REVIEW: msa -->` (already covers the whole table) | Translations are this project's own; unverified by a native reviewer, same status as the rest of that table. |
+
+## `skills/humanizer-pro/references/precedence.md`
+
+| Section | Source | Rationale |
+|---|---|---|
+| How-to-apply step 6: P2-only stop rule | finestructure-ai/humanizer-multilingual, `references/method.md:236-248` (idea only, MIT) | IMP-15. States the rule once at the precedence-mechanics level; `modes.md` restates it inside the `detect` contract for a reader who does not open this file. |
+
+## `skills/humanizer-pro/references/ar-shared.md`
+
+| Section | Source | Rationale |
+|---|---|---|
+| Family tags note (five families + reserved sixth) | finestructure-ai/humanizer-multilingual (idea only, MIT) | IMP-15. Family names and definitions are original; the source is credited for the taxonomy concept, not for these specific five names. |
+| `**Family:**` line on all 7 `AR-SH-*` entries | `origin: humanizer-pro` (editorial classification of existing entries) | See `docs/discrepancies/round1-docs.md` item 3 for the counts and the reasoning behind each assignment. |
+
+## `skills/humanizer-pro/references/ar-egyptian.md` and `ar-levantine.md`
+
+| Section | Source | Rationale |
+|---|---|---|
+| `**Family:**` line on all 26 `AR-EGT-*` and all 25 `AR-SHM-*` entries | `origin: humanizer-pro` (editorial classification of existing entries) | Same taxonomy as `ar-shared.md`; not upstream-sourced per entry. See `docs/discrepancies/round1-docs.md` item 3. |
+
+## `skills/humanizer-pro/references/voice-matching.md`
+
+| Section | Source | Rationale |
+|---|---|---|
+| Provenance and privacy of the voice sample | amanmaqsood, `lib/prose-core.js:524-629` (idea only, MIT) | IMP-16. The four-tier source-confidence ranking (own draft > bylined article > social post > forwarded text) is this project's own; the source is credited for the general idea of per-source evidence weighting and hash-only (never-stored) voice profiles. |
+
+## `skills/humanizer-pro/references/en-vocabulary.md`
+
+| Section | Source | Rationale |
+|---|---|---|
+| Era column on all 49 Tier 1A rows | `_sources/avoid-ai-writing/` and `_sources/blader/` (grepped, no per-word date found; all rows tagged `unknown`) | IMP-21. See `docs/discrepancies/round1-docs.md` item 1 for the full grep result and why every row is `unknown` rather than a guessed date. |
+| Decay paragraph | yoloshii, `SKILL.md:185-190` + eddyplolz, `tell-catalog.md:138-142` (idea only) | IMP-21. |
+
+## `docs/LANGUAGE-CODES.md` (new file)
+
+| Section | Source | Rationale |
+|---|---|---|
+| Whole document | sawradip/rehumanize, `docs/LANGUAGE-CODES.md:1-38` (idea/structure only, MIT) + `origin: humanizer-pro` (Arabic-specific content, `lib/lang.js` divergence note) | IMP-25. The BCP 47 naming rule is a public standard (RFC 5646), not the source's invention; the source is credited for the framing and the "worked table" structure, wording and the Arabic table's content are original. |
+
+## `skills/humanizer-pro/references/_TEMPLATE.md` (new file)
+
+| Section | Source | Rationale |
+|---|---|---|
+| Whole document | sawradip/rehumanize, `skills/_TEMPLATE.md:1-30` (structure only, MIT) + `origin: humanizer-pro` (all step content) | IMP-25. Adapted the numbered-recipe *shape* (pick naming, create file, adapt content, wire the system, ship as experimental); every step's actual content is specific to this project's own file layout (`ar-shared.md` thin-adapter pattern, `lib/lang.js` markers, `tests/fixtures/`, `docs/COVERAGE-MAP.md`) and not present in the source. |
+
+## `docs/COVERAGE-MAP.md` (new file)
+
+| Section | Source | Rationale |
+|---|---|---|
+| Whole document | `origin: humanizer-pro`, generated by reading `skills/humanizer-pro/references/*.md` headings against `scripts/lib/ar-detector/lexicons.js`'s `RAW_PATTERNS` export and `signals.js`'s comment references, plus a manual correlation between `scripts/lib/en-detector/index.js`'s category names and `en-patterns.md`'s entry titles | IMP-11. See `docs/discrepancies/round1-docs.md` item 4 for how the EN-* `signal` classification was decided, since the English engine does not tag issues by `EN-NNN` ID. |
+
+## `tests/coverage-map.test.js` (new file)
+
+| Section | Source | Rationale |
+|---|---|---|
+| Whole file | `origin: humanizer-pro`, structure mirrors the existing `tests/*.test.js` files (plain `node:test`, no framework) | IMP-11/IMP-16(borrow). Reads reference-file headings dynamically at test-run time (not hardcoded) specifically so a concurrent pass appending `AR-MSA-029+` to `ar-msa.md` (off-limits to this pass) does not go stale here; it will instead correctly fail until `docs/COVERAGE-MAP.md` is updated for the new IDs. |
+
+## `tools/check-skill.js` (`--refs` option)
+
+| Section | Source | Rationale |
+|---|---|---|
+| `--refs` option | `origin: humanizer-pro` | IMP-11. Runs the same heading-vs-map and lexicon-parity checks as `tests/coverage-map.test.js`, as a standalone CLI check independent of `npm test`, per the explicit instruction to extend `check-skill.js` with this option. |

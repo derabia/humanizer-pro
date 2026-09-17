@@ -80,3 +80,100 @@ judgment this task did not have access to.
 | 3 | `ar-msa.md:676-681` | AR-MSA-025 dialogue example | Verbatim upstream, pre-existing inconsistency |
 
 Total flagged items: 3 (2 shared, 1 MSA).
+
+---
+
+## Round-1 additions (IMP-12): the classical-rhetoric layer
+
+Four more self-authored Arabic examples entered `ar-msa.md` with the
+AR-MSA-029 to AR-MSA-033 block. Each is marked
+`<!-- NATIVE-REVIEW: msa -->` in the source file. The summary table above
+("Total flagged items: 3") counts only the items that existed before this
+round and is superseded by the combined table at the end of this section.
+
+### 4. `skills/humanizer-pro/references/ar-msa.md` AR-MSA-029 before/after pair
+
+```
+❌ تُظهر البيانات أن الإنفاق ارتفع. ويُظهر التحليل أن الأثر كان محدودًا.
+   وتُظهر المقارنة أن النتيجة لم تتغير.
+✓ ارتفع الإنفاق. فأين ذهب؟ التحليل يقول إن الأثر كان محدودًا، والمقارنة
+   مع العام السابق لا تُظهر فرقًا يُذكر.
+```
+
+**Why flagged:** Self-authored for this port. The upstream source
+(`patterns.md:235-241`) gives no before/after pair for this pattern, so
+there is nothing to reproduce and nothing to check the example against.
+Specific things a reviewer should verify: whether فأين ذهب؟ reads as a
+genuine استفهام إنكاري in running report prose rather than as a
+journalistic mannerism, and whether the ✓ version's mixture of a bare
+verbal sentence with a following nominal one is a natural rhythm or reads
+as clipped.
+
+### 5. `skills/humanizer-pro/references/ar-msa.md` AR-MSA-030 before/after pair
+
+```
+❌ خرج السكان من البيوت في الليلة نفسها، ووقفوا في الساحة حتى الفجر،
+   ولم يعودوا إلا بعد أن هدأ كل شيء.
+✓ خرج السكان من البيوت في الليلة نفسها. وها هم يقفون في الساحة حتى
+   الفجر، لا يعودون إلا بعد أن يهدأ كل شيء.
+```
+
+**Why flagged:** Self-authored for this port; the source gives no example.
+This is the riskiest of the four, because it claims a specific tense shift
+is an instance of الالتفات rather than an inconsistency. A reviewer should
+verify exactly that: whether وها هم يقفون after a ماضٍ opening is read by
+a native reader as a deliberate rhetorical shift into the present, or as a
+tense error. If it reads as an error, the example should be replaced with a
+person shift rather than a tense shift, or the entry should carry no
+example at all.
+
+### 6. `skills/humanizer-pro/references/ar-msa.md` AR-MSA-031 before/after pair
+
+```
+❌ قامت اللجنة بإجراء مراجعة شاملة للملفات، ثم قامت بتقديم توصياتها،
+   وبعد ذلك تم القيام باتخاذ القرار النهائي.
+✓ راجعت اللجنة الملفات كلها، وقدّمت توصياتها، ثم اتخذت قرارها.
+```
+
+**Why flagged:** Self-authored, though the *shape* of the pair follows the
+source's own example at `patterns.md:288-291` (a company conducting a study
+and then making a decision). Lowest risk of the four: both sides are
+ordinary administrative MSA and the transformation is mechanical. A
+reviewer should still confirm that راجعت اللجنة الملفات كلها is the
+natural direct-verb rendering rather than راجعت اللجنة كل الملفات, and
+that dropping شاملة loses nothing a reviewer would want kept.
+
+### 7. `skills/humanizer-pro/references/ar-msa.md` AR-MSA-032 before/after pair
+
+```
+❌ أخذت قرارًا متأخرًا بعد أن أخذت بعين الاعتبار كل الملاحظات.
+✓ اتخذت قرارًا متأخرًا بعد أن راعت كل الملاحظات.
+```
+
+**Why flagged:** Self-authored. The two calques themselves are taken from
+the source (`patterns.md:293-299`), which documents أخذ قرارًا against
+اتخذ قرارًا explicitly; the sentence around them is this port's. A
+reviewer should verify the replacement verbs specifically: whether راعت is
+the verb a native writer reaches for here, or whether وضعت في الحسبان or
+أخذت في الحسبان is the more usual form in administrative register, since
+the entry's Fix text recommends راعى first.
+
+Note on AR-MSA-033: that entry contains no Arabic example sentence, only
+term names for the five classical defects, so it carries no
+`NATIVE-REVIEW` marker and appears in no row below.
+
+## Summary, all rounds
+
+| # | File:line | Section | Origin |
+|---|---|---|---|
+| 1 | `ar-shared.md:358-359` | Typography, Arabic punctuation | Self-authored (humanizer-pro) |
+| 2 | `ar-shared.md:392-397` | Typography, digit convention | Self-authored (humanizer-pro) |
+| 3 | `ar-msa.md:676-681` | AR-MSA-025 dialogue example | Verbatim upstream, pre-existing inconsistency |
+| 4 | `ar-msa.md` AR-MSA-029 | Declarative rigidity example | Self-authored (humanizer-pro) |
+| 5 | `ar-msa.md` AR-MSA-030 | Missing iltifat example | Self-authored (humanizer-pro), highest risk of the four |
+| 6 | `ar-msa.md` AR-MSA-031 | Light-verb calque example | Self-authored, shape follows the MIT source |
+| 7 | `ar-msa.md` AR-MSA-032 | Collocation calque example | Self-authored, calques taken from the MIT source |
+
+Total flagged items after round 1: 7 (2 shared, 5 MSA). Line numbers for
+items 4 to 7 are given by pattern id rather than by line, because the
+entries sit at the end of a file that later rounds will keep appending to.

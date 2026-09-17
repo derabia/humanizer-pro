@@ -82,3 +82,62 @@ AR-SH id; the AR-MSA entry is a short pointer plus any MSA-specific nuance.
 
 All hashes above truncated in the AR-MSA table for readability; full values
 are in the file-hash table at the top of this document.
+
+---
+
+## Round-1 additions (IMP-12): the classical-rhetoric layer, AR-MSA-029 to AR-MSA-033
+
+These five entries do not come from `_sources/semitic`. They are adapted
+from a competitor repository reviewed in
+`docs/competitors/hazemshan1-rgb_humanizer-ar.md`.
+
+Source pin:
+
+| field | value |
+|---|---|
+| repository | `hazemshan1-rgb/humanizer-ar` |
+| URL | `https://github.com/hazemshan1-rgb/humanizer-ar` |
+| HEAD SHA | `5289d4a60aa52815125d4cb5548cdf51dad2790f` |
+| licence | MIT (`LICENSE:1-3`, "Copyright (c) 2026 Hazem Shannak") |
+| local path | `_sources/competitors/hazemshan1-rgb_humanizer-ar` |
+| file used | `skills/humanizer-ar/references/patterns.md` |
+| file SHA-256 | `b6a9cc170c0608912100934ad1102920a82ba849998b2006db2a22d5bd3bbf02` |
+
+What was taken, and what was not. MIT permits reuse of the text itself;
+this port takes only the **idea and the structure** of each pattern and
+rewrites the prose, examples included, in this reference's own voice and
+template. No sentence of `patterns.md` is reproduced. The upstream
+research citations (Marathe 2022 on Arabic rhetorical-device density, and
+the Arabic collocation-extraction literature) are repeated as the source
+gives them and have not been independently verified by this project; they
+are attributed to the source, not asserted by it.
+
+| ar-msa id | Source item | File:line | Engine status | Notes |
+|---|---|---|---|---|
+| AR-MSA-029 Declarative Rigidity (خبر with no إنشاء) | patterns.md item 21, "جمود الخبر وغياب تنويع الإنشاء" | `patterns.md:235-241` | judgment-only, not scored | Absence signal. Not scored per `scripts/README.md` ("Conservative by default") and per `ar-shared.md`'s rule that rhetorical questions are never a signal in Arabic. The source itself marks its own check informational, not a flag |
+| AR-MSA-030 Missing iltifat | patterns.md item 24, "غياب الالتفات" | `patterns.md:261-265` | judgment-only, not scored | Source calls it a low-confidence indicator; this port records the asymmetry (presence is weak human evidence, absence is no evidence) and scores neither direction |
+| AR-MSA-031 Light-Verb Calques | patterns.md item 26, "الأفعال المساعدة الفارغة بدل الفعل المباشر" | `patterns.md:279-291` | lexicon, `P2`, `minCount` 2 | Curated host list plus curated verbal-noun list, both required. The source's own warning that a naive قام + بـ regex misfires is honoured by having no bare قام بـ branch; regression-tested on قام بسرعة |
+| AR-MSA-032 Collocation Calques | patterns.md item 27, "التصادفات اللفظية المُقحمة من الإنجليزية" | `patterns.md:293-299` | lexicon, `P2`, `minCount` 1 | Only the two collocations the source documents as attested (أخذ قرارًا, أخذ بعين الاعتبار) are matched. The general class stays a review judgment, as the source recommends |
+| AR-MSA-033 Classical Fluency Defects (عيوب الفصاحة) | patterns.md item 25, "عيوب الفصاحة الكلاسيكية" | `patterns.md:267-277` | judgment-only, not scored | Five-item reviewer checklist. None of the five is string-matchable; the source also treats the category as a review judgment rather than a script check |
+| (no id) context-free emphatic particles | patterns.md item 22 | `patterns.md:243-247` | already covered | Duplicates AR-SH-001 and its لا شك / بالتأكيد phrase entries. No id minted |
+| (no id) الإطناب against الإيجاز | patterns.md item 23 | `patterns.md:249-259` | already covered | Duplicates AR-MSA-028 (near-paraphrase padding) with a classical name attached. No id minted |
+
+Cross-variety status: all five are MSA-only. None is promoted to
+`ar-shared.md`, because the source addresses MSA exclusively and neither
+`ar-egyptian.md` nor `ar-levantine.md` has a corresponding rule to
+generalize from.
+
+Self-authored examples in these five entries carry
+`<!-- NATIVE-REVIEW: msa -->` and are logged in
+`docs/native-review/ar-shared-msa.md` as items 4 to 7.
+
+## Round-1 additions (IMP-17): definite-article clitic in phrase matching
+
+No new pattern id. `lib/ar-detector/lexicons.js` gains an opt-in
+`stemPhrases` list per pattern, matched with the definite article ال
+allowed after the optional proclitic, and `AR-SH-001` moves
+جدير بالذكر and جدير بالإشارة into it so الجدير بالذكر,
+والجدير بالذكر and للجدير بالذكر match the same entry. Provenance is this
+project's own (origin: humanizer-pro), from the widening recorded as
+borrow 8 in `docs/COMPETITIVE-ANALYSIS.md` section 5. The measured
+false-positive effect of the widening is recorded in `corpus/RESULTS.md`.

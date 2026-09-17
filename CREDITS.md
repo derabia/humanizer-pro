@@ -59,3 +59,13 @@ kept verbatim in `skills/humanizer-pro/LICENSES/`.
   contains Hebrew-language material; humanizer-pro implements only the MSA,
   Egyptian, and Levantine Arabic content from this source and does not use,
   adapt, or ship any Hebrew patterns, samples, or code from it.
+
+## Sourced human fixtures (CC BY-SA 4.0)
+
+Two test fixtures reuse Wikipedia text under CC BY-SA 4.0 (not MIT):
+`tests/fixtures/human-sourced/msa-01.md` (Arabic Wikipedia, "دسوق", rev 58641269)
+and `tests/fixtures/human-sourced/egt-01.md` (Egyptian Arabic Wikipedia,
+"اللغه المصريه الحديثه", rev 6890147). Full attribution and cleanup steps are in
+`tests/fixtures/human-sourced/_provenance.md`. The false-positive corpus in
+`corpus/manifest.json` records only metadata and hashes; the article text is
+fetched on demand by `tools/fetch-corpus.js` and is not redistributed.
