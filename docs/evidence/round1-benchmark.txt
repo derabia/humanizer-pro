@@ -1,0 +1,32 @@
+PASS  en-detect-01
+PASS  en-rewrite-01
+PASS  en-edit-01
+PASS  en-seo-01
+PASS  msa-detect-01
+PASS  msa-rewrite-01
+PASS  msa-edit-01
+PASS  msa-seo-01
+PASS  egt-detect-01
+PASS  egt-rewrite-01
+PASS  egt-edit-01
+PASS  egt-seo-01
+PASS  shami-detect-01
+PASS  shami-rewrite-01
+PASS  shami-edit-01
+PASS  shami-seo-01
+
+16/16 cases passed
+
+--- tests/benchmark.test.js ---
+✔ a candidate that echoes the input verbatim fails minEditRatio (297.9415ms)
+✔ a candidate with an invented number not in the input fails forbidUnexpectedNumbers (306.3076ms)
+✔ an Arabic candidate with an invented Arabic-Indic-digit number fails forbidUnexpectedNumbers (282.6736ms)
+✔ all 16 real iteration-1 cases in evals/benchmark.json pass today (3350.1554ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4340.222

@@ -1,0 +1,86 @@
+[
+  {
+    "id": "en-rewrite-01",
+    "language": "en",
+    "inputFile": "evals/inputs/en-rewrite-01.md",
+    "candidateAFile": "evals/inputs/en-rewrite-01.md",
+    "candidateBFile": "evals/runs/iteration-1/en-rewrite-01/rewritten.md"
+  },
+  {
+    "id": "en-edit-01",
+    "language": "en",
+    "inputFile": "evals/inputs/en-edit-01.md",
+    "candidateAFile": "evals/inputs/en-edit-01.md",
+    "candidateBFile": "evals/runs/iteration-1/en-edit-01/edited.md"
+  },
+  {
+    "id": "en-seo-01",
+    "language": "en",
+    "inputFile": "evals/inputs/en-seo-01.md",
+    "candidateAFile": "evals/inputs/en-seo-01.md",
+    "candidateBFile": "evals/runs/iteration-1/en-seo-01/rewritten.md"
+  },
+  {
+    "id": "msa-rewrite-01",
+    "language": "ar",
+    "inputFile": "evals/inputs/msa-rewrite-01.md",
+    "candidateAFile": "evals/inputs/msa-rewrite-01.md",
+    "candidateBFile": "evals/runs/iteration-1/msa-rewrite-01/rewritten.md"
+  },
+  {
+    "id": "msa-edit-01",
+    "language": "ar",
+    "inputFile": "evals/inputs/msa-edit-01.md",
+    "candidateAFile": "evals/inputs/msa-edit-01.md",
+    "candidateBFile": "evals/runs/iteration-1/msa-edit-01/edited.md"
+  },
+  {
+    "id": "msa-seo-01",
+    "language": "ar",
+    "inputFile": "evals/inputs/msa-seo-01.md",
+    "candidateAFile": "evals/inputs/msa-seo-01.md",
+    "candidateBFile": "evals/runs/iteration-1/msa-seo-01/edited.md"
+  },
+  {
+    "id": "egt-rewrite-01",
+    "language": "ar",
+    "inputFile": "evals/inputs/egt-rewrite-01.md",
+    "candidateAFile": "evals/inputs/egt-rewrite-01.md",
+    "candidateBFile": "evals/runs/iteration-1/egt-rewrite-01/rewritten.md"
+  },
+  {
+    "id": "egt-edit-01",
+    "language": "ar",
+    "inputFile": "evals/inputs/egt-edit-01.md",
+    "candidateAFile": "evals/inputs/egt-edit-01.md",
+    "candidateBFile": "evals/runs/iteration-1/egt-edit-01/edited.md"
+  },
+  {
+    "id": "egt-seo-01",
+    "language": "ar",
+    "inputFile": "evals/inputs/egt-seo-01.md",
+    "candidateAFile": "evals/inputs/egt-seo-01.md",
+    "candidateBFile": "evals/runs/iteration-1/egt-seo-01/rewritten-full.md"
+  },
+  {
+    "id": "shami-rewrite-01",
+    "language": "ar",
+    "inputFile": "evals/inputs/shami-rewrite-01.md",
+    "candidateAFile": "evals/inputs/shami-rewrite-01.md",
+    "candidateBFile": "evals/runs/iteration-1/shami-rewrite-01/rewritten.md"
+  },
+  {
+    "id": "shami-edit-01",
+    "language": "ar",
+    "inputFile": "evals/inputs/shami-edit-01.md",
+    "candidateAFile": "evals/inputs/shami-edit-01.md",
+    "candidateBFile": "evals/runs/iteration-1/shami-edit-01/edited.md"
+  },
+  {
+    "id": "shami-seo-01",
+    "language": "ar",
+    "inputFile": "evals/inputs/shami-seo-01.md",
+    "candidateAFile": "evals/inputs/shami-seo-01.md",
+    "candidateBFile": "evals/runs/iteration-1/shami-seo-01/edited.md"
+  }
+]

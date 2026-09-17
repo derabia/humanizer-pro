@@ -1,0 +1,45 @@
+=== tools/prepare-pairwise.js dry run (seed=42) ===
+seed: 42
+spec: evals/human/pairs.json (12 pairs)
+wrote: evals/human/ballot.md
+wrote: evals/human/key.json
+reference block omitted (candidate == input) for 12/12 pairs
+
+7019ec94b6baec88b8a1ce5be42a922a272f7691cdc92cabdc99307d3328526e *evals/human/ballot.md
+5306db7d20af4e8ce244a848a2a2eb96af350e511a2d8ea9bfa2bd095a5c1bbe *evals/human/key.json
+
+=== re-run same seed (42) into a scratch dir, compare hashes ===
+seed: 42
+spec: evals/human/pairs.json (12 pairs)
+wrote: C:/Users/MTM/AppData/Local/Temp/claude/D--Dev-htdocs-humanizer-pro/22de8582-cbfe-418a-9b3b-33b565a3539c/scratchpad/run2/ballot.md
+wrote: C:/Users/MTM/AppData/Local/Temp/claude/D--Dev-htdocs-humanizer-pro/22de8582-cbfe-418a-9b3b-33b565a3539c/scratchpad/run2/key.json
+reference block omitted (candidate == input) for 12/12 pairs
+7019ec94b6baec88b8a1ce5be42a922a272f7691cdc92cabdc99307d3328526e */c/Users/MTM/AppData/Local/Temp/claude/D--Dev-htdocs-humanizer-pro/22de8582-cbfe-418a-9b3b-33b565a3539c/scratchpad/run2/ballot.md
+5306db7d20af4e8ce244a848a2a2eb96af350e511a2d8ea9bfa2bd095a5c1bbe */c/Users/MTM/AppData/Local/Temp/claude/D--Dev-htdocs-humanizer-pro/22de8582-cbfe-418a-9b3b-33b565a3539c/scratchpad/run2/key.json
+ballot.md: IDENTICAL across runs
+key.json: IDENTICAL across runs
+
+=== different seed (43) for comparison ===
+seed: 43
+spec: evals/human/pairs.json (12 pairs)
+wrote: C:/Users/MTM/AppData/Local/Temp/claude/D--Dev-htdocs-humanizer-pro/22de8582-cbfe-418a-9b3b-33b565a3539c/scratchpad/run3/ballot.md
+wrote: C:/Users/MTM/AppData/Local/Temp/claude/D--Dev-htdocs-humanizer-pro/22de8582-cbfe-418a-9b3b-33b565a3539c/scratchpad/run3/key.json
+reference block omitted (candidate == input) for 12/12 pairs
+Files evals/human/ballot.md and /c/Users/MTM/AppData/Local/Temp/claude/D--Dev-htdocs-humanizer-pro/22de8582-cbfe-418a-9b3b-33b565a3539c/scratchpad/run3/ballot.md differ
+ballot.md: DIFFERS with a different seed (expected)
+Files evals/human/key.json and /c/Users/MTM/AppData/Local/Temp/claude/D--Dev-htdocs-humanizer-pro/22de8582-cbfe-418a-9b3b-33b565a3539c/scratchpad/run3/key.json differ
+key.json: DIFFERS with a different seed (expected)
+
+=== tests/pairwise.test.js ===
+✔ same seed + same spec produces a byte-identical ballot and key (7.8241ms)
+✔ different seeds produce a different candidate order (5.5739ms)
+✔ key.json content (which label is which candidate) never appears in ballot.md (2.8208ms)
+✔ every pair id from the spec appears exactly once in the ballot and the key (2.8343ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 104.188

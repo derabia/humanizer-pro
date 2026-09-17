@@ -129,3 +129,83 @@ thin sections in the report rather than pad them with invented specifics.
 Run `node tools/check-evals.js` to verify this coverage against
 `evals/evals.json` mechanically; see `docs/evidence/phase9-check-evals.txt`
 for the last recorded run.
+
+## Deterministic benchmark (IMP-04)
+
+`evals/benchmark.json` holds one mechanical-invariant case per eval in
+`evals/evals.json` (16 cases). It is **not** a substitute for the
+qualitative grading above — it only catches the failure modes a script
+actually can: an invented number, a candidate that just echoes the source,
+a dropped protected span, or a detector score that got worse. Each case
+carries:
+
+- `required` — strings that must appear in the candidate.
+- `forbidden` — strings that must not appear (literal `mustNotContain`
+  entries from `evals.json` plus a small fixed list of English AI-isms /
+  MSA-leakage tokens, for the language/variety of that case).
+- `protected` — spans copied from the input that must survive verbatim
+  (numbers, names, links, code, headings). For this dataset it is the same
+  verified subset of `mustPreserve` as `required`; a few `mustPreserve`
+  entries are intentionally excluded here because the real candidate
+  legitimately re-flows or re-cases them (documented per-case in
+  `_notes`).
+- `minEditRatio` / `maxEditRatio` — a character-level edit-ratio window
+  (normalized Levenshtein distance / max length) so a candidate that
+  echoes the input fails `minEditRatio`, and one that rewrites far more
+  than the mode calls for fails `maxEditRatio`. Bounds were derived by
+  measuring the real iteration-1 candidates and leaving headroom; see
+  `docs/evidence/round1-benchmark.txt`.
+- `forbidUnexpectedNumbers` — every number in the candidate (Western or
+  Arabic-Indic digits) must already appear in the input.
+- `scoreMustNotWorsen` — `detect.js`'s score on the candidate must not
+  exceed its score on the input, run with the case's `--lang`/`--variety`
+  so auto-detection doesn't score the wrong engine.
+
+Run it:
+
+```
+node evals/run-benchmark.js               # all 16 cases, human-readable table
+node evals/run-benchmark.js --case msa-edit-01
+node evals/run-benchmark.js --json        # machine-readable
+```
+
+Exit code is 1 if any case fails any applicable check. `tests/benchmark.test.js`
+proves the invariants actually bite (an injected invented number, and a
+verbatim echo of the source, are both constructed and asserted to fail) and
+that the real iteration-1 candidates pass today. If a genuine invariant
+failure shows up on real candidates, the fix is to fix the candidate or the
+skill, not to loosen the invariant — record the failure in
+`docs/evidence/round1-benchmark.txt` instead.
+
+## Blinded pairwise kit (IMP-07)
+
+`tools/prepare-pairwise.js` builds a blinded human-rating ballot from a
+pairs spec:
+
+```
+node tools/prepare-pairwise.js --seed 42 --pairs evals/human/pairs.json --out evals/human/
+```
+
+This writes `evals/human/ballot.md` (Arabic + English instructions, then
+each pair's original text plus its two candidates labelled "1" and "2" in
+an order randomized from the seed, with a rating grid) and
+`evals/human/key.json` (the seed plus, per pair, which label maps to which
+candidate — the only place that mapping is recorded). Given the same seed
+and the same `--pairs` spec, the output is byte-identical every time
+(`tests/pairwise.test.js` proves this, proves different seeds diverge, and
+proves no candidate-identifying path or the `key.json` A/B mapping ever
+appears in `ballot.md`).
+
+`evals/human/pairs.json` is the initial spec: input vs. the iteration-1
+rewrite/edit for the 12 evals that produced one (the 4 `detect`-only evals
+are skipped, since there is no second candidate to compare). Because
+`candidateA` in that spec is always the unedited input itself, the ballot
+omits the separate "original text" reference block for those pairs (it
+would otherwise be visibly byte-identical to whichever label is the
+original, defeating the blinding) and says so inline. A future spec with
+two genuinely different candidates (e.g. two model versions) would show
+the reference block normally.
+
+See `docs/evidence/round1-pairwise.txt` for a dry run (seed 42, both a
+determinism check via `sha256sum` across two runs and a different-seed
+divergence check) and the test output.

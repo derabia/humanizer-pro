@@ -1,0 +1,648 @@
+[
+  {
+    "id": "en-detect-01",
+    "lang": "en",
+    "variety": null,
+    "mode": "detect",
+    "seo": false,
+    "inputFile": "evals/inputs/en-detect-01.md",
+    "candidateFile": null,
+    "required": [
+      "Corvus Notes"
+    ],
+    "forbidden": [
+      "delve into",
+      "in today's fast-paced world",
+      "it is important to note",
+      "furthermore, ",
+      "moreover, "
+    ],
+    "protected": [
+      "Corvus Notes"
+    ],
+    "maxEditRatio": null,
+    "minEditRatio": null,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "en-rewrite-01",
+    "lang": "en",
+    "variety": null,
+    "mode": "rewrite",
+    "seo": false,
+    "inputFile": "evals/inputs/en-rewrite-01.md",
+    "candidateFile": "evals/runs/iteration-1/en-rewrite-01/rewritten.md",
+    "required": [
+      "Basecraft",
+      "onboarding module",
+      "Task tracking",
+      "Manager check-ins",
+      "Document library",
+      "Progress dashboard",
+      "Slack reminders",
+      "Buddy system pairing",
+      "Feedback surveys",
+      "Calendar sync",
+      "API"
+    ],
+    "forbidden": [
+      "might possibly",
+      "potentially struggling",
+      "Great question about",
+      "delve into",
+      "in today's fast-paced world",
+      "it is important to note",
+      "furthermore, ",
+      "moreover, "
+    ],
+    "protected": [
+      "Basecraft",
+      "onboarding module",
+      "Task tracking",
+      "Manager check-ins",
+      "Document library",
+      "Progress dashboard",
+      "Slack reminders",
+      "Buddy system pairing",
+      "Feedback surveys",
+      "Calendar sync",
+      "API"
+    ],
+    "maxEditRatio": 0.85,
+    "minEditRatio": 0.2,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Excluded from required/protected (present in candidate but reflowed/re-cased, not byte-verbatim): \"role-based templates\". Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "en-edit-01",
+    "lang": "en",
+    "variety": null,
+    "mode": "edit",
+    "seo": false,
+    "inputFile": "evals/inputs/en-edit-01.md",
+    "candidateFile": "evals/runs/iteration-1/en-edit-01/edited.md",
+    "required": [
+      "#!/usr/bin/env bash",
+      "set -euo pipefail",
+      "./scripts/build.sh",
+      "./scripts/test.sh",
+      "./scripts/promote.sh --env=staging",
+      "staging deploy complete, run ./scripts/promote.sh --env=prod when ready",
+      "~2 min",
+      "~5 min",
+      "~1 min",
+      "twice this year"
+    ],
+    "forbidden": [
+      "robust and seamless",
+      "foundational capability",
+      "every dimension of the software lifecycle",
+      "delve into",
+      "in today's fast-paced world",
+      "it is important to note",
+      "furthermore, ",
+      "moreover, "
+    ],
+    "protected": [
+      "#!/usr/bin/env bash",
+      "set -euo pipefail",
+      "./scripts/build.sh",
+      "./scripts/test.sh",
+      "./scripts/promote.sh --env=staging",
+      "staging deploy complete, run ./scripts/promote.sh --env=prod when ready",
+      "~2 min",
+      "~5 min",
+      "~1 min",
+      "twice this year"
+    ],
+    "maxEditRatio": 0.3,
+    "minEditRatio": 0.04,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "en-seo-01",
+    "lang": "en",
+    "variety": null,
+    "mode": "rewrite",
+    "seo": true,
+    "inputFile": "evals/inputs/en-seo-01.md",
+    "candidateFile": "evals/runs/iteration-1/en-seo-01/rewritten.md",
+    "required": [
+      "title: Standing desks for small home offices",
+      "description: A quick look at standing desks for compact home offices.",
+      "[shortcode\ncta id=\"12\"]",
+      "/blog/home-office-setup",
+      "/blog/desk-accessories",
+      "<!-- wp:paragraph",
+      "desk-specs.json",
+      "desk-corner.jpg",
+      "application/ld+json",
+      "40",
+      "48",
+      "55"
+    ],
+    "forbidden": [
+      "padded filler sentences added to the thin sections",
+      "delve into",
+      "in today's fast-paced world",
+      "it is important to note",
+      "furthermore, ",
+      "moreover, "
+    ],
+    "protected": [
+      "title: Standing desks for small home offices",
+      "description: A quick look at standing desks for compact home offices.",
+      "[shortcode\ncta id=\"12\"]",
+      "/blog/home-office-setup",
+      "/blog/desk-accessories",
+      "<!-- wp:paragraph",
+      "desk-specs.json",
+      "desk-corner.jpg",
+      "application/ld+json",
+      "40",
+      "48",
+      "55"
+    ],
+    "maxEditRatio": 0.6,
+    "minEditRatio": 0.1,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "msa-detect-01",
+    "lang": "ar",
+    "variety": "msa",
+    "mode": "detect",
+    "seo": false,
+    "inputFile": "evals/inputs/msa-detect-01.md",
+    "candidateFile": null,
+    "required": [
+      "ثلاثة أشهر"
+    ],
+    "forbidden": [],
+    "protected": [
+      "ثلاثة أشهر"
+    ],
+    "maxEditRatio": null,
+    "minEditRatio": null,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "msa-rewrite-01",
+    "lang": "ar",
+    "variety": "msa",
+    "mode": "rewrite",
+    "seo": false,
+    "inputFile": "evals/inputs/msa-rewrite-01.md",
+    "candidateFile": "evals/runs/iteration-1/msa-rewrite-01/rewritten.md",
+    "required": [
+      "منصة \"جسر\"",
+      "دروس تفاعلية",
+      "اختبارات قصيرة",
+      "تقارير للأهل",
+      "دعم فني مستمر",
+      "خمسين مدرسة",
+      "الفصل الدراسي الأول"
+    ],
+    "forbidden": [
+      "من المهم الإشارة إلى",
+      "علاوة على ذلك، فإن",
+      "من الجدير بالذكر أن",
+      "من ناحية أخرى"
+    ],
+    "protected": [
+      "منصة \"جسر\"",
+      "دروس تفاعلية",
+      "اختبارات قصيرة",
+      "تقارير للأهل",
+      "دعم فني مستمر",
+      "خمسين مدرسة",
+      "الفصل الدراسي الأول"
+    ],
+    "maxEditRatio": 0.75,
+    "minEditRatio": 0.15,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "msa-edit-01",
+    "lang": "ar",
+    "variety": "msa",
+    "mode": "edit",
+    "seo": false,
+    "inputFile": "evals/inputs/msa-edit-01.md",
+    "candidateFile": "evals/runs/iteration-1/msa-edit-01/edited.md",
+    "required": [
+      "fetch(\"https://api.example.com/v1/ping\"",
+      "Authorization: `Bearer ${apiKey}`",
+      "مجاني",
+      "احترافي",
+      "مؤسسات",
+      "60",
+      "600",
+      "429"
+    ],
+    "forbidden": [
+      "نهج موحّد وشامل",
+      "بالغ الأهمية",
+      "جميع جوانب دورة حياة المنتج"
+    ],
+    "protected": [
+      "fetch(\"https://api.example.com/v1/ping\"",
+      "Authorization: `Bearer ${apiKey}`",
+      "مجاني",
+      "احترافي",
+      "مؤسسات",
+      "60",
+      "600",
+      "429"
+    ],
+    "maxEditRatio": 0.3,
+    "minEditRatio": 0.04,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "msa-seo-01",
+    "lang": "ar",
+    "variety": "msa",
+    "mode": "edit",
+    "seo": true,
+    "inputFile": "evals/inputs/msa-seo-01.md",
+    "candidateFile": "evals/runs/iteration-1/msa-seo-01/edited.md",
+    "required": [
+      "title: أساسيات التسويق عبر البريد الإلكتروني",
+      "description: مقدمة عملية حول بناء حملات بريد إلكتروني فعالة.",
+      "[shortcode\ncta id=\"7\"]",
+      "/blog/email-list",
+      "/blog/email-tools",
+      "<!-- wp:paragraph",
+      "mail-config.json",
+      "email-dashboard.jpg",
+      "application/ld+json",
+      "معدل الفتح",
+      "معدل النقر"
+    ],
+    "forbidden": [
+      "من الجدير بالإشارة أن",
+      "من المهم الإشارة إلى"
+    ],
+    "protected": [
+      "title: أساسيات التسويق عبر البريد الإلكتروني",
+      "description: مقدمة عملية حول بناء حملات بريد إلكتروني فعالة.",
+      "[shortcode\ncta id=\"7\"]",
+      "/blog/email-list",
+      "/blog/email-tools",
+      "<!-- wp:paragraph",
+      "mail-config.json",
+      "email-dashboard.jpg",
+      "application/ld+json",
+      "معدل الفتح",
+      "معدل النقر"
+    ],
+    "maxEditRatio": 0.15,
+    "minEditRatio": 0.015,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Excluded from required/protected (present in candidate but reflowed/re-cased, not byte-verbatim): \"معدل إلغاء الاشتراك\". Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "egt-detect-01",
+    "lang": "ar",
+    "variety": "egt",
+    "mode": "detect",
+    "seo": false,
+    "inputFile": "evals/inputs/egt-detect-01.md",
+    "candidateFile": null,
+    "required": [
+      "زاد"
+    ],
+    "forbidden": [
+      "الآن",
+      "سوف ",
+      "يُعتبر",
+      "لا يستطيع",
+      "الذي",
+      "يُريدُ",
+      "هذا الأمر",
+      "لم أستطع"
+    ],
+    "protected": [
+      "زاد"
+    ],
+    "maxEditRatio": null,
+    "minEditRatio": null,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "egt-rewrite-01",
+    "lang": "ar",
+    "variety": "egt",
+    "mode": "rewrite",
+    "seo": false,
+    "inputFile": "evals/inputs/egt-rewrite-01.md",
+    "candidateFile": "evals/runs/iteration-1/egt-rewrite-01/rewritten.md",
+    "required": [
+      "نايل ساوند",
+      "ثمانية ساعات",
+      "تسعمائة جنيه",
+      "ألف ومائتين",
+      "ألف وخمسمائة"
+    ],
+    "forbidden": [
+      "الآن",
+      "سوف",
+      "هذا الأمر",
+      "يُعتبر",
+      "لم أستطع",
+      "سوف ",
+      "لا يستطيع",
+      "الذي",
+      "يُريدُ"
+    ],
+    "protected": [
+      "نايل ساوند",
+      "ثمانية ساعات",
+      "تسعمائة جنيه",
+      "ألف ومائتين",
+      "ألف وخمسمائة"
+    ],
+    "maxEditRatio": 0.85,
+    "minEditRatio": 0.2,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "egt-edit-01",
+    "lang": "ar",
+    "variety": "egt",
+    "mode": "edit",
+    "seo": false,
+    "inputFile": "evals/inputs/egt-edit-01.md",
+    "candidateFile": "evals/runs/iteration-1/egt-edit-01/edited.md",
+    "required": [
+      "if (message.includes(\"سعر\"))",
+      "reply(priceList)",
+      "reply(\"اكتب سعر عشان تشوف قائمة الأسعار\")",
+      "رد على كل رسالة يدويًا",
+      "ساعتين يوميًا",
+      "نص ساعة بس"
+    ],
+    "forbidden": [
+      "نهج شامل ومتكامل",
+      "بالغ الأهمية",
+      "النجاح المستدام على المدى الطويل",
+      "الآن",
+      "سوف ",
+      "يُعتبر",
+      "لا يستطيع",
+      "الذي",
+      "يُريدُ",
+      "هذا الأمر",
+      "لم أستطع"
+    ],
+    "protected": [
+      "if (message.includes(\"سعر\"))",
+      "reply(priceList)",
+      "reply(\"اكتب سعر عشان تشوف قائمة الأسعار\")",
+      "رد على كل رسالة يدويًا",
+      "ساعتين يوميًا",
+      "نص ساعة بس"
+    ],
+    "maxEditRatio": 0.3,
+    "minEditRatio": 0.03,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "egt-seo-01",
+    "lang": "ar",
+    "variety": "egt",
+    "mode": "rewrite",
+    "seo": true,
+    "inputFile": "evals/inputs/egt-seo-01.md",
+    "candidateFile": "evals/runs/iteration-1/egt-seo-01/rewritten-full.md",
+    "required": [
+      "title: أكلات مصرية سريعة للعشا",
+      "description: أفكار أكل مصري سريع وسهل لما مايكونش عندك وقت كتير.",
+      "[shortcode\ncta id=\"4\"]",
+      "/blog/freezer-meals",
+      "/blog/pantry-basics",
+      "<!-- wp:paragraph",
+      "recipes.json",
+      "koshari-quick.jpg",
+      "application/ld+json",
+      "خمستاشر دقيقة",
+      "عشرين دقيقة",
+      "خمس وعشرين دقيقة"
+    ],
+    "forbidden": [
+      "الآن",
+      "سوف ",
+      "يُعتبر",
+      "لا يستطيع",
+      "الذي",
+      "يُريدُ",
+      "هذا الأمر",
+      "لم أستطع"
+    ],
+    "protected": [
+      "title: أكلات مصرية سريعة للعشا",
+      "description: أفكار أكل مصري سريع وسهل لما مايكونش عندك وقت كتير.",
+      "[shortcode\ncta id=\"4\"]",
+      "/blog/freezer-meals",
+      "/blog/pantry-basics",
+      "<!-- wp:paragraph",
+      "recipes.json",
+      "koshari-quick.jpg",
+      "application/ld+json",
+      "خمستاشر دقيقة",
+      "عشرين دقيقة",
+      "خمس وعشرين دقيقة"
+    ],
+    "maxEditRatio": 0.12,
+    "minEditRatio": 0.01,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "shami-detect-01",
+    "lang": "ar",
+    "variety": "shami",
+    "mode": "detect",
+    "seo": true,
+    "inputFile": "evals/inputs/shami-detect-01.md",
+    "candidateFile": null,
+    "required": [
+      "حكي",
+      "عشرين ألف مستخدم",
+      "الأشهر الثلاثة الأولى"
+    ],
+    "forbidden": [
+      "الآن",
+      "سوف ",
+      "يُعتبر",
+      "لا يستطيع",
+      "الذي",
+      "يُريدُ",
+      "هذا الأمر",
+      "لم أستطع"
+    ],
+    "protected": [
+      "حكي",
+      "عشرين ألف مستخدم",
+      "الأشهر الثلاثة الأولى"
+    ],
+    "maxEditRatio": null,
+    "minEditRatio": null,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "shami-rewrite-01",
+    "lang": "ar",
+    "variety": "shami",
+    "mode": "rewrite",
+    "seo": false,
+    "inputFile": "evals/inputs/shami-rewrite-01.md",
+    "candidateFile": "evals/runs/iteration-1/shami-rewrite-01/rewritten.md",
+    "required": [
+      "السوق المركزي",
+      "خمسة عشر",
+      "خمسة وعشرين دولارًا"
+    ],
+    "forbidden": [
+      "يُريدُ",
+      "سوف",
+      "لا يستطيع",
+      "يجب على",
+      "الذي",
+      "الآن",
+      "سوف ",
+      "يُعتبر",
+      "هذا الأمر",
+      "لم أستطع"
+    ],
+    "protected": [
+      "السوق المركزي",
+      "خمسة عشر",
+      "خمسة وعشرين دولارًا"
+    ],
+    "maxEditRatio": 0.75,
+    "minEditRatio": 0.15,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "shami-edit-01",
+    "lang": "ar",
+    "variety": "shami",
+    "mode": "edit",
+    "seo": false,
+    "inputFile": "evals/inputs/shami-edit-01.md",
+    "candidateFile": "evals/runs/iteration-1/shami-edit-01/edited.md",
+    "required": [
+      "SSID: home-network",
+      "Channel: auto",
+      "Extender mode: repeater",
+      "Backhaul: wireless",
+      "سرعة ضعيفة بالغرفة الخلفية",
+      "تغطية كاملة بكل الغرف",
+      "راوتر + extender"
+    ],
+    "forbidden": [
+      "يُريدُ المستخدم",
+      "من الضروري أن يتم",
+      "مواصفات تقنية متقدمة",
+      "الآن",
+      "سوف ",
+      "يُعتبر",
+      "لا يستطيع",
+      "الذي",
+      "يُريدُ",
+      "هذا الأمر",
+      "لم أستطع"
+    ],
+    "protected": [
+      "SSID: home-network",
+      "Channel: auto",
+      "Extender mode: repeater",
+      "Backhaul: wireless",
+      "سرعة ضعيفة بالغرفة الخلفية",
+      "تغطية كاملة بكل الغرف",
+      "راوتر + extender"
+    ],
+    "maxEditRatio": 0.3,
+    "minEditRatio": 0.03,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  },
+  {
+    "id": "shami-seo-01",
+    "lang": "ar",
+    "variety": "shami",
+    "mode": "edit",
+    "seo": true,
+    "inputFile": "evals/inputs/shami-seo-01.md",
+    "candidateFile": "evals/runs/iteration-1/shami-seo-01/edited.md",
+    "required": [
+      "title: أكلات شامية سهلة للبيت",
+      "description: وصفات شامية بسيطة تقدر تحضرها بالبيت بدون تعقيد.",
+      "/blog/kitchen-basics",
+      "/blog/spices-guide",
+      "<!-- wp:paragraph",
+      "recipes-sham.json",
+      "fattoush-sham.jpg",
+      "application/ld+json",
+      "عشر دقايق",
+      "أربعين دقيقة"
+    ],
+    "forbidden": [
+      "من الجدير بالإشارة أن",
+      "بالغ الأهمية",
+      "الآن",
+      "سوف ",
+      "يُعتبر",
+      "لا يستطيع",
+      "الذي",
+      "يُريدُ",
+      "هذا الأمر",
+      "لم أستطع"
+    ],
+    "protected": [
+      "title: أكلات شامية سهلة للبيت",
+      "description: وصفات شامية بسيطة تقدر تحضرها بالبيت بدون تعقيد.",
+      "/blog/kitchen-basics",
+      "/blog/spices-guide",
+      "<!-- wp:paragraph",
+      "recipes-sham.json",
+      "fattoush-sham.jpg",
+      "application/ld+json",
+      "عشر دقايق",
+      "أربعين دقيقة"
+    ],
+    "maxEditRatio": 0.25,
+    "minEditRatio": 0.02,
+    "forbidUnexpectedNumbers": true,
+    "scoreMustNotWorsen": true,
+    "_notes": "Excluded from required/protected (present in candidate but reflowed/re-cased, not byte-verbatim): \"[shortcode\\ncta id=\\\"5\\\"]\", \"خمس وعشرين دقيقة\". Edit-ratio bounds derived from measured iteration-1 editRatio (see docs/evidence/round1-benchmark.txt): min = ~half measured, max = measured + headroom."
+  }
+]

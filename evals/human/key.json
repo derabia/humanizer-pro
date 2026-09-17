@@ -1,0 +1,65 @@
+{
+  "seed": 42,
+  "pairs": [
+    {
+      "id": "en-rewrite-01",
+      "label1": "B",
+      "label2": "A"
+    },
+    {
+      "id": "en-edit-01",
+      "label1": "A",
+      "label2": "B"
+    },
+    {
+      "id": "en-seo-01",
+      "label1": "B",
+      "label2": "A"
+    },
+    {
+      "id": "msa-rewrite-01",
+      "label1": "B",
+      "label2": "A"
+    },
+    {
+      "id": "msa-edit-01",
+      "label1": "A",
+      "label2": "B"
+    },
+    {
+      "id": "msa-seo-01",
+      "label1": "B",
+      "label2": "A"
+    },
+    {
+      "id": "egt-rewrite-01",
+      "label1": "A",
+      "label2": "B"
+    },
+    {
+      "id": "egt-edit-01",
+      "label1": "B",
+      "label2": "A"
+    },
+    {
+      "id": "egt-seo-01",
+      "label1": "B",
+      "label2": "A"
+    },
+    {
+      "id": "shami-rewrite-01",
+      "label1": "A",
+      "label2": "B"
+    },
+    {
+      "id": "shami-edit-01",
+      "label1": "A",
+      "label2": "B"
+    },
+    {
+      "id": "shami-seo-01",
+      "label1": "B",
+      "label2": "A"
+    }
+  ]
+}
