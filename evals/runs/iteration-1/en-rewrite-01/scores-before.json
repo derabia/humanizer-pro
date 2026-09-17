@@ -1,0 +1,70 @@
+{
+  "lang": "en",
+  "variety": null,
+  "confidence": 1,
+  "engine": "en",
+  "arabicRatio": 0,
+  "score": 8,
+  "label": "Minimal AI signals",
+  "issues": [
+    {
+      "type": "hedge-stack",
+      "text": "might possibly",
+      "index": 436,
+      "severity": "high",
+      "suggestion": null
+    },
+    {
+      "type": "bullet-np-list",
+      "text": "8-item bullet list of bare noun phrases",
+      "severity": "high",
+      "suggestion": "Convert to a prose paragraph or merge items. Long lists of bare adj+noun pairs read as AI scaffolding."
+    },
+    {
+      "type": "em-dash",
+      "text": "1 em dashes in 213 words",
+      "severity": "medium",
+      "suggestion": "Replace with commas, periods, or rewrite"
+    }
+  ],
+  "stats": {
+    "wordCount": 213,
+    "tier1Count": 0,
+    "tier2Count": 0,
+    "tier2Clusters": 0,
+    "tier3Count": 0,
+    "tier3Flags": 0,
+    "patternCount": 3,
+    "contextMode": "general",
+    "contextModeFallback": null,
+    "sourceMode": "rendered-markdown",
+    "maskedFrontmatter": 0,
+    "maskedHtmlComments": 1,
+    "normalization": {
+      "zeroWidth": 0,
+      "homoglyph": 0,
+      "roleplay": 0
+    },
+    "quotedLines": 0,
+    "unmappedHighlights": 0,
+    "denseAIVocab": false,
+    "tier1Distinct": 0
+  },
+  "document_classification": "HUMAN_ONLY",
+  "class_probabilities": {
+    "human": 0.913,
+    "mixed": 0.063,
+    "ai": 0.024
+  },
+  "confidence_category": "medium",
+  "highlight_sentence_for_ai": [
+    {
+      "startSentence": 3,
+      "endSentence": 3,
+      "start": 402,
+      "end": 643,
+      "hitCount": 1,
+      "score": 0.3
+    }
+  ]
+}

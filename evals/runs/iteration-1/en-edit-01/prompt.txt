@@ -1,0 +1,1 @@
+Can you clean up the AI-sounding paragraph in this deploy doc? Edit the file in place, don't touch the script or the table.

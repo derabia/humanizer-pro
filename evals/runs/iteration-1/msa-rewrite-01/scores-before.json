@@ -1,0 +1,120 @@
+{
+  "lang": "ar",
+  "variety": "msa",
+  "confidence": 0.7,
+  "engine": "ar",
+  "arabicRatio": 0.9427430093209055,
+  "score": 39,
+  "label": "MIXED",
+  "issues": [
+    {
+      "type": "hedge-opener",
+      "patternId": "AR-SH-001",
+      "start": 102,
+      "end": 122,
+      "excerpt": "من المهم الإشارة إلى",
+      "severity": "P1",
+      "suggestion": "احذف التحوّط وابدأ بالدعوى نفسها (AR-SH-001). إن كان الشك حقيقيًا فسمِّ مصدره ودرجته بدل المُلطِّف الجاهز."
+    },
+    {
+      "type": "transition-density",
+      "patternId": "AR-SH-002",
+      "start": 102,
+      "end": 174,
+      "excerpt": "من المهم الإشارة إلى أن التعليم الإلكتروني أصبح خيارًا أساسيًا وليس مجرد",
+      "severity": "P1",
+      "suggestion": "كثافة الروابط الشكلية عالية. احذف ما لا يحمل وزنًا منطقيًا، ونوِّع ما تبقّى (AR-SH-002 / AR-SHM-012)."
+    },
+    {
+      "type": "transition",
+      "patternId": "AR-SH-002-A",
+      "start": 186,
+      "end": 199,
+      "excerpt": "علاوة على ذلك",
+      "severity": "P0",
+      "suggestion": "استبدلها بـ «إضافة إلى ذلك» أو «فضلًا عن ذلك» أو احذفها إن كان الربط واضحًا من المحتوى (AR-SH-002 / AR-MSA-003)."
+    },
+    {
+      "type": "transition",
+      "patternId": "AR-SH-002-B",
+      "start": 292,
+      "end": 308,
+      "excerpt": "بالإضافة إلى ذلك",
+      "severity": "P2",
+      "suggestion": "نوِّع الروابط أو احذف ما لا يحمل وزنًا منطقيًا حقيقيًا؛ لا تكرر الرابط نفسه (AR-SH-002 / AR-MSA-004)."
+    },
+    {
+      "type": "hedge-opener",
+      "patternId": "AR-SH-001",
+      "start": 431,
+      "end": 447,
+      "excerpt": "من الجدير بالذكر",
+      "severity": "P1",
+      "suggestion": "احذف التحوّط وابدأ بالدعوى نفسها (AR-SH-001). إن كان الشك حقيقيًا فسمِّ مصدره ودرجته بدل المُلطِّف الجاهز."
+    },
+    {
+      "type": "transition",
+      "patternId": "AR-SH-002-B",
+      "start": 545,
+      "end": 558,
+      "excerpt": "في هذا السياق",
+      "severity": "P2",
+      "suggestion": "نوِّع الروابط أو احذف ما لا يحمل وزنًا منطقيًا حقيقيًا؛ لا تكرر الرابط نفسه (AR-SH-002 / AR-MSA-004)."
+    },
+    {
+      "type": "transition",
+      "patternId": "AR-SH-002-B",
+      "start": 618,
+      "end": 631,
+      "excerpt": "من ناحية أخرى",
+      "severity": "P2",
+      "suggestion": "نوِّع الروابط أو احذف ما لا يحمل وزنًا منطقيًا حقيقيًا؛ لا تكرر الرابط نفسه (AR-SH-002 / AR-MSA-004)."
+    },
+    {
+      "type": "formulaic-conclusion",
+      "patternId": "AR-SH-002-C",
+      "start": 807,
+      "end": 822,
+      "excerpt": "في نهاية المطاف",
+      "severity": "P1",
+      "suggestion": "استبدل الخاتمة النمطية بدعوى مكثّفة أو صورة أخيرة — أو توقّف ببساطة (AR-SH-002 / AR-MSA-005)."
+    }
+  ],
+  "stats": {
+    "wordCount": 150,
+    "sentenceCount": 20,
+    "paragraphCount": 6,
+    "variety": "msa",
+    "sourceMode": "rendered-markdown",
+    "maskedFrontmatter": 0,
+    "maskedHtmlComments": 2,
+    "maskedCodeFences": 0,
+    "maskedUrls": 0,
+    "maskedInlineCode": 0,
+    "hasArabic": true,
+    "sentenceLengthCv": 0.5291502622129182,
+    "paragraphLengthCv": 0.4301937547973781,
+    "trigramRepeatRatio": 0,
+    "transitionsPer100Words": 3.3333333333333335,
+    "westernPunctuationCount": 0,
+    "mixedDigitSystems": false,
+    "tanwinCount": 4,
+    "tashkeelCount": 5,
+    "tooShort": false,
+    "rawScore": 38.5,
+    "scoreWithoutLeakage": 39,
+    "issueCount": 8,
+    "p0Count": 1,
+    "p1Count": 4,
+    "p2Count": 3,
+    "registerMix": {
+      "msaScore": 39,
+      "dialectScore": 83,
+      "scoreWithoutLeakage": 69,
+      "variety": "egt",
+      "promoted": false,
+      "note": "النص يخلط بين الفصحى والعامية المصرية؛ إن كان المقصود العامية المصرية فهذا تسرّب فصحى",
+      "noteEn": "Text mixes MSA and Egyptian markers; if the intended variety is Egyptian, MSA leakage is P0"
+    }
+  }
+}

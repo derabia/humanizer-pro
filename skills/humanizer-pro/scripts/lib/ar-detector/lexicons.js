@@ -102,6 +102,8 @@ const SHARED_PATTERNS = [
       'مما لا شك فيه',
       'جدير بالذكر',
       'من الجدير بالذكر',
+      'من الجدير بالإشارة', // eval msa-edit-01 finding: common variant missing
+      'يجدر بالإشارة',
       'لا شك أن',
       'من الواضح أن',
     ],

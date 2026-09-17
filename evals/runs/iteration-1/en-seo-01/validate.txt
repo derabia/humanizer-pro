@@ -1,0 +1,26 @@
+PASS — 0 violation(s), 1 warning(s)
+
+  [PASS] code-blocks: Fenced code blocks: unchanged.
+  [PASS] frontmatter: YAML frontmatter: unchanged.
+  [PASS] blockquotes: Blockquotes: unchanged.
+  [PASS] table-cells: Markdown table cells: unchanged.
+  [PASS] inline-code: Inline code: unchanged.
+  [PASS] urls: URLs: unchanged.
+  [PASS] file-paths: File paths: unchanged.
+  [PASS] json-ld: JSON-LD/schema block(s): 1 block(s), unchanged.
+  [PASS] shortcodes: Shortcode(s): 1 block(s), unchanged.
+  [PASS] wp-comments: WordPress block comment(s): 2 block(s), unchanged.
+  [PASS] html-attributes: HTML tag(s)/attribute(s): 3 block(s), unchanged.
+  [PASS] image-alt-captions: Image alt text/caption/filename: 1 block(s), unchanged.
+  [PASS] link-anchor-internal: 2 link(s): anchors and internal targets unchanged.
+  [PASS] frontmatter-meta: Frontmatter meta title/description unchanged.
+  [PASS] heading-structure: 4 heading(s), structure and wording unchanged.
+  [PASS] numbers: All numbers preserved (values and digit systems).
+  [PASS] seo-keyword-presence: All 3 keyword(s) still present.
+  [PASS] seo-keyword-placement: Primary keyword "standing desk" placement checkpoints preserved.
+  [PASS] seo-stuffing: No keyword stuffing detected.
+  [WARN] seo-thin-sections: Section(s) below 40 words: "Sizes to consider" (24 words).
+  [PASS] detector-score: Detector score did not worsen: 0 → 0.
+
+  scores: before=0 after=0
+exit=0

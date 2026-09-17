@@ -1,0 +1,156 @@
+{
+  "lang": "ar",
+  "variety": "msa",
+  "confidence": 0.7,
+  "engine": "ar",
+  "arabicRatio": 0.9402390438247012,
+  "score": 59,
+  "label": "AI",
+  "issues": [
+    {
+      "type": "cliche-opener",
+      "patternId": "AR-MSA-002",
+      "start": 104,
+      "end": 128,
+      "excerpt": "في ظل التطورات المتسارعة",
+      "severity": "P1",
+      "suggestion": "احذف الافتتاحية المشهدية وابدأ الفقرة بالدعوى أو الملاحظة أو الصورة المحددة (AR-MSA-002)."
+    },
+    {
+      "type": "uniform-paragraphs",
+      "patternId": "AR-MSA-014",
+      "start": 104,
+      "end": 224,
+      "excerpt": "في ظل التطورات المتسارعة التي يشهدها قطاع الرعاية الصحية، من المهم الإشارة\nإلى أن المستشفيات في المنطقة تواجه تحديات جدي",
+      "severity": "P2",
+      "suggestion": "كل الفقرات بالطول نفسه. أفرد ٢-٣ دعاوى مهمة في فقرات من جملة واحدة، ودع فقرة واحدة تطول عن البقية (AR-MSA-014)."
+    },
+    {
+      "type": "hedge-opener",
+      "patternId": "AR-SH-001",
+      "start": 162,
+      "end": 182,
+      "excerpt": "من المهم الإشارة\nإلى",
+      "severity": "P1",
+      "suggestion": "احذف التحوّط وابدأ بالدعوى نفسها (AR-SH-001). إن كان الشك حقيقيًا فسمِّ مصدره ودرجته بدل المُلطِّف الجاهز."
+    },
+    {
+      "type": "hedge-opener",
+      "patternId": "AR-SH-001",
+      "start": 265,
+      "end": 281,
+      "excerpt": "تجدر الإشارة إلى",
+      "severity": "P1",
+      "suggestion": "احذف التحوّط وابدأ بالدعوى نفسها (AR-SH-001). إن كان الشك حقيقيًا فسمِّ مصدره ودرجته بدل المُلطِّف الجاهز."
+    },
+    {
+      "type": "periphrastic-passive",
+      "patternId": "AR-MSA-006",
+      "start": 286,
+      "end": 288,
+      "excerpt": "تم",
+      "severity": "P0",
+      "suggestion": "حوِّل إلى المبني للمعلوم مع تسمية الفاعل؛ وإن كان مجهولًا فاستعمل فاعلًا عامًّا بدل تم/يتم (AR-MSA-006)."
+    },
+    {
+      "type": "hedge-opener",
+      "patternId": "AR-SH-001",
+      "start": 367,
+      "end": 380,
+      "excerpt": "مما لا شك فيه",
+      "severity": "P1",
+      "suggestion": "احذف التحوّط وابدأ بالدعوى نفسها (AR-SH-001). إن كان الشك حقيقيًا فسمِّ مصدره ودرجته بدل المُلطِّف الجاهز."
+    },
+    {
+      "type": "passive-disguise",
+      "patternId": "AR-SH-007",
+      "start": 443,
+      "end": 450,
+      "excerpt": "يُستخدم",
+      "severity": "P1",
+      "suggestion": "سمِّ الفاعل واكتب الجملة بالمبني للمعلوم؛ وإن كان الفاعل مجهولًا فاستعمل فاعلًا عامًّا بدل صيغة المجهول (AR-SH-007)."
+    },
+    {
+      "type": "passive-disguise",
+      "patternId": "AR-SH-007",
+      "start": 488,
+      "end": 494,
+      "excerpt": "يُلاحظ",
+      "severity": "P1",
+      "suggestion": "سمِّ الفاعل واكتب الجملة بالمبني للمعلوم؛ وإن كان الفاعل مجهولًا فاستعمل فاعلًا عامًّا بدل صيغة المجهول (AR-SH-007)."
+    },
+    {
+      "type": "passive-disguise",
+      "patternId": "AR-SH-007",
+      "start": 559,
+      "end": 566,
+      "excerpt": "يُستخدم",
+      "severity": "P1",
+      "suggestion": "سمِّ الفاعل واكتب الجملة بالمبني للمعلوم؛ وإن كان الفاعل مجهولًا فاستعمل فاعلًا عامًّا بدل صيغة المجهول (AR-SH-007)."
+    },
+    {
+      "type": "passive-disguise",
+      "patternId": "AR-SH-007",
+      "start": 614,
+      "end": 620,
+      "excerpt": "يُعتبر",
+      "severity": "P1",
+      "suggestion": "سمِّ الفاعل واكتب الجملة بالمبني للمعلوم؛ وإن كان الفاعل مجهولًا فاستعمل فاعلًا عامًّا بدل صيغة المجهول (AR-SH-007)."
+    },
+    {
+      "type": "hedge-opener",
+      "patternId": "AR-SH-001",
+      "start": 672,
+      "end": 688,
+      "excerpt": "لا بد من التنويه",
+      "severity": "P1",
+      "suggestion": "احذف التحوّط وابدأ بالدعوى نفسها (AR-SH-001). إن كان الشك حقيقيًا فسمِّ مصدره ودرجته بدل المُلطِّف الجاهز."
+    },
+    {
+      "type": "periphrastic-passive",
+      "patternId": "AR-MSA-006",
+      "start": 773,
+      "end": 775,
+      "excerpt": "تم",
+      "severity": "P0",
+      "suggestion": "حوِّل إلى المبني للمعلوم مع تسمية الفاعل؛ وإن كان مجهولًا فاستعمل فاعلًا عامًّا بدل تم/يتم (AR-MSA-006)."
+    },
+    {
+      "type": "formulaic-conclusion",
+      "patternId": "AR-SH-002-C",
+      "start": 841,
+      "end": 850,
+      "excerpt": "في الختام",
+      "severity": "P1",
+      "suggestion": "استبدل الخاتمة النمطية بدعوى مكثّفة أو صورة أخيرة — أو توقّف ببساطة (AR-SH-002 / AR-MSA-005)."
+    }
+  ],
+  "stats": {
+    "wordCount": 145,
+    "sentenceCount": 17,
+    "paragraphCount": 5,
+    "variety": "msa",
+    "sourceMode": "rendered-markdown",
+    "maskedFrontmatter": 0,
+    "maskedHtmlComments": 2,
+    "maskedCodeFences": 0,
+    "maskedUrls": 0,
+    "maskedInlineCode": 0,
+    "hasArabic": true,
+    "sentenceLengthCv": 0.4604707305551339,
+    "paragraphLengthCv": 0.12528208361782725,
+    "trigramRepeatRatio": 0,
+    "transitionsPer100Words": 0.6896551724137931,
+    "westernPunctuationCount": 0,
+    "mixedDigitSystems": false,
+    "tanwinCount": 2,
+    "tashkeelCount": 8,
+    "tooShort": false,
+    "rawScore": 59,
+    "scoreWithoutLeakage": 59,
+    "issueCount": 13,
+    "p0Count": 2,
+    "p1Count": 10,
+    "p2Count": 1
+  }
+}

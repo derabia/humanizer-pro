@@ -1,0 +1,48 @@
+{
+  "lang": "en",
+  "variety": null,
+  "confidence": 1,
+  "engine": "en",
+  "arabicRatio": 0,
+  "score": 0,
+  "label": "Clean",
+  "issues": [
+    {
+      "type": "em-dash",
+      "text": "1 em dashes in 276 words",
+      "severity": "medium",
+      "suggestion": "Replace with commas, periods, or rewrite"
+    }
+  ],
+  "stats": {
+    "wordCount": 276,
+    "tier1Count": 0,
+    "tier2Count": 0,
+    "tier2Clusters": 0,
+    "tier3Count": 0,
+    "tier3Flags": 0,
+    "patternCount": 1,
+    "contextMode": "general",
+    "contextModeFallback": null,
+    "sourceMode": "rendered-markdown",
+    "maskedFrontmatter": 1,
+    "maskedHtmlComments": 2,
+    "normalization": {
+      "zeroWidth": 0,
+      "homoglyph": 0,
+      "roleplay": 0
+    },
+    "quotedLines": 0,
+    "unmappedHighlights": 0,
+    "denseAIVocab": false,
+    "tier1Distinct": 0
+  },
+  "document_classification": "HUMAN_ONLY",
+  "class_probabilities": {
+    "human": 1,
+    "mixed": 0,
+    "ai": 0
+  },
+  "confidence_category": "high",
+  "highlight_sentence_for_ai": []
+}
