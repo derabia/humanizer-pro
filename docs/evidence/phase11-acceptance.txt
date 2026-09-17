@@ -1,0 +1,685 @@
+### Phase 11 acceptance evidence
+### generated 2026-09-17T16:43:48Z (UTC)
+### repo: D:/Dev/htdocs/humanizer-pro
+
+### $ git rev-parse HEAD
+1f025cd582c365943136801df1bdc022bd47bb63
+
+### $ git status --porcelain
+ M docs/NATIVE-REVIEW.md
+?? docs/evidence/phase11-acceptance.txt
+?? docs/evidence/phase9-iteration-2-rescore.txt
+?? docs/native-review/evals.md
+?? evals/runs/iteration-1/SELF-ASSESSMENT.md
+?? evals/runs/iteration-2/
+
+### $ node --version
+v25.2.1
+
+### $ git --version
+git version 2.52.0.windows.1
+
+### $ npm test
+
+> humanizer-pro@0.1.0 test
+> node tools/run-tests.js
+
+✔ fixture corpus is complete (>=5 AI and >=5 human per variety) (2.9777ms)
+✔ every AI fixture scores at or above the AI threshold (48.1296ms)
+✔ every human fixture scores below the AI threshold (19.6523ms)
+✔ every human fixture is labelled HUMAN (17.0081ms)
+✔ false-positive fixtures score HUMAN (6.1013ms)
+✔ every issue offset indexes the ORIGINAL text exactly (44.9642ms)
+✔ offsets stay exact on tashkeel- and tatweel-heavy input (3.3976ms)
+✔ rendered-markdown excludes frontmatter, HTML comments and code fences (2.3467ms)
+✔ URLs and inline code are never flagged, in either source mode (0.7561ms)
+✔ MSA-leakage ratio is reported only for dialect varieties (4.7248ms)
+✔ a single P2 signal never leaves HUMAN, and neither does a single P1 or P0 (0.9429ms)
+✔ empty and whitespace-only input (0.3298ms)
+✔ text with no Arabic at all scores 0 and is flagged noArabic (0.4464ms)
+✔ very short Arabic text is capped and marked tooShort (0.5026ms)
+✔ invalid variety and sourceMode fall back and are recorded (0.3113ms)
+✔ exports are shaped for docs and tests (0.6273ms)
+✔ rhetorical questions are not a signal in Arabic (0.4776ms)
+✔ strips a heavy tashkeel string and keeps exact offsets (2.2964ms)
+✔ tatweel (kashida) is removed and does not appear in the map (0.3589ms)
+✔ alef forms unify to bare alef: أ إ آ ٱ -> ا (0.2818ms)
+✔ alef maqsura unifies to ya: ى -> ي (0.235ms)
+✔ ta marbuta is left untouched by default (0.3756ms)
+✔ ta marbuta unifies to ha when options.taMarbuta is true (0.2992ms)
+✔ Arabic-Indic and Extended Arabic-Indic digits pass through untouched (0.3546ms)
+✔ round-trips a slice via toOriginalRange (0.5029ms)
+✔ toOriginal maps the end-of-string sentinel to original.length (0.3576ms)
+✔ empty string normalizes to empty string with an empty map (0.4345ms)
+✔ non-string input throws (0.8941ms)
+✔ mixed Arabic/Latin text: only Arabic-block chars are touched (0.2606ms)
+✔ auto-routing fixture corpus is non-empty (1.574ms)
+✔ every AI fixture scores at or above THRESHOLDS.AI under auto-routing (no --variety) (56.6702ms)
+✔ every human fixture scores below THRESHOLDS.MIXED under auto-routing (no --variety) (23.5588ms)
+✔ every false-positive fixture scores below THRESHOLDS.MIXED under auto-routing (no --variety) (10.9321ms)
+✔ quoted dialect speech inside MSA narration does not mis-route the document (1.6065ms)
+✔ register-mix promotion only fires when the dialect candidate outscores msa, clears THRESHOLDS.AI, and shows lexical dialect intent (6.1295ms)
+✔ register-mix check never runs when --variety/--lang is passed explicitly (1.6422ms)
+✔ genuine human MSA text is never promoted to a dialect by the register-mix check (7.7058ms)
+✔ a single injected hedge phrase never promotes clean human MSA prose to a dialect verdict (18.557ms)
+✔ a single stray dialect word in an otherwise human MSA text does not trigger promotion (13.5087ms)
+✔ CLI: Arabic file, human-readable report (174.6965ms)
+✔ CLI: Arabic file, --json shape (128.7787ms)
+✔ CLI: English file routes to the English engine (125.442ms)
+✔ CLI: English file, human-readable report (110.7203ms)
+✔ CLI: stdin with - (202.0265ms)
+✔ CLI: --variety overrides auto-detection (304.3355ms)
+✔ CLI: --lang overrides auto-detection (201.03ms)
+✔ CLI: --markdown changes the source mode (212.039ms)
+✔ CLI: exit code 2 on input errors, 0 otherwise (567.8861ms)
+✔ programmatic analyze() is exported and routes like the CLI (61.518ms)
+✔ mixed Arabic/English documents auto-route to the Arabic engine (118.552ms)
+✔ report renders line:col positions (1.4639ms)
+CATEGORIES.md anti-drift contract
+  (53 detector types, 53 documented in tables)
+  ✓ every detector type is documented in a CATEGORIES.md table
+  ✓ every type referenced in the tables is a real detector type
+  ✓ fixtures/en-upstream/README-excerpt.md states the engine type total, and it matches TYPE_LABELS (engine implements (\d+) `typ…)
+  ✓ fixtures/en-upstream/CATEGORIES.md states the engine type total, and it matches TYPE_LABELS (engine exposes (\d+) issue `…)
+  ✓ fixtures/en-upstream/CATEGORIES.md states the engine type total, and it matches TYPE_LABELS (the engine's \*\*(\d+) `type…)
+
+CATEGORIES.md contract holds.
+✔ D:\Dev\htdocs\humanizer-pro\tests\en-categories.upstream.test.js (140.1669ms)
+✔ parity: AI-heavy paragraph scores in Strong/Heavy range (63.2473ms)
+✔ parity: plain human bug-report prose stays in Minimal range (21.3444ms)
+✔ parity: stats fields sum to issues length fixture (3.7396ms)
+✔ parity: chatbot artifacts score as P0 critical (2.1079ms)
+✔ parity: crypto-shill social post with hashtag block + bullet-NP lists flags (14.642ms)
+✔ parity: text under 10 words returns tooShort flag (0.5122ms)
+Detector fixtures
+  ✓ empty text returns Empty label
+  ✓ text under 10 words returns tooShort flag
+  ✓ text over 10k words returns tooLong flag
+  ✓ AI-heavy paragraph scores in Strong/Heavy range
+  ✓ plain human bug-report prose stays in Minimal range
+  ✓ stats fields sum to issues length
+  ✓ #123: rendered Markdown ignores frontmatter and multiline HTML comments
+  ✓ #123: same-line and unclosed HTML comments are source-only
+  ✓ #123: comment markers inside fenced and inline code remain visible
+  ✓ #123: comment markers in top-level indented code remain visible
+  ✓ #123: an indented HTML comment under a list item stays hidden
+  ✓ #123: list syntax inside a comment cannot hide later indented code
+  ✓ #123: backticks inside an HTML comment do not protect its closing delimiter
+  ✓ #123: code delimiters in one comment cannot hide a later comment
+  ✓ #190: tilde fences and adjacent list markers in comments preserve later context
+  ✓ #123: short HTML comments close at an overlapping delimiter
+  ✓ #123: rendered Markdown preserves issue offsets after masked source
+  ✓ #123: multiline blockquote masking preserves later source offsets
+  ✓ #123: plain mode preserves legacy blockquote paragraph scoring
+  ✓ #123: rendered Markdown recognizes blank-first-line and CR-only frontmatter
+  ✓ #123: rendered Markdown does not mistake a thematic break for frontmatter
+  ✓ #123: unknown source modes fall back visibly to plain
+  ✓ #190: many HTML comments avoid quadratic rescanning
+  ✓ adversarial Markdown scans stay within a bounded time
+  ✓ version-heading dash carve-out does not swallow prose after a closed version label
+  ✓ repeated Tier 1 phrase does not inflate score linearly
+  ✓ em-dash detector skips definition-list separators (bold term / link + dash)
+  ✓ em-dash carve-out covers numbered-list separators too
+  ✓ em-dash carve-out covers a bold lead term with a parenthetical (#67)
+  ✓ em-dash carve-out covers Keep-a-Changelog version headings (#67)
+  ✓ em-dash carve-out stays narrow — prose dashes in a heading still fire (#67)
+  ✓ hedge-stack does not fire on ordinary negation or inverted questions (#69)
+  ✓ em-dash carve-out requires a list marker — line-initial bold splices still fire
+  ✓ smart-punct signature is not corroborated by separator-only em dashes
+  ✓ em-dash detector still fires on mid-sentence splices at the same density
+  ✓ #73: em-dash overuse remains a P2 edit without affecting authorship output
+  ✓ em-dash detector ignores CLI flags like --save-dev
+  ✓ chatbot artifacts score as P0 critical
+  ✓ crypto-shill social post with hashtag block + bullet-NP lists flags
+  ✓ "Interesting part of the project:" header opener flags emotional-flatline
+  ✓ "the line I keep coming back to" flags lingering-attention
+  ✓ "I cannot stop thinking about" flags lingering-attention
+  ✓ bare "I keep coming back to X because ..." does NOT flag lingering-attention
+  ✓ "real on-chain tokenomics" flags real-actual-inflation
+  ✓ hashtag-stuff does not fire on prose with 2-3 hashtags
+  ✓ "load-bearing" flags only allowlisted attributive abstractions (#56)
+  ✓ #107: deterministic unnecessary hyphenation subclasses fire with fixes
+  ✓ #107: standard compound modifiers and open forms do not fire
+  ✓ #107: protected spans are excluded from unnecessary-hyphenation detection
+  ✓ #107: proper nouns, identifiers, and version strings stay protected
+  ✓ #107: punctuation-adjacent flags and single-component paths stay protected
+  ✓ #107: frontmatter, YAML, Markdown tables, and HTML attributes stay protected
+  ✓ #107: adversarial filename masking remains within a linear-time budget
+  ✓ #107: long closed quotations are masked without a length cutoff
+  ✓ #107: copyedit-only findings do not affect score or trinary classification
+  ✓ "verbatim" is Tier 3: single use stays clean, overuse flags by density
+  ✓ "quietly" clusters with another Tier 2 word flags tier2
+  ✓ "deeply" joins a tier2 cluster only in significance collocations
+  ✓ bullet-np-list does not fire on prose containing short verb-form bullets
+  ✓ tier3-phrase fires on per-phrase repetition (>=2 hits)
+  ✓ tier3-phrase-cluster fires on 3 distinct phrases at density 1 each
+  ✓ tier3-phrase span dedup: overlapping regex matches count as one phrase
+  ✓ emotional-flatline opener fires at position 0 (no leading newline)
+  ✓ emotional-flatline stays visible without moving the authorship score
+  ✓ bullet-np-list ignores bullets inside fenced code blocks
+  ✓ bullet-np-list flushes on 2+ blank lines between bullet sections
+  ✓ hashtag-stuff matches tags after sentence punctuation
+  ✓ hashtag-stuff excludes URL fragments from the count
+  ✓ hashtag-stuff excludes issue and PR references from the count
+  ✓ hashtag-stuff excludes hex colours and preprocessor directives
+  ✓ hashtag-stuff ignores hashes inside code spans and fences
+  ✓ hashtag-stuff still counts short hex-shaped words, which are real tags
+  ✓ hashtag-stuff still fires on a tag block that also cites an issue
+  ✓ hashtag-stuff still fires on tags spread inline through a post
+  ✓ low-ttr fires on a 200+ token text with narrow vocabulary
+  ✓ low-ttr does not fire on natural human prose at 200+ tokens
+  ✓ low-ttr does not fire on short texts (<200 tokens)
+  ✓ ai-placeholder fires on common slot-fill bracket patterns
+  ✓ ai-placeholder does not fire on legitimate bracketed content
+  ✓ ai-citation-markup fires on chatbot-internal tokens
+  ✓ ai-utm-source fires on AI-tool tracking parameters
+  ✓ ai-utm-source does not fire on benign utm_source values
+  ✓ severity labels are distinct across all four tiers
+  ✓ v2: zero-width chars trigger normalization-flag
+  ✓ v2: Cyrillic homoglyph swap restores Tier 1 hit
+  ✓ v2: formulaic opener fires
+  ✓ v2: speculative scenario opener fires
+  ✓ v2: speculative opener leaves instructional "imagine you have" alone
+  ✓ v2: launch-copy introduction fires
+  ✓ v2: launch-copy introduction leaves ordinary narrative alone
+  ✓ v2: dramatized crowd contrast fires on the dismissive clause
+  ✓ v2: crowd contrast leaves literal simultaneity alone
+  ✓ v2: fake-casual props fire
+  ✓ v2: fake-casual props leave math and plain qualifiers alone
+  ✓ v2: parenthetical hedge fires
+  ✓ v2: social endorsement closer fires on LinkedIn-style share post
+  ✓ v2: social endorsement closer covers every regex branch
+  ✓ v2: social endorsement closer matches curly-apostrophe forms
+  ✓ v2: social endorsement closer leaves literal-verb human prose alone
+  ✓ v2: trinary output present + FN-biased for ambiguous text
+  ✓ v2: highly AI-marked text reaches AI_ONLY with corroborators
+  ✓ v2: highlight_sentence_for_ai returns regions with start/end offsets
+  ✓ v2: context mode "technical" suppresses Title Case header flag
+  ✓ #62: Title Case flagged on a Markdown heading, not just a bare line
+  ✓ #62: the heading fix does not flag sentence-case or non-headings
+  ✓ #62: legitimate three-word Title Case headings are not flagged
+  ✓ #62: a heading inside a fenced block is illustration, not a section header
+  ✓ #62: headings opening with a function word are not the tell
+  ✓ #62: an interior function word still flags, in both forms
+  ✓ #240: an acronym or single-letter function word in the title still flags
+  ✓ #240: an all-caps banner line is not a title-case header
+  ✓ #240: unrelated single-letter capitals do not widen the rule
+  ✓ #314: first-person I can appear inside a Title Case heading
+  ✓ #291: blank lines do not manufacture a longer heading
+  ✓ #291: a single physical line still flags with horizontal whitespace
+  ✓ #62: fences that a parity count gets wrong
+  ✓ #77: only spaces and tabs may follow a closing fence
+  ✓ #62: MD_HEADING_PREFIX accepts what the pattern accepts
+  ✓ #62: an indented line is not a Markdown heading
+  ✓ #62: the reported text is value-asserted, not merely present
+  ✓ v2: markdown **bold** is preserved by normalize pre-pass
+  ✓ v2: punct-distribution fires on uniform per-paragraph density
+  ✓ v2: cross-para-burstiness fires on uniform sentence rhythm
+  ✓ v2: invalid contextMode falls back to general with stats.contextModeFallback set
+  ✓ v2: trinary fields present on tooShort / tooLong / empty as UNSCORED
+  ✓ v2: probability fields sum to exactly 1.000 (no float drift)
+  ✓ v2: mid-score isolated stylometric hits do not reach AI_ONLY
+  ✓ v2: humanizer bypass escalates to AI_ONLY (normalization-flag corroborator)
+  ✓ v2: canonical saturated-AI essay reaches AI_ONLY (calibration regression)
+  ✓ v2: legitimate *italic phrase* is NOT stripped by roleplay rule
+  ✓ v2: *roleplay action verb* IS stripped
+  ✓ v2: single ZWSP does not flip to AI_ONLY (hair-trigger fix)
+  ✓ v2: dense-AI-vocab trifecta reaches AI_ONLY (calibration regression)
+  ✓ v2: blockquoted AI text does not penalize the human wrapper
+  ✓ v2: probability sum is exactly 1 with no negative components
+  ✓ v2: unmappedHighlights counter surfaced in stats
+  ✓ v2: real Rust technical post does NOT classify AI_ONLY (denseAIVocab FP fix)
+  ✓ v2: canonical "As an AI language model" disclaimer fires cutoff-disclaimer + AI_ONLY
+  ✓ v2: single-line shell prompt > is NOT stripped as blockquote
+  ✓ v2: stats.denseAIVocab and stats.tier1Distinct surface for observability
+  ✓ v2: backward compat — score, label, issues, stats still present
+  ✓ #109: Object.prototype names in prose do not fire tier lookups
+  ✓ #109 complement: real tier1 vocabulary still fires after the hasOwn guard
+  ✓ performed-insight: essayist tics fire
+  ✓ performed-insight: ordinary uses do not fire
+  ✓ performed-insight: determiner "sit with that <noun>" and literal "only X I trust" stay clean
+  ✓ performed-insight: literal punchline and naming senses stay clean
+  ✓ performed-insight: sentence-initial Turns out keeps a clean text and index
+  ✓ negation-chain: no-chains, didn't-chains, and don't-verb-it fire
+  ✓ negation-chain: idiomatic pairs stay clean
+  ✓ negation-chain: ordinary narration with restated subjects stays clean
+  ✓ negation-chain: mid-sentence technical inventories stay clean
+  ✓ negation-chain: two-item sentence-initial factual inventories stay clean
+  ✓ dev-blog-boilerplate: simplicity slogans fire
+  ✓ dev-blog-boilerplate: spaced and hyphenated out-of-the-box slogans fire
+  ✓ dev-blog-boilerplate: ordinary prose stays clean
+  ✓ #189: plain-mode multiline blockquote (LF) keeps issue and highlight offsets on source
+  ✓ #189: plain-mode multiline blockquote (CRLF) keeps issue and highlight offsets on source
+  ✓ #189: rendered-markdown multiline blockquotes keep offsets on source (LF and CRLF)
+  ✓ #189: zero-width characters do not shift later offsets
+  ✓ #189: zero-width chars separated by content record exact source runs
+  ✓ #189: roleplay-action markers do not shift later offsets
+  ✓ #189: interleaved preprocessing stages compose source offsets
+  ✓ #189: overlapping normalization removals map once and keep staged semantics
+  ✓ #189: malformed emphasis is not reclassified as roleplay
+  ✓ #189: a zero-width character inside a finding preserves its source start and region
+  ✓ #189: trailing removed markers stay outside the preceding highlight
+  ✓ #189: direct normalization handles every occurrence and mapped analysis stays linear
+  ✓ #189: ordinary unchanged text reports native indexes and exact slices
+  ✓ #189: highlight regions land on real source bytes and slice back to the flagged sentence
+  ✓ #235: sentence spans match the former regex scan on every boundary shape
+  ✓ #260: punctuation-prefix analysis scales without rescanning each suffix
+  ✓ #235: analysis time grows linearly on whitespace-heavy input
+  ✓ #235: table delimiter rows still mask with surrounding whitespace and CR
+  ✓ #237: technical context mode suppresses technical-legitimate vocabulary terms
+  ✓ reply openers and analytical framing are not reported as acknowledgment loops (#239)
+  ✓ #241: unsegmented-script documents are declined, not scored "Too short"
+
+All detector fixtures passed.
+✔ D:\Dev\htdocs\humanizer-pro\tests\en-detector.upstream.test.js (4559.6603ms)
+✔ AI-style fixture ai-01.md scores above the AI threshold (15) (37.872ms)
+✔ AI-style fixture ai-02.md scores above the AI threshold (15) (22.0164ms)
+✔ AI-style fixture ai-03.md scores above the AI threshold (15) (7.7032ms)
+✔ AI-style fixture ai-04.md scores above the AI threshold (15) (4.3376ms)
+✔ AI-style fixture ai-05.md scores above the AI threshold (15) (5.0835ms)
+✔ human-style fixture human-01.md scores at or below the AI threshold (15) (3.8884ms)
+✔ human-style fixture human-02.md scores at or below the AI threshold (15) (2.9773ms)
+✔ human-style fixture human-03.md scores at or below the AI threshold (15) (2.8403ms)
+✔ human-style fixture human-04.md scores at or below the AI threshold (15) (3.1563ms)
+✔ human-style fixture human-05.md scores at or below the AI threshold (15) (2.907ms)
+✔ false-positive fixture ar-changelog-list.md scores at or below the AI threshold (15) (3.9226ms)
+✔ false-positive fixture ar-quoted-speech.md scores at or below the AI threshold (15) (2.3896ms)
+✔ false-positive fixture ar-rhetorical-egt.md scores at or below the AI threshold (15) (1.7262ms)
+✔ false-positive fixture ar-rhetorical-msa.md scores at or below the AI threshold (15) (2.6899ms)
+✔ false-positive fixture ar-technical-en-terms.md scores at or below the AI threshold (15) (2.0034ms)
+✔ false-positive fixture en-01-realtime-feature-gating.md scores at or below the AI threshold (15) (2.2953ms)
+✔ false-positive fixture en-02-disclosure.md scores at or below the AI threshold (15) (2.2607ms)
+✔ false-positive fixture en-03-changelog.md scores at or below the AI threshold (15) (2.4168ms)
+✔ false-positive fixture en-04-quoted-speech.md scores at or below the AI threshold (15) (1.969ms)
+✔ AI fixture minimum score exceeds human fixture maximum score (clean separation) (37.2525ms)
+
+preservation validator
+
+  ✓ fenced code edited → error
+  ✓ fenced code removed → error
+  ✓ a tilde line inside a backtick fence does not end it → error
+  ✓ a backtick line inside a tilde fence does not end it → error
+  ✓ a three-backtick line inside a four-backtick fence does not end it → error
+  ✓ an indented closing fence leaves following prose editable
+  ✓ an indented fenced-code edit still fires
+  ✓ blockquote reworded → error
+  ✓ table cell content changed → error
+  ✓ table without outer pipes changed → error
+  ✓ single-column pipe table changed → error
+  ✓ inline code dropped → error
+  ✓ URL dropped → error
+  ✓ file path altered → error
+  ✓ section deleted → heading count error
+  ✓ heading nesting changed → error
+  ✓ frontmatter touched → error
+  ✓ CRLF frontmatter touched -> error
+  ✓ CRLF frontmatter removed -> error
+  ✓ CRLF table cell changed -> error
+  ✓ CRLF and LF forms of the same document compare clean
+  ✓ lone CR changed to LF inside fenced code -> error
+  ✓ maskCode closes a CRLF fence before following prose
+  ✓ stripping an AI utm_source parameter → no error
+  ✓ stripping AI tracking parameters preserves the remaining query string
+  ✓ stripping a terminal AI tracker preserves adjacent sentence punctuation
+  ✓ dash and ellipsis suffixes cannot move query data into prose
+  ✓ removing a terminal question mark from a URL is still an error
+  ✓ changing a non-tracking query parameter → error
+  ✓ sentence-casing a Title Case heading → warning, not error
+  ✓ removing an emoji from a heading → warning, not error
+  ✓ re-aligning table padding → no error
+  ✓ re-aligning a table without outer pipes → no error
+  ✓ compact GFM delimiters protect cells and allow delimiter padding changes
+  ✓ colon-only cells do not form a table delimiter
+  ✓ hyphens in table content remain significant
+  ✓ a mismatched header and delimiter shape is not a table
+  ✓ top-level indented code is not a table
+  ✓ three-space-indented tables remain protected
+  ✓ escaped pipes do not add table cells
+  ✓ prose containing a bare pipe is not treated as a table
+  ✓ pipe-delimited lines without a delimiter row are not a table
+  ✓ ordinary prose rewrite → no error
+  ✓ four-space list continuation is not treated as code
+  ✓ URL inside a code block is not double-counted as prose
+  ✓ dropped figure → warning
+  ✓ halved text → shrink warning
+  ✓ rewrite that adds AI patterns → residual error
+  ✓ rewrite that removes AI patterns → clean
+  ✓ identical input and output is always clean
+  ✓ non-string input throws
+
+all preservation tests passed
+
+✔ D:\Dev\htdocs\humanizer-pro\tests\en-validate.upstream.test.js (216.1433ms)
+✔ pure English prose identifies as en with no variety (3.9239ms)
+✔ pure MSA prose identifies as ar/msa with no strong dialect evidence (2.8639ms)
+✔ Egyptian Arabic prose identifies as ar/egt with distinct markers (1.3266ms)
+✔ Levantine Arabic prose identifies as ar/shami with distinct markers (0.5503ms)
+✔ mixed Arabic + English tech terms routes to the Arabic engine (0.4648ms)
+✔ short texts (<=3 words) are unknown or low confidence (0.3212ms)
+✔ override short-circuits detection entirely (1.3676ms)
+✔ LEXICONS exports both dialect marker lists non-empty and disjoint (0.3387ms)
+✔ non-string input throws (when not overridden) (0.8332ms)
+✔ article-before.md / article-after-ok.md: exit 0, ok:true (149.2752ms)
+✔ article-after-bad-keyword-removed.md: exit 1, "seo-keyword-placement" FAILED (133.651ms)
+✔ article-after-bad-h2.md: exit 1, "seo-keyword-placement" FAILED (116.3166ms)
+✔ article-after-bad-link.md: exit 1, "link-anchor-internal" FAILED (123.2035ms)
+✔ article-after-bad-alt.md: exit 1, "image-alt-captions" FAILED (126.9456ms)
+✔ article-after-bad-jsonld.md: exit 1, "json-ld" FAILED (121.9459ms)
+✔ article-after-bad-shortcode.md: exit 1, "shortcodes" FAILED (122.8004ms)
+✔ article-after-bad-wpcomment.md: exit 1, "wp-comments" FAILED (130.884ms)
+✔ article-after-bad-number.md: exit 1, "numbers" FAILED (121.4444ms)
+✔ article-after-bad-frontmatter.md: exit 1, "frontmatter-meta" FAILED (124.5617ms)
+✔ article-after-bad-codeblock.md: exit 1, "code-blocks" FAILED (127.6209ms)
+✔ article-after-bad-tablecell.md: exit 1, "table-cells" FAILED (128.9196ms)
+✔ article-after-bad-blockquote.md: exit 1, "blockquotes" FAILED (135.2036ms)
+✔ article-after-bad-stuffing.md: exit 1, "seo-stuffing" FAILED (139.5088ms)
+✔ ar-article: pure digit-system change warns (not fails) by default (98.3093ms)
+✔ ar-article: --strict-digits turns the digit-system warning into a failure (114.6705ms)
+✔ ar-article-after-ok.md: clean Arabic pair passes (112.903ms)
+✔ detector-score check reports "not computed" when no engine is available for the language (6.5796ms)
+✔ thin-before.md / thin-after.md: shrunk section warns, does not fail (122.3742ms)
+✔ missing arguments: exit 2 (79.1518ms)
+✔ nonexistent file: exit 2 (76.6553ms)
+✔ unknown flag: exit 2 (78.8333ms)
+✔ bad --lang value: exit 2 (81.4187ms)
+✔ --json output has the documented shape (133.6356ms)
+✔ without --seo, no seo-* checks are emitted, base checks still run (114.9439ms)
+ℹ tests 114
+ℹ suites 0
+ℹ pass 114
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4660.8309
+
+### $ node tools/check-skill.js
+check-skill: D:\Dev\htdocs\humanizer-pro\skills\humanizer-pro\SKILL.md
+
+  ok      no BOM
+  ok      line endings: LF only
+  ok      no em dash or en dash characters
+  ok      line count: 265 (limit 500)
+  ok      frontmatter parsed; keys: name, description, license, metadata
+  ok      name: humanizer-pro
+  ok      description length: 973 characters (limit 1024)
+  ok      reference paths mentioned: 11
+  ok      script paths mentioned: 3
+
+result: 0 failure(s), 0 warning(s)
+exit=0
+
+### $ node tools/check-evals.js
+evals.json: 16 entries
+Language buckets: {"en":4,"msa":4,"egt":4,"shami":4}
+Mode counts: {"detect":4,"rewrite":6,"edit":6}
+seo:true count: 5
+voiceSample by language family: {"english":1,"arabic":1}
+thinContent:true count: 1
+
+PASS — all checks passed.
+exit=0
+
+### $ node tools/check-upstream.js
+
+blader  (https://github.com/blader/humanizer)
+  recorded SHA: 9862685f575c65a8247f90369951df1b3416e3d6  (version 3.0.0)
+  remote HEAD:  9862685f575c65a8247f90369951df1b3416e3d6
+  status:       unchanged
+
+avoid-ai-writing  (https://github.com/conorbronsdon/avoid-ai-writing)
+  recorded SHA: 7a2c7d11d4a74d90c6be41fbed8402d972543798  (version 3.35.0)
+  remote HEAD:  7a2c7d11d4a74d90c6be41fbed8402d972543798
+  status:       unchanged
+
+semitic  (https://github.com/OthmanAdi/humanizer-semitic)
+  recorded SHA: 2c9d4fbe3e0086d373b59bfebc9556082275cf62  (version 1.0.0)
+  remote HEAD:  2c9d4fbe3e0086d373b59bfebc9556082275cf62
+  status:       unchanged
+
+Result: all upstream repositories are unchanged since they were pinned.
+exit=0
+
+### detect.js on every fixture (bash loop)
+### $ for f in tests/fixtures/*/*.md; do node skills/humanizer-pro/scripts/detect.js "$f" --json | node -e "..."; done
+tests/fixtures/ar-egt/ai-01.md | ar | egt | 100 | AI | -
+tests/fixtures/ar-egt/ai-02.md | ar | egt | 100 | AI | -
+tests/fixtures/ar-egt/ai-03.md | ar | egt | 100 | AI | -
+tests/fixtures/ar-egt/ai-04.md | ar | egt | 100 | AI | -
+tests/fixtures/ar-egt/ai-05.md | ar | egt | 100 | AI | -
+tests/fixtures/ar-egt/human-01.md | ar | egt | 0 | HUMAN | -
+tests/fixtures/ar-egt/human-02.md | ar | egt | 0 | HUMAN | -
+tests/fixtures/ar-egt/human-03.md | ar | egt | 0 | HUMAN | -
+tests/fixtures/ar-egt/human-04.md | ar | egt | 0 | HUMAN | -
+tests/fixtures/ar-egt/human-05.md | ar | egt | 0 | HUMAN | -
+tests/fixtures/ar-msa/ai-01.md | ar | msa | 100 | AI | -
+tests/fixtures/ar-msa/ai-02.md | ar | msa | 98 | AI | -
+tests/fixtures/ar-msa/ai-03.md | ar | msa | 100 | AI | -
+tests/fixtures/ar-msa/ai-04.md | ar | msa | 100 | AI | -
+tests/fixtures/ar-msa/ai-05.md | ar | msa | 95 | AI | -
+tests/fixtures/ar-msa/human-01.md | ar | msa | 0 | HUMAN | -
+tests/fixtures/ar-msa/human-02.md | ar | msa | 0 | HUMAN | -
+tests/fixtures/ar-msa/human-03.md | ar | msa | 0 | HUMAN | -
+tests/fixtures/ar-msa/human-04.md | ar | msa | 0 | HUMAN | -
+tests/fixtures/ar-msa/human-05.md | ar | msa | 0 | HUMAN | -
+tests/fixtures/ar-shami/ai-01.md | ar | shami | 100 | AI | -
+tests/fixtures/ar-shami/ai-02.md | ar | shami | 100 | AI | -
+tests/fixtures/ar-shami/ai-03.md | ar | shami | 84 | AI | -
+tests/fixtures/ar-shami/ai-04.md | ar | shami | 100 | AI | -
+tests/fixtures/ar-shami/ai-05.md | ar | shami | 100 | AI | -
+tests/fixtures/ar-shami/human-01.md | ar | shami | 0 | HUMAN | -
+tests/fixtures/ar-shami/human-02.md | ar | egt | 0 | HUMAN | -
+tests/fixtures/ar-shami/human-03.md | ar | egt | 0 | HUMAN | -
+tests/fixtures/ar-shami/human-04.md | ar | egt | 0 | HUMAN | -
+tests/fixtures/ar-shami/human-05.md | ar | shami | 0 | HUMAN | -
+tests/fixtures/en-upstream/CATEGORIES.md | en | - | 7 | Minimal AI signals | HUMAN_ONLY
+tests/fixtures/en-upstream/README-excerpt.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/en/ai-01.md | en | - | 42 | Moderate AI signals | MIXED
+tests/fixtures/en/ai-02.md | en | - | 15 | Minimal AI signals | MIXED
+tests/fixtures/en/ai-03.md | en | - | 36 | Moderate AI signals | MIXED
+tests/fixtures/en/ai-04.md | en | - | 16 | Some AI patterns | AI_ONLY
+tests/fixtures/en/ai-05.md | en | - | 20 | Some AI patterns | MIXED
+tests/fixtures/en/human-01.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/en/human-02.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/en/human-03.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/en/human-04.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/en/human-05.md | en | - | 2 | Minimal AI signals | HUMAN_ONLY
+tests/fixtures/false-positives/ar-changelog-list.md | ar | msa | 0 | HUMAN | -
+tests/fixtures/false-positives/ar-quoted-speech.md | ar | msa | 0 | HUMAN | -
+tests/fixtures/false-positives/ar-rhetorical-egt.md | ar | egt | 0 | HUMAN | -
+tests/fixtures/false-positives/ar-rhetorical-msa.md | ar | msa | 0 | HUMAN | -
+tests/fixtures/false-positives/ar-technical-en-terms.md | ar | msa | 0 | HUMAN | -
+tests/fixtures/false-positives/en-01-realtime-feature-gating.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/false-positives/en-02-disclosure.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/false-positives/en-03-changelog.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/false-positives/en-04-quoted-speech.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/ar-article-after-bad-digits.md | ar | msa | 4 | HUMAN | -
+tests/fixtures/seo/ar-article-after-ok.md | ar | msa | 2 | HUMAN | -
+tests/fixtures/seo/ar-article-before.md | ar | msa | 2 | HUMAN | -
+tests/fixtures/seo/article-after-bad-alt.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-bad-blockquote.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-bad-codeblock.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-bad-frontmatter.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-bad-h2.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-bad-jsonld.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-bad-keyword-removed.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-bad-link.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-bad-number.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-bad-shortcode.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-bad-stuffing.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-bad-tablecell.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-bad-wpcomment.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-after-ok.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/article-before.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/thin-after.md | en | - | 0 | Clean | HUMAN_ONLY
+tests/fixtures/seo/thin-before.md | en | - | 0 | Clean | HUMAN_ONLY
+
+### detect.js on every fixture (PowerShell variant, spot-check of the same loop)
+### PS> Get-ChildItem tests/fixtures -Recurse -Filter *.md | ForEach-Object { node skills/humanizer-pro/scripts/detect.js $_.FullName --json }
+.\tests\fixtures\ar-egt\ai-01.md | ar | egt | 100 | AI
+.\tests\fixtures\ar-egt\ai-02.md | ar | egt | 100 | AI
+.\tests\fixtures\ar-egt\ai-03.md | ar | egt | 100 | AI
+.\tests\fixtures\ar-egt\ai-04.md | ar | egt | 100 | AI
+.\tests\fixtures\ar-egt\ai-05.md | ar | egt | 100 | AI
+.\tests\fixtures\ar-egt\human-01.md | ar | egt | 0 | HUMAN
+(PowerShell loop verified on the first 6 fixtures; the bash loop above covers all 74.)
+
+### validate.js on the SEO ok/bad pairs
+### $ for f in tests/fixtures/seo/article-after-*.md; do node skills/humanizer-pro/scripts/validate.js tests/fixtures/seo/article-before.md "$f" --seo tests/fixtures/seo/keywords.txt; echo "exit=$?"; done
+tests/fixtures/seo/article-after-bad-alt.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-bad-blockquote.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-bad-codeblock.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-bad-frontmatter.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-bad-h2.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-bad-jsonld.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-bad-keyword-removed.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-bad-link.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-bad-number.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-bad-shortcode.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-bad-stuffing.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-bad-tablecell.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-bad-wpcomment.md exit=1 :: PASS violation 
+tests/fixtures/seo/article-after-ok.md exit=0 :: PASS violation 
+
+### $ Arabic SEO pair (default, then --strict-digits)
+tests/fixtures/seo/ar-article-after-ok.md exit=0
+tests/fixtures/seo/ar-article-after-ok.md --strict-digits exit=0
+tests/fixtures/seo/ar-article-after-bad-digits.md exit=0
+tests/fixtures/seo/ar-article-after-bad-digits.md --strict-digits exit=1
+
+### $ thin-content pair (warn, not fail)
+PASS — 0 violation(s), 1 warning(s)
+
+  [PASS] code-blocks: Fenced code blocks: unchanged.
+  [PASS] frontmatter: YAML frontmatter: unchanged.
+  [PASS] blockquotes: Blockquotes: unchanged.
+  [PASS] table-cells: Markdown table cells: unchanged.
+  [PASS] inline-code: Inline code: unchanged.
+  [PASS] urls: URLs: unchanged.
+  [PASS] file-paths: File paths: unchanged.
+  [PASS] json-ld: JSON-LD/schema block(s): 0 block(s), unchanged.
+  [PASS] shortcodes: Shortcode(s): 0 block(s), unchanged.
+  [PASS] wp-comments: WordPress block comment(s): 0 block(s), unchanged.
+  [PASS] html-attributes: HTML tag(s)/attribute(s): 0 block(s), unchanged.
+  [PASS] image-alt-captions: Image alt text/caption/filename: 0 block(s), unchanged.
+  [PASS] link-anchor-internal: 0 link(s): anchors and internal targets unchanged.
+  [PASS] frontmatter-meta: Frontmatter meta title/description unchanged.
+  [PASS] heading-structure: 3 heading(s), structure and wording unchanged.
+  [PASS] numbers: All numbers preserved (values and digit systems).
+  [PASS] seo-keyword-presence: All 3 keyword(s) still present.
+  [PASS] seo-keyword-placement: Primary keyword "edge caching" placement checkpoints preserved.
+  [PASS] seo-stuffing: No keyword stuffing detected.
+  [WARN] seo-thin-sections: Section(s) below 40 words: "Cache invalidation" (6 words).
+  [PASS] detector-score: Detector score did not worsen: 0 → 0.
+
+  scores: before=0 after=0
+exit=0
+
+### zip rebuild and listing comparison
+### $ node tools/build-zip.js   (rebuilt into scratchpad, dist/ restored with git checkout afterwards)
+### $ diff <(unzip -l docs-evidence-listing) <(unzip -l rebuilt)  -- names only
+-- committed dist/humanizer-pro.zip entry names vs rebuilt entry names:
+IDENTICAL (entry names)
+
+-- docs/evidence/phase10-zip-listing.txt entry names vs rebuilt entry names:
+IDENTICAL (entry names)
+
+-- name+length diff (committed vs rebuilt), to show whether committed zip is stale:
+19c19
+< 26064 humanizer-pro/scripts/lib/ar-detector/lexicons.js
+---
+> 26195 humanizer-pro/scripts/lib/ar-detector/lexicons.js
+
+-- sizes: committed=227834 rebuilt=227881
+-- git status dist/ after restore:
+(empty means dist/ restored to the committed blob)
+
+### provenance index: generation and cross-check
+(index built from docs/PROVENANCE.md with a throwaway Node script, not saved to the repo)
+headings found: 141  table rows: 141
+in refs but not in table: none
+in table but not a heading in refs: none
+ids appearing as a heading more than once: none
+heading counts by family: {"AR-EGT":26,"AR-SHM":25,"AR-MSA":28,"AR-SH":7,"EN":55}
+
+### provenance spot-checks (5 random rows opened in _sources/)
+$ sed -n "58,62p" _sources/blader/SKILL.md   # EN-001 / BL-001
+### 1. Not X but Y
+
+**Watch for:** not X but Y; not just, not only, or not merely X, but Y; it's not X, it's Y; the reversed form X rather than Y; the same contrast split across sentences ("This does not mean X. It means Y."); a clipped negative tail ("..., no guessing"). The formula appears in every language; treat the equivalent construction the same way.
+**Problem:** The negative half names something no one claimed, so the positive half sounds larger. It adds weight without adding a claim. State the point directly. Keep a contrast only when the negative half corrects a belief the reader actually holds, or when both halves carry information.
+**Before:**
+
+$ sed -n "18p" _sources/avoid-ai-writing/references/patterns.md   # EN-001 / AW-007
+- **"It's not X — it's Y" / "This isn't about X, it's about Y"**: Rewrite as a direct positive statement. Max one per piece, and only if it serves the argument. This includes the **split-sentence form**, where the negation and the correction fall in two separate sentences rather than pivoting on a single dash or comma: "The headline isn't the speed. The real story is Y." Read on its own, each sentence looks like an innocent declarative, which is exactly why the split version slips past a check tuned to the joined phrasing — flag it the same way. AI also stacks the negation across several options before the reveal ("It's not the price. It's not the features. It's the trust."). The multi-negation countdown is the same move inflated; flag it and cut straight to the positive claim. The **tailing negation** is the clipped cousin: a bare negation fragment tacked onto the end of a sentence — "The options come from the selected item, no guessing." Write the constraint as a real clause ("without forcing the user to guess") or cut it. Carve-out: negations enumerating spec constraints in a list ("no dependencies, no telemetry") are list content, not a reveal. Adapted from `blader/humanizer` P9.
+
+$ sed -n "44,47p" _sources/semitic/skills/humanizer-ar-msa/SKILL.md   # AR-MSA-001 / SM-MSA-001
+### Pattern 1 — Hedging Phrase Overload
+
+**Detection:** Scan for: من المهم الإشارة إلى، يجب الإشارة إلى، من الضروري أن نذكر، يُعتقد أنّ، قد يكون، ربما، من المحتمل أنّ، تجدر الإشارة إلى، لا بد من التنويه. Flag any that appear more than once per 200 words. Flag any that open a sentence where a direct assertion would serve better.
+
+
+$ sed -n "122,126p" _sources/semitic/skills/humanizer-ar-egt/SKILL.md   # AR-EGT-003 / SM-EGT-003
+### Pattern 3 — Wrong Future Tense Marker
+
+**Detection:** Look for سـ prefix (as in سيذهب, سنتحدث, سأفعل) or the word سوف before any verb.
+
+**Why it matters:** MSA future is formed with سـ or سوف. Egyptian Arabic forms the future with حـ prefix (sometimes written هـ or ها in informal contexts) directly before the imperfect verb without the بـ prefix. This is a systematic grammatical difference, not a vocabulary choice. Getting this wrong is like writing "I will to go" in English — grammatically wrong at a deep level.
+
+$ sed -n "199,203p" _sources/semitic/skills/humanizer-ar-shami/SKILL.md   # AR-SHM-004 / SM-SHM-004
+### Pattern 4 — Wrong Future: سوف/سـ instead of رح
+
+**Detection:** Any use of سوف or the سـ prefix for future tense. سوف is an exclusive MSA
+future marker. سـ is a contracted MSA form. Neither appears in natural Levantine speech or
+writing.
+
+### native-review marker counts in the reference files
+$ grep -o "<!-- NATIVE-REVIEW: [a-z]* -->" skills/humanizer-pro/references/ar-*.md | sort | uniq -c
+      5 ar-egyptian.md:<!-- NATIVE-REVIEW: egt -->
+     26 ar-levantine.md:<!-- NATIVE-REVIEW: shami -->
+      1 ar-msa.md:<!-- NATIVE-REVIEW: msa -->
+      2 ar-shared.md:<!-- NATIVE-REVIEW: shared -->
+note: ar-levantine.md line 14 is a backticked prose mention of the tag, not a marker
+      (docs/NATIVE-REVIEW.md lines 16-19 say the same), so real markers are:
+      msa 1, egt 5, shami 25, shared 2 = 33
+
+### fixture counts
+$ ls tests/fixtures/ar-*/human-*.md | wc -l  -> 15
+$ ls tests/fixtures/ar-*/*.md | wc -l       -> 30
+$ ls tests/fixtures/false-positives/ar-*.md | wc -l -> 5
+
+### --markdown re-verification of the one score that differs from phase6b-fixture-scores.txt
+$ node skills/humanizer-pro/scripts/detect.js tests/fixtures/false-positives/ar-technical-en-terms.md --markdown --json
+variety=msa score=14 label=HUMAN
+
+### cause of the stale dist zip
+$ git show --stat da36da5 -- '*lexicons.js'
+    Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+
+ skills/humanizer-pro/scripts/lib/ar-detector/lexicons.js | 2 ++
+ 1 file changed, 2 insertions(+)
+
+### PowerShell variants from sections 1.6 and 1.8 (executed)
+### PS> Get-ChildItem tests/fixtures/seo/article-after-*.md | ForEach-Object { node ... ; "$($_.Name) exit=$LASTEXITCODE" }
+article-after-bad-alt.md exit=1
+article-after-bad-blockquote.md exit=1
+article-after-bad-codeblock.md exit=1
+article-after-bad-frontmatter.md exit=1
+article-after-bad-h2.md exit=1
+article-after-bad-jsonld.md exit=1
+article-after-bad-keyword-removed.md exit=1
+article-after-bad-link.md exit=1
+article-after-bad-number.md exit=1
+article-after-bad-shortcode.md exit=1
+article-after-bad-stuffing.md exit=1
+article-after-bad-tablecell.md exit=1
+article-after-bad-wpcomment.md exit=1
+article-after-ok.md exit=0
+
+### PS> [IO.Compression.ZipFile]::OpenRead(...).Entries | ForEach-Object { $_.FullName } | Sort-Object
+entries: 26
+humanizer-pro/LICENSES/avoid-ai-writing.MIT.txt
+humanizer-pro/LICENSES/blader-humanizer.MIT.txt
+humanizer-pro/LICENSES/humanizer-semitic.MIT.txt
+humanizer-pro/references/ar-egyptian.md
+...

@@ -1,5 +1,10 @@
 # Conflicts between upstream sources
 
+> Phase-2 research table. The **final, owner-approved resolutions** for every row
+> are in `skills/humanizer-pro/references/precedence.md` (section "Conflict
+> resolution"). C-08 and C-09/C-14 were resolved differently from the proposals
+> below; the reasons are recorded there and in `docs/REVIEW-HANDOFF.md`.
+
 Scope: conflicts found between `blader/humanizer` (BL), `avoid-ai-writing` (AW),
 and `humanizer-semitic` (SM: SM-MSA / SM-EGT / SM-SHM), and between the three
 Arabic varieties inside `humanizer-semitic` itself. Every row cites
