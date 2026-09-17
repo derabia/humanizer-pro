@@ -1,0 +1,57 @@
+{
+  "lang": "ar",
+  "variety": "msa",
+  "confidence": 1,
+  "engine": "ar",
+  "arabicRatio": null,
+  "score": 9,
+  "label": "HUMAN",
+  "issues": [
+    {
+      "type": "hedge-opener",
+      "patternId": "AR-SH-001",
+      "start": 447,
+      "end": 465,
+      "excerpt": "من الجدير بالإشارة",
+      "severity": "P1",
+      "suggestion": "احذف التحوّط وابدأ بالدعوى نفسها (AR-SH-001). إن كان الشك حقيقيًا فسمِّ مصدره ودرجته بدل المُلطِّف الجاهز."
+    },
+    {
+      "type": "hedge-opener",
+      "patternId": "AR-SH-001",
+      "start": 533,
+      "end": 553,
+      "excerpt": "من المهم الإشارة إلى",
+      "severity": "P1",
+      "suggestion": "احذف التحوّط وابدأ بالدعوى نفسها (AR-SH-001). إن كان الشك حقيقيًا فسمِّ مصدره ودرجته بدل المُلطِّف الجاهز."
+    }
+  ],
+  "stats": {
+    "wordCount": 170,
+    "sentenceCount": 28,
+    "paragraphCount": 11,
+    "variety": "msa",
+    "sourceMode": "rendered-markdown",
+    "maskedFrontmatter": 1,
+    "maskedHtmlComments": 3,
+    "maskedCodeFences": 0,
+    "maskedUrls": 1,
+    "maskedInlineCode": 0,
+    "hasArabic": true,
+    "sentenceLengthCv": 0.6284117012996456,
+    "paragraphLengthCv": 0.8890724531721919,
+    "trigramRepeatRatio": 0.031413612565445025,
+    "transitionsPer100Words": 0,
+    "westernPunctuationCount": 0,
+    "mixedDigitSystems": false,
+    "tanwinCount": 5,
+    "tashkeelCount": 8,
+    "tooShort": false,
+    "rawScore": 9,
+    "scoreWithoutLeakage": 9,
+    "issueCount": 2,
+    "p0Count": 0,
+    "p1Count": 2,
+    "p2Count": 0
+  }
+}

@@ -1,0 +1,130 @@
+{
+  "lang": "en",
+  "variety": null,
+  "confidence": 1,
+  "engine": "en",
+  "arabicRatio": 0,
+  "score": 17,
+  "label": "Some AI patterns",
+  "issues": [
+    {
+      "type": "tier1",
+      "text": "game-changer",
+      "severity": "high",
+      "suggestion": "describe what changed"
+    },
+    {
+      "type": "tier1",
+      "text": "seamless",
+      "severity": "high",
+      "suggestion": "smooth, easy, without friction"
+    },
+    {
+      "type": "tier1",
+      "text": "robust",
+      "severity": "high",
+      "suggestion": "strong, reliable, solid"
+    },
+    {
+      "type": "tier1",
+      "text": "comprehensive",
+      "severity": "high",
+      "suggestion": "thorough, complete, full"
+    },
+    {
+      "type": "tier1",
+      "text": "pivotal",
+      "severity": "high",
+      "suggestion": "important, key, critical"
+    },
+    {
+      "type": "transition",
+      "text": "Moreover",
+      "index": 461,
+      "severity": "medium",
+      "suggestion": null
+    },
+    {
+      "type": "transition",
+      "text": "Furthermore",
+      "index": 365,
+      "severity": "medium",
+      "suggestion": null
+    },
+    {
+      "type": "transition",
+      "text": "In today's",
+      "index": 1064,
+      "severity": "medium",
+      "suggestion": null
+    },
+    {
+      "type": "transition",
+      "text": "At the end of the day",
+      "index": 1180,
+      "severity": "medium",
+      "suggestion": null
+    },
+    {
+      "type": "significance-inflation",
+      "text": "a pivotal moment in",
+      "index": 1227,
+      "severity": "high",
+      "suggestion": null
+    },
+    {
+      "type": "em-dash",
+      "text": "4 em dashes in 228 words",
+      "severity": "medium",
+      "suggestion": "Replace with commas, periods, or rewrite"
+    }
+  ],
+  "stats": {
+    "wordCount": 228,
+    "tier1Count": 5,
+    "tier2Count": 0,
+    "tier2Clusters": 0,
+    "tier3Count": 0,
+    "tier3Flags": 0,
+    "patternCount": 6,
+    "contextMode": "general",
+    "contextModeFallback": null,
+    "sourceMode": "rendered-markdown",
+    "maskedFrontmatter": 0,
+    "maskedHtmlComments": 1,
+    "normalization": {
+      "zeroWidth": 0,
+      "homoglyph": 0,
+      "roleplay": 0
+    },
+    "quotedLines": 0,
+    "unmappedHighlights": 0,
+    "denseAIVocab": false,
+    "tier1Distinct": 5
+  },
+  "document_classification": "MIXED",
+  "class_probabilities": {
+    "human": 0.454,
+    "mixed": 0.441,
+    "ai": 0.105
+  },
+  "confidence_category": "medium",
+  "highlight_sentence_for_ai": [
+    {
+      "startSentence": 1,
+      "endSentence": 3,
+      "start": 191,
+      "end": 555,
+      "hitCount": 6,
+      "score": 1
+    },
+    {
+      "startSentence": 11,
+      "endSentence": 12,
+      "start": 1064,
+      "end": 1383,
+      "hitCount": 4,
+      "score": 0.65
+    }
+  ]
+}

@@ -1,0 +1,108 @@
+{
+  "lang": "ar",
+  "variety": "egt",
+  "confidence": 1,
+  "engine": "ar",
+  "arabicRatio": null,
+  "score": 52,
+  "label": "MIXED",
+  "issues": [
+    {
+      "type": "trigram-repetition",
+      "patternId": "AR-MSA-028",
+      "start": 2,
+      "end": 76,
+      "excerpt": "-- targets: AR-EGT-001, AR-EGT-004, AR-EGT-006, AR-EGT-011, AR-EGT-022 -->",
+      "severity": "P2",
+      "suggestion": "تتكرر التراكيب نفسها حرفيًا عبر النص. أبقِ أقوى جملة وحوِّل البقية إلى دليل أو تقييد أو مثال مختلف (AR-MSA-028)."
+    },
+    {
+      "type": "msa-vocabulary",
+      "patternId": "AR-EGT-001",
+      "start": 172,
+      "end": 176,
+      "excerpt": "التي",
+      "severity": "P1",
+      "suggestion": "استبدل المفردة الفصحى بمقابلها المصري: الآن→دلوقتي، أريد→عايز، ماذا→إيه، كيف→ازاي، أيضًا→كمان، الذي/التي→اللي (AR-EGT-001، AR-EGT-026)."
+    },
+    {
+      "type": "msa-leakage",
+      "patternId": "AR-EGT-026",
+      "start": 172,
+      "end": 176,
+      "excerpt": "التي",
+      "severity": "P0",
+      "suggestion": "أدوات الفصحى الوظيفية تطغى على نظيراتها المصرية. طبّق قائمة التحقق: مش/ما..ش لا ليس/لم، حـ/هـ لا سـ/سوف، ده/دي/دول بعد الاسم، اللي لا الذي/التي، دلوقتي لا الآن (AR-EGT-026)."
+    },
+    {
+      "type": "msa-demonstrative",
+      "patternId": "AR-EGT-005",
+      "start": 347,
+      "end": 356,
+      "excerpt": "هذا الأمر",
+      "severity": "P0",
+      "suggestion": "اقلب الترتيب واستعمل الصيغة المصرية بعد الاسم: هذا الكتاب→الكتاب ده، هذه المشكلة→المشكلة دي، هؤلاء الناس→الناس دول (AR-EGT-005)."
+    },
+    {
+      "type": "tanwin-present",
+      "patternId": "AR-EGT-002",
+      "start": 366,
+      "end": 370,
+      "excerpt": "اسبً",
+      "severity": "P1",
+      "suggestion": "العامية المصرية بلا إعراب ولا تنوين. احذف التنوين والحركات الإعرابية: أيضًا→كمان، شكرًا→متشكر، تمامًا→تمام (AR-EGT-002)."
+    },
+    {
+      "type": "msa-demonstrative",
+      "patternId": "AR-EGT-005",
+      "start": 579,
+      "end": 588,
+      "excerpt": "هذا الأمر",
+      "severity": "P0",
+      "suggestion": "اقلب الترتيب واستعمل الصيغة المصرية بعد الاسم: هذا الكتاب→الكتاب ده، هذه المشكلة→المشكلة دي، هؤلاء الناس→الناس دول (AR-EGT-005)."
+    },
+    {
+      "type": "msa-vocabulary",
+      "patternId": "AR-EGT-001",
+      "start": 694,
+      "end": 699,
+      "excerpt": "الذين",
+      "severity": "P1",
+      "suggestion": "استبدل المفردة الفصحى بمقابلها المصري: الآن→دلوقتي، أريد→عايز، ماذا→إيه، كيف→ازاي، أيضًا→كمان، الذي/التي→اللي (AR-EGT-001، AR-EGT-026)."
+    }
+  ],
+  "stats": {
+    "wordCount": 147,
+    "sentenceCount": 16,
+    "paragraphCount": 6,
+    "variety": "egt",
+    "sourceMode": "plain",
+    "maskedFrontmatter": 0,
+    "maskedHtmlComments": 0,
+    "maskedCodeFences": 0,
+    "maskedUrls": 0,
+    "maskedInlineCode": 0,
+    "hasArabic": true,
+    "sentenceLengthCv": 0.43233419987579996,
+    "paragraphLengthCv": 0.3305450507008528,
+    "trigramRepeatRatio": 0.04081632653061224,
+    "transitionsPer100Words": 0,
+    "msaLeakage": {
+      "ratio": 1,
+      "msaHits": 6,
+      "dialectHits": 0,
+      "applicable": true
+    },
+    "westernPunctuationCount": 0,
+    "mixedDigitSystems": false,
+    "tanwinCount": 1,
+    "tashkeelCount": 2,
+    "tooShort": false,
+    "rawScore": 52,
+    "scoreWithoutLeakage": 38,
+    "issueCount": 7,
+    "p0Count": 3,
+    "p1Count": 3,
+    "p2Count": 1
+  }
+}

@@ -1,0 +1,207 @@
+{
+  "lang": "ar",
+  "variety": "egt",
+  "confidence": 1,
+  "engine": "ar",
+  "arabicRatio": null,
+  "score": 100,
+  "label": "AI",
+  "issues": [
+    {
+      "type": "chatbot-ritual",
+      "patternId": "AR-SH-006",
+      "start": 106,
+      "end": 115,
+      "excerpt": "بالتأكيد!",
+      "severity": "P0",
+      "suggestion": "احذف الافتتاحية التملّقية بالكامل؛ إن لزم الإقرار فاستعمل صيغة طبيعية في السجل نفسه (AR-SH-006)."
+    },
+    {
+      "type": "hedge-opener",
+      "patternId": "AR-SH-001",
+      "start": 116,
+      "end": 133,
+      "excerpt": "من المهم أن نلاحظ",
+      "severity": "P1",
+      "suggestion": "احذف التحوّط وابدأ بالدعوى نفسها (AR-SH-001). إن كان الشك حقيقيًا فسمِّ مصدره ودرجته بدل المُلطِّف الجاهز."
+    },
+    {
+      "type": "tanwin-present",
+      "patternId": "AR-EGT-002",
+      "start": 203,
+      "end": 207,
+      "excerpt": "صوصً",
+      "severity": "P1",
+      "suggestion": "العامية المصرية بلا إعراب ولا تنوين. احذف التنوين والحركات الإعرابية: أيضًا→كمان، شكرًا→متشكر، تمامًا→تمام (AR-EGT-002)."
+    },
+    {
+      "type": "msa-vocabulary",
+      "patternId": "AR-EGT-001",
+      "start": 246,
+      "end": 250,
+      "excerpt": "الآن",
+      "severity": "P1",
+      "suggestion": "استبدل المفردة الفصحى بمقابلها المصري: الآن→دلوقتي، أريد→عايز، ماذا→إيه، كيف→ازاي، أيضًا→كمان، الذي/التي→اللي (AR-EGT-001، AR-EGT-026)."
+    },
+    {
+      "type": "msa-leakage",
+      "patternId": "AR-EGT-026",
+      "start": 246,
+      "end": 250,
+      "excerpt": "الآن",
+      "severity": "P0",
+      "suggestion": "أدوات الفصحى الوظيفية تطغى على نظيراتها المصرية. طبّق قائمة التحقق: مش/ما..ش لا ليس/لم، حـ/هـ لا سـ/سوف، ده/دي/دول بعد الاسم، اللي لا الذي/التي، دلوقتي لا الآن (AR-EGT-026)."
+    },
+    {
+      "type": "msa-vocabulary",
+      "patternId": "AR-EGT-001",
+      "start": 251,
+      "end": 255,
+      "excerpt": "أريد",
+      "severity": "P1",
+      "suggestion": "استبدل المفردة الفصحى بمقابلها المصري: الآن→دلوقتي، أريد→عايز، ماذا→إيه، كيف→ازاي، أيضًا→كمان، الذي/التي→اللي (AR-EGT-001، AR-EGT-026)."
+    },
+    {
+      "type": "msa-future",
+      "patternId": "AR-EGT-003",
+      "start": 345,
+      "end": 348,
+      "excerpt": "سوف",
+      "severity": "P0",
+      "suggestion": "الفصحى تبني المستقبل بـ سـ/سوف؛ المصرية تبنيه بـ حـ/هـ: سوف نتحدث→هنتكلم، سأذهب→هروح (AR-EGT-003)."
+    },
+    {
+      "type": "msa-demonstrative",
+      "patternId": "AR-EGT-005",
+      "start": 356,
+      "end": 368,
+      "excerpt": "هذه المميزات",
+      "severity": "P0",
+      "suggestion": "اقلب الترتيب واستعمل الصيغة المصرية بعد الاسم: هذا الكتاب→الكتاب ده، هذه المشكلة→المشكلة دي، هؤلاء الناس→الناس دول (AR-EGT-005)."
+    },
+    {
+      "type": "msa-demonstrative",
+      "patternId": "AR-EGT-005",
+      "start": 474,
+      "end": 483,
+      "excerpt": "هذا الأمر",
+      "severity": "P0",
+      "suggestion": "اقلب الترتيب واستعمل الصيغة المصرية بعد الاسم: هذا الكتاب→الكتاب ده، هذه المشكلة→المشكلة دي، هؤلاء الناس→الناس دول (AR-EGT-005)."
+    },
+    {
+      "type": "msa-vocabulary",
+      "patternId": "AR-EGT-001",
+      "start": 510,
+      "end": 514,
+      "excerpt": "التي",
+      "severity": "P1",
+      "suggestion": "استبدل المفردة الفصحى بمقابلها المصري: الآن→دلوقتي، أريد→عايز، ماذا→إيه، كيف→ازاي، أيضًا→كمان، الذي/التي→اللي (AR-EGT-001، AR-EGT-026)."
+    },
+    {
+      "type": "msa-negation",
+      "patternId": "AR-EGT-007",
+      "start": 540,
+      "end": 542,
+      "excerpt": "لم",
+      "severity": "P1",
+      "suggestion": "استعمل نظام النفي المصري: ما+فعل+ش (ماعرفش)، مش للاسم/الصفة، مش حـ للمستقبل، مفيش للوجود (AR-EGT-007)."
+    },
+    {
+      "type": "msa-vocabulary",
+      "patternId": "AR-EGT-001",
+      "start": 558,
+      "end": 562,
+      "excerpt": "ماذا",
+      "severity": "P1",
+      "suggestion": "استبدل المفردة الفصحى بمقابلها المصري: الآن→دلوقتي، أريد→عايز، ماذا→إيه، كيف→ازاي، أيضًا→كمان، الذي/التي→اللي (AR-EGT-001، AR-EGT-026)."
+    },
+    {
+      "type": "msa-demonstrative",
+      "patternId": "AR-EGT-005",
+      "start": 607,
+      "end": 616,
+      "excerpt": "هذا\nالأمر",
+      "severity": "P0",
+      "suggestion": "اقلب الترتيب واستعمل الصيغة المصرية بعد الاسم: هذا الكتاب→الكتاب ده، هذه المشكلة→المشكلة دي، هؤلاء الناس→الناس دول (AR-EGT-005)."
+    },
+    {
+      "type": "msa-negation",
+      "patternId": "AR-EGT-007",
+      "start": 617,
+      "end": 619,
+      "excerpt": "لم",
+      "severity": "P1",
+      "suggestion": "استعمل نظام النفي المصري: ما+فعل+ش (ماعرفش)، مش للاسم/الصفة، مش حـ للمستقبل، مفيش للوجود (AR-EGT-007)."
+    },
+    {
+      "type": "msa-intensifier",
+      "patternId": "AR-EGT-013",
+      "start": 689,
+      "end": 692,
+      "excerpt": "جدا",
+      "severity": "P0",
+      "suggestion": "استبدل كل «جدًا» بـ «أوي» بعد الصفة أو الفعل (AR-EGT-013)."
+    },
+    {
+      "type": "msa-intensifier",
+      "patternId": "AR-EGT-013",
+      "start": 718,
+      "end": 721,
+      "excerpt": "جدا",
+      "severity": "P0",
+      "suggestion": "استبدل كل «جدًا» بـ «أوي» بعد الصفة أو الفعل (AR-EGT-013)."
+    },
+    {
+      "type": "formulaic-conclusion",
+      "patternId": "AR-SH-002-C",
+      "start": 810,
+      "end": 819,
+      "excerpt": "في الختام",
+      "severity": "P1",
+      "suggestion": "استبدل الخاتمة النمطية بدعوى مكثّفة أو صورة أخيرة — أو توقّف ببساطة (AR-SH-002 / AR-MSA-005)."
+    },
+    {
+      "type": "msa-demonstrative",
+      "patternId": "AR-EGT-005",
+      "start": 833,
+      "end": 842,
+      "excerpt": "هذا العرض",
+      "severity": "P0",
+      "suggestion": "اقلب الترتيب واستعمل الصيغة المصرية بعد الاسم: هذا الكتاب→الكتاب ده، هذه المشكلة→المشكلة دي، هؤلاء الناس→الناس دول (AR-EGT-005)."
+    }
+  ],
+  "stats": {
+    "wordCount": 158,
+    "sentenceCount": 17,
+    "paragraphCount": 7,
+    "variety": "egt",
+    "sourceMode": "plain",
+    "maskedFrontmatter": 0,
+    "maskedHtmlComments": 0,
+    "maskedCodeFences": 0,
+    "maskedUrls": 0,
+    "maskedInlineCode": 0,
+    "hasArabic": true,
+    "sentenceLengthCv": 0.46937965108200397,
+    "paragraphLengthCv": 0.26777463039628074,
+    "trigramRepeatRatio": 0.037267080745341616,
+    "transitionsPer100Words": 0.6329113924050633,
+    "msaLeakage": {
+      "ratio": 1,
+      "msaHits": 13,
+      "dialectHits": 0,
+      "applicable": true
+    },
+    "westernPunctuationCount": 0,
+    "mixedDigitSystems": false,
+    "tanwinCount": 5,
+    "tashkeelCount": 7,
+    "tooShort": false,
+    "rawScore": 130,
+    "scoreWithoutLeakage": 100,
+    "issueCount": 18,
+    "p0Count": 9,
+    "p1Count": 9,
+    "p2Count": 0
+  }
+}
