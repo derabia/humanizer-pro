@@ -161,7 +161,10 @@ rewrite is **recommended, not mandatory**, whenever a shell exists: it
 catches the same preservation regressions (dropped numbers, altered code
 blocks, a shrunk word count) that `edit` gets for free, and costs one extra
 command. Report its exit code and any violation when it was run; if it was
-skipped for a `rewrite`, say so rather than implying it ran.
+skipped for a `rewrite`, say so rather than implying it ran. Use `--mode rewrite`
+for that run. The validator also checks that dates, proper-name candidates
+and citation markers survived (`names-dates-citations`: WARN by default,
+FAIL under `--strict-fidelity`).
 
 ## `seo` modifier
 

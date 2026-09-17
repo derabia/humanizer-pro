@@ -196,7 +196,7 @@ rewrite is **recommended** whenever a shell exists, not mandatory; it
 catches the same preservation regressions `edit` gets for free:
 
 ```
-node scripts/validate.js before.md after.md [--seo keywords.txt] [--json]
+node scripts/validate.js before.md after.md [--seo keywords.txt] [--mode rewrite|edit|seo] [--strict-fidelity] [--json]
 ```
 
 Exit codes: `0` no violation, `1` at least one violation, `2` usage error.
