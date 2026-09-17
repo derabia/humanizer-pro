@@ -3,7 +3,7 @@
 Read `docs/BUILD-PROMPT.md` first, then this file. Resume from **Next step**.
 
 ## Current phase
-Phase 11: review handoff written (docs/REVIEW-HANDOFF.md, docs/evidence/phase11-acceptance.txt), not yet committed
+Improvement round 1 complete on branch `improve/round-1`, head `9de5d8f` plus this documentation pass. Version 0.2.0, CHANGELOG section `[0.2.0-build]`, not tagged.
 
 ## Completed steps
 | Step | Commit |
@@ -29,10 +29,30 @@ Phase 11: review handoff written (docs/REVIEW-HANDOFF.md, docs/evidence/phase11-
 | Phase 9: iteration-1 eval runs (egt, shami) | 1f025cd |
 | Phase 11: docs/REVIEW-HANDOFF.md (600 lines, 141-row provenance index) + docs/evidence/phase11-acceptance.txt | uncommitted |
 
-## Next step
-Phase 11: commit handoff, tag v0.1.0-build, final report.
+## Round 1
+Improvement plan from `docs/COMPETITIVE-ANALYSIS.md` section 6. Branch `improve/round-1`, branched from `566f563`.
 
-Note: `dist/humanizer-pro.zip` is stale by one file (`lexicons.js`, changed in da36da5 after the zip was built in f1cf8b8); rebuild with `node tools/build-zip.js` in the Phase 11 commit. `STATE.md` is also stale and still names e90dc73.
+| Step | Commit |
+|---|---|
+| state: start improvement round 1 | 548dc3b |
+| IMP-03 CI workflow, IMP-05 packaging and host manifests, IMP-06 changelog and version check | 4589438 |
+| IMP-04 deterministic benchmark, IMP-07 blinded pairwise kit, IMP-08 native-review ballots | 7821f63 |
+| IMP-11 coverage map + parity test, IMP-15 family tags + P2-only rule, IMP-16 voice privacy, IMP-18/19/22/26 principles and contract lines, IMP-21 era tags, IMP-25 language codes + template | 5532f4f |
+| IMP-09 fidelity check and --mode, IMP-10 overlap grouping and coverage, IMP-13 formal register profile, IMP-14 authorship/calibration labelling | 3388a16 |
+| document --mode rewrite and --strict-fidelity in modes.md and SKILL.md | ccf1441 |
+| IMP-01 Arabic FP corpus (300 docs, Wilson CI) and fp-measure tool, IMP-02 sourced human fixtures (MSA, Egyptian), IMP-12 classical rhetoric layer AR-MSA-029..033, IMP-17 stem matching | 0e63a64 |
+| IMP-20 ignore regions in detect.js and self-scan tool with regression budgets | 949da07 |
+| IMP-27 ambiguous-marker routing guard, per-pattern contribution cap (24), IMP-23 AR-SH-008 vocabulary concentration; FP rate 0/300 (Wilson upper 1.26%) | 9de5d8f |
+| Round-1 documentation: version 0.2.0, CHANGELOG [0.2.0-build], REVIEW-HANDOFF sections 1/2/3/6/7, COMPETITIVE-ANALYSIS section 7, README, this file | uncommitted |
+
+Measured: tests 114 to 226, all passing. Arabic false-positive rate 1.67% (5/300, Wilson 0.71% to 3.84%) to 0.00% (0/300, Wilson upper 1.26%); documents scoring at or above 25, 49 to 31. Benchmark 16/16. Self-scan 30 files, all inside budget. Raw output for the closing checks: `docs/evidence/round1-final-checks.txt`.
+
+Not closed: IMP-08 execution (ballots unfilled), IMP-24 (deferred behind IMP-08), CI never run (nothing pushed), npm never published, no sourced Levantine fixture (searched for, not found). Full table in `docs/REVIEW-HANDOFF.md` section 7, "Round-1 acceptance".
+
+## Next step
+Tag v0.2.0-build; owner runs docs/native-review/ballot-egyptian.md; recruit Levantine reviewer; push for CI when approved.
+
+Note: `dist/humanizer-pro.zip` was rebuilt in 84f666a and is stale again, since round 1 changed lexicons.js, index.js, signals.js, lang.js and detect.js; rebuild with `node tools/build-zip.js` before uploading it anywhere. `STATE.md` is also stale and still names e90dc73.
 
 ## Open questions
 - None.

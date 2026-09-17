@@ -18,14 +18,54 @@ skill says so and stops instead of complying.
 
 ## Status
 
-v0.1.0-build; builder self-assessed only, not independently reviewed;
+v0.2.0-build; builder self-assessed only, not independently reviewed;
 Levantine Arabic experimental pending native review.
 
 This is not a production-ready release. It has not been reviewed by
-anyone outside the build session that produced it, and the Arabic
-detector's weights and thresholds are tuned against this repository's
-own fixtures, not a measured corpus. Read `docs/REVIEW-HANDOFF.md` and
-`docs/NATIVE-REVIEW.md` before relying on it for anything that matters.
+anyone outside the build sessions that produced it. The Arabic
+detector's false-positive rate is now measured against a 300-document
+corpus of pre-2022 human Arabic, and its weights and thresholds are
+still reasoned from doctrine rather than fitted to data. Read
+`docs/REVIEW-HANDOFF.md` and `docs/NATIVE-REVIEW.md` before relying on
+it for anything that matters.
+
+### What changed in round 1
+
+- **A measured false-positive rate.** `corpus/` holds 300 Arabic
+  Wikimedia documents (230 encyclopedic, 70 news) whose revisions all
+  predate 2022-11-30, so any `AI` verdict on one is a false positive by
+  construction. `node tools/fp-measure.js` reports 0 of 300 flagged,
+  Wilson 95% upper bound 1.26%, down from 5 of 300 at the start of the
+  round. Quote the upper bound, not the zero: 300 documents cannot
+  separate a true rate of 0% from one of 1%, the corpus covers two
+  registers of Wikimedia text, and there is no dialect corpus and no
+  true-positive corpus.
+- **Two fixes the corpus paid for.** Nine Arabic dialect markers turned
+  out to be MSA homographs in every one of their 102 corpus hits
+  (`دي` as Latin "de", `إيه` as the A of CIA), and they no longer count
+  as dialect evidence. Separately, no single pattern can now push a
+  document past `HUMAN` on its own, however often it fires.
+- **`evals/benchmark.json` and `evals/run-benchmark.js`**: 16
+  deterministic cases, each with required and forbidden strings,
+  protected spans, a minimum edit ratio, and a check that fails on any
+  number the rewrite invented. All 16 pass.
+- **Self-scan with budgets.** `npm run self-scan` runs the detector over
+  30 of this repository's own files and fails when a file drifts past
+  its recorded budget. Both engines honour ignore regions
+  (`<!-- humanizer:ignore -->` ... `<!-- /humanizer:ignore -->`), which
+  the reference files need, since they quote the bad examples they warn
+  against.
+- **Test count 114 to 226**, plus a fidelity check for names, dates and
+  citations on every validator run, a formal-register profile for
+  Arabic, and `authorshipClaim: false` on every `--json` report.
+
+Round 1 did not close four things, and all four are waiting on a person
+rather than on code: the native-speaker ballots under
+`docs/native-review/` (18 Egyptian items, 35 Levantine) are unfilled,
+the blinded pairwise kit has never been run by a reviewer, the CI
+workflow has never executed because nothing has been pushed to a
+remote, and nothing is tagged or published. See
+`docs/REVIEW-HANDOFF.md` section 7, "Round-1 acceptance".
 
 ## What's in the box
 
@@ -218,13 +258,24 @@ always a warning, never a failure).
   Arabic words before it leaves the MSA default; short snippets
   usually get analyzed as MSA. Pass `--variety` when you know it.
 - **The detector is heuristic, not proof of authorship.** Scores come
-  from a weighted phrase-and-signal model tuned against this
-  repository's own fixtures, not a measured corpus. A low score is not
+  from a weighted phrase-and-signal model. Its false-positive rate is
+  measured (`corpus/RESULTS.md`); its weights, tier values and label
+  thresholds are not fitted to data, and every `--json` report carries
+  `authorshipClaim: false` and `calibration:
+  uncalibrated-review-signal` for that reason. A low score is not
   evidence of human authorship, nor a high score proof of AI origin.
-- **Synthetic-human fixtures pending native review.** Every Arabic
-  human-style fixture under `tests/fixtures/ar-*/human-*.md` was
-  written for this project, not sampled from native writing, and is
-  listed in `docs/native-review/fixtures.md`.
+- **Nothing measures whether the detector catches AI text.** The corpus
+  measures false positives only. True-positive behaviour rests on this
+  repository's own synthetic AI fixtures.
+- **Most human fixtures are still synthetic, and pending native
+  review.** Every Arabic human-style fixture under
+  `tests/fixtures/ar-*/human-*.md` was written for this project, not
+  sampled from native writing, and is listed in
+  `docs/native-review/fixtures.md`. Two sourced exceptions exist,
+  `tests/fixtures/human-sourced/msa-01.md` and `egt-01.md`. There is no
+  sourced Levantine fixture: paragraph-length published Levantine prose
+  that can be cached under a usable licence was searched for and not
+  found, so Levantine is the least evidenced of the three varieties.
 - **Node 18 compatibility is a target, not a verified fact.** The code
   avoids anything newer than Node 18 by design, but this build ran
   only on Node 25; no real Node 18 run has been performed here.
@@ -250,8 +301,15 @@ docs/
   evidence/                raw output backing every "passes/verified" claim
   provenance/, dedup-log/, native-review/, discrepancies/
                             per-area fragments merged into the docs above
-tests/                     node --test suite, fixtures
-tools/                     check-skill.js, check-upstream.js, merge-docs.js, run-tests.js
+corpus/                    Arabic false-positive corpus: manifest.json (300
+                             pinned revisions), README.md, RESULTS.md;
+                             raw/ is gitignored, re-fetch it
+evals/                     benchmark.json + run-benchmark.js (16 deterministic
+                             cases), human/ (blinded pairwise kit), runs/
+tests/                     node --test suite, fixtures, fixtures/human-sourced/
+tools/                     check-skill.js, check-upstream.js, merge-docs.js,
+                             run-tests.js, fetch-corpus.js, fp-measure.js,
+                             self-scan.js, prepare-pairwise.js, check-version.js
 _sources/                  pinned upstream clones (gitignored, not shipped)
 ```
 
@@ -264,6 +322,11 @@ node tools/check-upstream.js
 node tools/merge-docs.js
 node tools/check-version.js
 node tools/check-node18.js
+node tools/check-skill.js --refs
+node tools/check-evals.js
+node evals/run-benchmark.js
+npm run self-scan
+node tools/fetch-corpus.js && node tools/fp-measure.js
 ```
 
 - `npm test`: runs `tools/run-tests.js`, which enumerates
@@ -287,6 +350,23 @@ node tools/check-node18.js
 - `node tools/check-node18.js`: statically greps `skills/`, `tools/`,
   and `tests/` for JS/Node APIs newer than Node 18; a real Node 18 CI
   run is still the actual compatibility gate.
+- `node tools/check-skill.js --refs`: also checks every pattern heading
+  in `references/` against `docs/COVERAGE-MAP.md`.
+- `node evals/run-benchmark.js`: runs the 16 deterministic cases in
+  `evals/benchmark.json` and fails on a missing required string, a
+  forbidden string, a touched protected span, an edit ratio below the
+  case minimum, or a number the candidate invented.
+- `npm run self-scan`: runs the detector over this repository's own
+  Markdown and compares each file against `tools/self-scan-budgets.json`.
+  Exits non-zero when a budget is exceeded. Both engines skip text
+  between `<!-- humanizer:ignore -->` and `<!-- /humanizer:ignore -->`
+  (or `<!-- humanizer-ignore-start -->` and
+  `<!-- humanizer-ignore-end -->`), which is how the reference files
+  quote bad examples without scoring for them.
+- `node tools/fetch-corpus.js` then `node tools/fp-measure.js`: re-fetches
+  the 300 pinned corpus revisions into the gitignored `corpus/raw/` and
+  rewrites the measurement tables in `corpus/RESULTS.md`. Needs network
+  access to the Wikimedia APIs.
 
 ## Credits and license
 

@@ -334,25 +334,35 @@ independent and can land first.
 
 ## 7. Honest verdict
 
-| Dimension | Best today | After the plan |
-|---|---|---|
-| Arabic depth (varieties, dialect routing) | us | us, widened by IMP-12 and IMP-24 |
-| Language breadth | sawradip/rehumanize (100 languages, BCP 47, unverified, un-cited) | sawradip/rehumanize, unless we take B7's Family-1b/BCP-47 shortcut; we hold depth (IDs, provenance, testing) regardless |
-| Pattern catalog rigour and provenance | us (141 IDs, pinned SHAs) | us, hardened by IMP-11 |
-| Deterministic detection | tie: us, eddyplolz, amanmaqsood | us, after IMP-10 and IMP-14 |
-| Detector calibration evidence | eddyplolz (measured FPR with Wilson CIs) | us, after IMP-01 and IMP-02 |
-| Preservation validation | tie: us on SEO, eddyplolz on general fidelity | us, after IMP-09 |
-| SEO safety | us (nobody else has it) | us |
-| Voice matching | us on presets, amanmaqsood on rigour | us, after IMP-16 |
-| Modes and output contract | tie: us, eddyplolz, yoloshii | us, after IMP-15 and IMP-18 |
-| Tests and CI | amanmaqsood (Node 18/20/22 matrix) | us, after IMP-03 and IMP-04 |
-| Independent evaluation | nobody (all self-graded or model-graded) | us, if IMP-07 and IMP-08 actually run |
-| Native Arabic verification | nobody verified; ziad reads best | us only if IMP-08 completes; otherwise still nobody |
-| Distribution and packaging | amanmaqsood (npm plus 4 manifests) | us, after IMP-05 |
-| Release maturity | eddyplolz (v4.12.0) | us, after IMP-06 |
-| Ethics and refusal policy | us | us |
+The third column was written before round 1 as a prediction. It has been
+replaced with what round 1 actually produced, at `9de5d8f` on branch
+`improve/round-1`. Where the prediction did not come true, the cell says so.
 
-Two rows cannot be closed by writing code: release maturity needs a release, and
-native Arabic verification needs a native speaker. Until IMP-08 completes, any claim
-about our Arabic output quality stays exactly as honest as
-`docs/REVIEW-HANDOFF.md` section 3.2 already states it.
+| Dimension | Best today | After round 1 (actual) |
+|---|---|---|
+| Arabic depth (varieties, dialect routing) | us | us. IMP-12 landed (`AR-MSA-029` to `AR-MSA-033`); IMP-24 (Gulf) is deferred behind IMP-08. Dialect routing is narrower than before, not wider: IMP-27 demoted nine markers to ambiguous |
+| Language breadth | sawradip/rehumanize (100 languages, BCP 47, unverified, un-cited) | still sawradip/rehumanize. We did not take the Family-1b shortcut and added no language. IMP-25 wrote the BCP 47 note and the contributor template, which is a naming convention, not breadth. Depth (IDs, provenance, testing) is still ours |
+| Pattern catalog rigour and provenance | us (141 IDs, pinned SHAs) | us, hardened as predicted. IMP-11 added `docs/COVERAGE-MAP.md`, `check-skill.js --refs` and a parity test; the `EN-*` half of the map is a correlation against detector category names, not an ID lookup, and the map says so |
+| Deterministic detection | tie: us, eddyplolz, amanmaqsood | us. IMP-10 groups overlapping findings and reports `affectedCoveragePercent`; IMP-14 puts `authorshipClaim: false` and a calibration label on every `--json` report |
+| Detector calibration evidence | eddyplolz (measured FPR with Wilson CIs) | us, with the caveats attached. 0 of 300 pre-2022-11-30 documents flagged, Wilson 95% upper bound 1.26%, down from 5 of 300. Two registers, Wikimedia text only, no dialect corpus, no true-positive corpus, and the weights and thresholds themselves are still reasoned rather than fitted (`stats.calibration` reports `uncalibrated-review-signal`) |
+| Preservation validation | tie: us on SEO, eddyplolz on general fidelity | us. IMP-09 added a names/dates/citations check on every validator run, WARN by default and FAIL under `--strict-fidelity` |
+| SEO safety | us (nobody else has it) | us. Unchanged in round 1 |
+| Voice matching | us on presets, amanmaqsood on rigour | us on documented policy. IMP-16 states per-source-type confidence weighting and that raw sample prose is never stored or echoed. No voice-matching code changed, so "rigour" here means a written model, not a measured one |
+| Modes and output contract | tie: us, eddyplolz, yoloshii | us. IMP-15 (family tags, P2-only stop rule) and IMP-18 (claims-added line, not-flagged list) both landed, plus `--mode` and `--strict-fidelity` on the validator |
+| Tests and CI | amanmaqsood (Node 18/20/22 matrix) | still amanmaqsood. Tests went 114 to 226 and IMP-04's benchmark passes 16/16, and **our CI has never run**: `.github/workflows/ci.yml` exists and nothing has been pushed to a remote. A static Node 18 API grep is not a Node 18 run |
+| Independent evaluation | nobody (all self-graded or model-graded) | still nobody. IMP-07's blinded kit reproduces from seed 42 over 12 pairs and no ballot has been filled in. This is the exact failure IMP-07's risk column named |
+| Native Arabic verification | nobody verified; ziad reads best | still nobody. Two ballots exist, 18 Egyptian items and 35 Levantine items, and no reviewer has run either. `docs/REVIEW-HANDOFF.md` 3.2 stands unchanged |
+| Distribution and packaging | amanmaqsood (npm plus 4 manifests) | still amanmaqsood. We have three manifests and npm `bin` entries, `npm pack --dry-run` passes and the tarball CLIs run, and nothing is published and no manifest has been loaded by a host |
+| Release maturity | eddyplolz (v4.12.0) | still eddyplolz. Version 0.2.0 across four files, a `[0.2.0-build]` CHANGELOG section and a passing `check-version.js`, and the tag is prepared, not created. An untagged build is not a release |
+| Ethics and refusal policy | us | us. IMP-19 added the substitutability gate bound to never-invent, IMP-22 the prompt-injection principle |
+
+The two rows called out as uncloseable by code are still open, and two more
+joined them. Release maturity needs a tag and a publish. Native Arabic
+verification needs a native speaker. Independent evaluation needs a person to
+fill in a ballot. Tests and CI needs a push to a remote. All four are waiting on
+an action rather than on work, which makes them easy to describe and easy to
+leave undone. Until IMP-08 completes, any claim about our Arabic output quality
+stays exactly as honest as `docs/REVIEW-HANDOFF.md` section 3.2 already states
+it. The one row that genuinely moved on measured evidence is detector
+calibration, and the number to quote there is the 1.26% upper bound, not the
+zero.

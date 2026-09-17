@@ -16,7 +16,7 @@ description: >-
   invents facts, quotes, statistics, sources or experiences.
 license: MIT
 metadata:
-  version: "0.1.0"
+  version: "0.2.0"
   upstream: "blader/humanizer, conorbronsdon/avoid-ai-writing, OthmanAdi/humanizer-semitic"
 ---
 

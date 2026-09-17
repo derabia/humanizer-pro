@@ -9,6 +9,13 @@ the same session as this document. Builder environment: Node v25.2.1, git
 environment"). Nothing here is a review: eval grading was done by the builder's
 own agents and is labelled a builder self-assessment throughout.
 
+Improvement round 1 has since landed. Sections 1.1 to 1.8 below describe the
+`1f025cd` state and were not re-run; read them with section 1.9, which lists
+the round-1 commands. Round-1 head: `9de5d8f` on branch `improve/round-1`,
+eight commits from `548dc3b`. Test count is 226, not the 114 quoted in
+section 1.4. Sections 2, 3, 6 and 7 are updated for round 1 and say which
+version they describe.
+
 ## 1. Reproduce from scratch
 
 Bash first, PowerShell where the two differ. Each step says whether it was
@@ -186,7 +193,66 @@ committed zip and a fresh rebuild. Exactly one entry length differs:
 `humanizer-pro/scripts/lib/ar-detector/lexicons.js` is 26064 bytes committed
 and 26195 rebuilt, because `da36da5` added hedge variants to that file after
 the zip was last built in `f1cf8b8`. The committed zip is stale by that one
-change; see section 6.
+change; see section 6. The zip was rebuilt in `84f666a` and is stale again:
+round 1 changed `lexicons.js`, `index.js`, `signals.js`, `lang.js` and
+`detect.js` after that rebuild.
+
+### 1.9 Round 1: the added commands
+
+Branch `improve/round-1`, head `9de5d8f`. Raw output for all six checks in the
+last block is in `docs/evidence/round1-final-checks.txt`; the per-wave evidence
+files named in `CHANGELOG.md` cover the runs made while each wave landed. Same
+builder environment as above, Node v25.2.1 on Windows 11.
+
+Fetch the false-positive corpus. `corpus/raw/` is gitignored, so a fresh clone
+has no documents and the corpus tests skip themselves until this runs. It needs
+network access to the Wikimedia APIs and it re-fetches the exact revision ids
+pinned in `corpus/manifest.json`, so the sha256 of every document is
+reproducible.
+
+```bash
+node tools/fetch-corpus.js
+node tools/fp-measure.js
+```
+
+`fp-measure.js` rewrites everything in `corpus/RESULTS.md` above the
+`<!-- CHANGE-LOG-START -->` marker and prints per-register flagged counts, n
+and Wilson 95% bounds. Expect 300 of 300 documents measured, 0 sha256
+mismatches, 0 flagged, and a Wilson upper bound of 1.26% on the all-register
+row.
+
+The rest of the round-1 tooling needs no network:
+
+```bash
+node evals/run-benchmark.js                                                  # 16/16
+node tools/prepare-pairwise.js --seed 42 --pairs evals/human/pairs.json --out evals/human/
+npm run self-scan                                                            # 30 files, all inside budget
+npm run check:version
+npm run check:node18
+npm pack --dry-run
+```
+
+`prepare-pairwise.js` is deterministic from its seed: running it twice with
+`--seed 42` writes byte-identical `ballot.md` and `key.json`
+(`docs/evidence/round1-pairwise.txt` records both sha256 sums). It overwrites
+`evals/human/ballot.md` and `evals/human/key.json` in place, so point `--out`
+at a scratch directory if the committed pair matters to you.
+
+The six commands that gate the round: all six were run at `9de5d8f` plus the
+documentation changes of this pass, and all six pass.
+
+```bash
+npm test                          # 226 tests, 226 pass
+node tools/check-skill.js --refs
+node tools/check-version.js
+node tools/check-evals.js
+npm run self-scan
+node evals/run-benchmark.js
+```
+
+`check-version.js` exits 0 with one warning: `package.json` and `SKILL.md`
+carry `0.2.0` while `CHANGELOG.md`'s latest heading is `0.2.0-build`. That is
+the interim-build case the tool documents, not a failure.
 
 ## 2. Decision register
 
@@ -226,16 +292,42 @@ Every non-obvious decision with a pointer to where it is justified; line numbers
 | 30 | "key" (adjective) is placed at Tier 3 (density-flagged only), because avoid-ai-writing recommends "key" as the replacement for other flagged words while blader flags it; only saturation-level overuse is flagged. | `docs/DISCREPANCIES.md`, EN fragment, item 3 |
 | 31 | Hebrew (`humanizer-he`, a fourth skill in the semitic package) is out of scope by instruction and is not implemented. | `docs/BUILD-PROMPT.md` section 0 table; `docs/DISCREPANCIES.md` section (c), item 2 |
 
+Rows 32 to 43 are improvement round 1; line numbers in them are from the files
+as committed at `9de5d8f`.
+
+| # | Decision | Where it is justified |
+|---|---|---|
+| 32 | IMP-27: nine Arabic dialect markers (eleven spellings, since `إيه`/`ايه` and `بقى`/`بقي` collapse under normalization) are demoted to `ambiguousDistinct`/`ambiguousHits` and never count as dialect evidence: `دي`, `يعني`, `دول`, `ايه`, `بقى`, `والله`, `طب`, `روح`, `هاي`. The list is not a judgment call: across all 300 corpus documents these markers fired 102 times and every single hit was an MSA homograph or a transliteration fragment (`دي` as Latin "de", `ايه` as the A of CIA, `دول` as the plural of دولة). Zero true dialect markers fired. This one filter removed four of the five false positives. | `skills/humanizer-pro/scripts/lib/lang.js:111-152`; `corpus/RESULTS.md` "Run 3" marker table; `docs/evidence/round1-wave2F-marker-homographs.txt` |
+| 33 | The per-pattern contribution cap of 24 applies to every tier, including P0, against the wave brief, which exempted P0. The exemption was rejected because `AR-MSA-006` (تم/يتم) is itself P0 and is the one measured single-pattern false positive: 15 hits in one MSA article scored 67 and gave an `AI` verdict with a single issue id. Exempting P0 would have left exactly the case the cap exists for. 24 is the largest integer that keeps any one pattern below `MIXED`. A P0 keeps its weight: it reaches the cap in three hits where a P1 needs six and a P2 seventeen, and corroboration across different patterns is untouched, so two capped patterns still sum to 48. | `skills/humanizer-pro/scripts/lib/ar-detector/index.js:128-180` (`PATTERN_CONTRIBUTION_CAP`, and the deviation recorded in the header block); `corpus/RESULTS.md` "Run 4" |
+| 34 | `AR-SH-008`'s two gates sit at the corpus p97.5 of top-word share (0.0629) and the p2.5 of type-token ratio (0.6455), not the p95/p5 the brief asked for. Measured, p95/p5 puts 9.33% of human documents in contention rather than 5%, because the two tails are disjoint: 15 documents trip the share gate, 13 trip the TTR gate, and no document trips both, so the union is the sum. The binding requirement is that at most 5% of human documents receive any contribution, and p97.5/p2.5 is the tightest measured pair that satisfies it, at exactly 15 of 300. | `corpus/RESULTS.md` "Run 5"; `docs/evidence/round1-wave2F-vocab-distribution.txt`; `skills/humanizer-pro/scripts/README.md` signal table |
+| 35 | Corpus documents are trimmed to at most 600 Arabic words at a paragraph boundary, with the first paragraph kept whole, so a long opening paragraph can exceed the cap (observed maximum 809 words). The minimum is 150. Reason: the engine applies no length normalization, so an untrimmed 10,000-word article would measure that missing normalization rather than the lexicon. | `corpus/README.md`; `corpus/RESULTS.md` "Run" table and "Caveats on the number itself" |
+| 36 | The corpus carries two registers, encyclopedic (230) and news (70). A `literary` register from Arabic Wikisource was planned and not reached, and there is no dialect register at all. Reported as a limit on what the 0.00% rate covers rather than filled with whatever text was available. | `corpus/README.md:129`; `corpus/RESULTS.md` "Caveats on the number itself" |
+| 37 | The corpus fetcher does not use the MediaWiki `prop=extracts` API. TextExtracts ignores `revids`/`oldid` and returns the current revision's extract, which would silently defeat the pre-2022-11-30 cutoff the whole measurement rests on. Verified against ar.wikipedia rather than assumed. Everything goes through the revision content API instead. | `corpus/README.md:64-68` |
+| 38 | IMP-05 changed nothing about zip entry names: `tools/build-zip.js` already wrote explicit forward-slash entry names, which decision 26 recorded at build time. The packaging wave re-read it and left it alone. Recorded so a reviewer does not read the absence of a diff as an oversight. | decision 26 above; `tools/build-zip.js:60-74` |
+| 39 | Ignore regions are HTML comment pairs, two spellings, both accepted: `<!-- humanizer:ignore -->` with `<!-- /humanizer:ignore -->`, and `<!-- humanizer-ignore-start -->` with `<!-- humanizer-ignore-end -->`. Masking happens before either engine runs, preserves every original offset, and reports `stats.ignoredRegions` and `stats.ignoredCharCount`. An unclosed opener is a warning, not an error. This landed before `tools/self-scan.js` on purpose: the reference files quote bad examples, so without ignore regions their raw scores are noise (`ar-msa.md` scores 100 raw and 1 adjusted). | `skills/humanizer-pro/scripts/detect.js:56-64, 397-445`; `docs/evidence/round1-wave2G-self-scan.txt` |
+| 40 | The `formal` register profile changes exactly one number: the `AR-SH-004` burstiness lower bound moves from CV 0.35 to 0.22. Nothing else differs, and the engine has no max-sentence-length trigger to relax. Two profiles is the stated ceiling, and the per-pattern cap is the mitigation against threshold sprawl that IMP-13's risk column asked for. A profile can only make the engine quieter: it cannot add a finding. | `skills/humanizer-pro/scripts/README.md:425-450`; `skills/humanizer-pro/scripts/lib/ar-detector/index.js:85` (`REGISTER_PROFILES`); `tests/register-profile.test.js` |
+| 41 | The IMP-09 fidelity check WARNs by default and only FAILs under `--strict-fidelity`. This is the "ship it as a warning tier first" mitigation from IMP-09's own risk column: name extraction without a morphological analyzer over-fires in Arabic, so a dropped proper name, a removed citation marker and a dropped honorific are all warnings unless the caller opts in. The check runs on every invocation, including with `--seo`. | IMP-09 risk column in `docs/COMPETITIVE-ANALYSIS.md` section 6; `tests/validate.test.js` ("fidelity: dropping a proper name WARNs, and FAILs under --strict-fidelity") |
+| 42 | Which of the five families each of the 58 AR-SH/AR-EGT/AR-SHM entries belongs to is this project's editorial reading of each entry's own text, not a mapping stated in any upstream source. The family names come from finestructure-ai's taxonomy concept and are credited. The result skews to `register-flattening` (40 of 58) because the two dialect files are, in substance, MSA-leakage catalogs. The skew is reported rather than rebalanced. | `docs/discrepancies/round1-docs.md` section 3; `docs/COVERAGE-MAP.md` |
+| 43 | All 49 Tier 1A vocabulary entries carry the Era value `unknown`. Not one had a sourced date to attach: grepping both upstream trees found one dated em-dash formatting rule, one dated Tier 1B corpus note, and blader's global pre-2022-11-30 carve-out, none of which dates an individual word. Tagging anything else would have been inventing dates, which `core-principles.md` forbids of this project's own documentation as much as of a humanized text. | `docs/discrepancies/round1-docs.md` section 1; `skills/humanizer-pro/references/en-vocabulary.md` Era column |
+
 ## 3. Known weak spots, ranked by risk
 
-Highest risk first, with why it is a risk and how to probe it.
+Highest risk first, with why it is a risk and how to probe it. Rewritten for
+improvement round 1: 3.1, 3.5, 3.6 and 3.8 are rewritten, 3.12 to 3.17 are new, and
+the rest stand as written. Nothing here was retired outright.
 
-**3.1 All 30 Arabic fixtures are self-written.** The human side of the Arabic
-detector's calibration is 15 `human-*.md` files (5 per variety) plus 5 Arabic
-false-positive fixtures, all written by the builder to look human rather than
-sampled from native writing, so a shared blind spot is invisible to the test
-suite (`skills/humanizer-pro/scripts/README.md:334-337`).
-Probe: run `detect.js` on real published Arabic; anything at or above 25 is a false positive.
+**3.1 Most Arabic fixtures are still self-written. PARTIALLY ADDRESSED in
+round 1.** The fixture suite gained two sourced files,
+`tests/fixtures/human-sourced/msa-01.md` and `egt-01.md`, with licence and
+cleanup steps recorded per file, and the 300-document corpus under `corpus/`
+now measures the false-positive rate against text nobody here wrote. What has
+not changed: the 15 `human-*.md` files (5 per variety) and the 5 Arabic
+false-positive fixtures are all still builder-written, and there is no sourced
+Levantine fixture, because paragraph-length published Levantine prose could not
+be found (`tests/fixtures/human-sourced/_provenance.md`, "Levantine: searched
+for, not found"). A shared blind spot in the self-written fixtures is still
+invisible to the test suite.
+Probe: run `detect.js` on real published Arabic; anything at or above 25 is a false positive. Then run `node tools/fetch-corpus.js && node tools/fp-measure.js` and read `corpus/RESULTS.md`.
 
 **3.2 Levantine is entirely unreviewed by a native speaker.** `ar-levantine.md`
 carries `status: experimental` on line 2 and 25 `NATIVE-REVIEW: shami` markers,
@@ -264,18 +356,33 @@ paragraph in an otherwise-good post" case.
 Probe: `evals/runs/iteration-1/SUMMARY-egt-shami.md`, "Skill defects found",
 defect 1.
 
-**3.5 The Arabic weights and thresholds were tuned on 15 AI and 20 human
-fixtures, with no corpus calibration.** `scripts/README.md:338-343` says so:
-the numbers are chosen so no single signal can cross the threshold, not fitted
-to data, and 35 documents cannot establish a false-positive rate.
-Probe: perturb `WEIGHTS` or `THRESHOLDS` and count how few fixtures flip.
+**3.5 The Arabic weights and thresholds are still reasoned rather than fitted.
+PARTIALLY ADDRESSED in round 1.** The false-positive rate is now measured, not
+guessed: 0 of 300 pre-cutoff documents flagged, Wilson 95% upper bound 1.26%,
+down from 5 of 300 at the start of the round. Three numbers are now
+corpus-derived and marked as such in `scripts/README.md`: the two `AR-SH-008`
+gates and the ambiguous-marker list. Everything else is unchanged in kind. The
+tier weights (P0 14, P1 6, P2 2), the label thresholds (25 and 55), the
+per-pattern cap (24), the repeat discount, the MSA-leakage ratios and the
+short-text cap are all reasoned from doctrine, not fitted to data, and
+`stats.calibration` still reports `uncalibrated-review-signal`. A measured
+false-positive rate is not a calibration.
+Probe: perturb `WEIGHTS` or `THRESHOLDS`, re-run `node tools/fp-measure.js`, and compare against the change log in `corpus/RESULTS.md`.
 
-**3.6 Every Arabic human fixture scores exactly 0.** Not one lands between 1
-and 24. That clean a separation suggests the score is carried by lexicon hits
-human-style text simply never contains rather than by a graded stylometric
-signal, and gives no evidence about where the real boundary sits.
-Probe: insert one `AR-SH-001` hedge phrase into any `human-*.md` fixture and
-watch the score jump past the interesting middle range.
+**3.6 No fixture exercises the graded middle of the score range. PARTIALLY
+ADDRESSED in round 1, and the gap is now precisely located.** IMP-23 added
+`AR-SH-008`, a graded P2 signal over top-word share and type-token ratio, which
+is exactly the stylometric signal this weak spot asked for, and on the corpus
+it does what it should: 15 of 300 human documents receive 1 or 2 points and
+none of them is flagged. **No human fixture in `tests/fixtures/` trips either
+gate.** Every Arabic fixture holds 76 to 121 content tokens with a top-word
+share between 0.0120 and 0.0345, and the highest, `ar-msa/human-05.md` at
+0.0345, is a little over half the 0.0629 gate. Loosening the gates to reach a
+fixture would break the 5%-of-human-documents constraint, which is the harder
+requirement, so the gates were left where the corpus put them and the
+acceptance criterion is recorded as missed. The Arabic human fixtures still
+score 0.
+Probe: `corpus/RESULTS.md` "Run 5", last paragraph; then insert one `AR-SH-001` hedge phrase into any `human-*.md` fixture and watch the score jump past the middle range anyway.
 
 **3.7 The register-mix note has to guess between `egt` and `shami` when there
 is no lexical evidence.** With a P0/P1 MSA issue but zero dialect vocabulary,
@@ -288,7 +395,12 @@ Probe: run `detect.js` on pure-MSA AI text and read `stats.registerMix.note`.
 carry over:** the em-dash weight-0 contradiction against its own prose rule,
 the unverified "5-20x more common in AI text" premise behind Tier 1A, and
 upstream's unresolved rewrite-preservation eval failure. See
-`docs/DISCREPANCIES.md` sections (a) and (d) and "Additional items".
+`docs/DISCREPANCIES.md` sections (a) and (d) and "Additional items". Round 1
+documented the Tier 1A problem without solving it: IMP-21 added an Era column
+to all 49 Tier 1A entries and every value is `unknown`, because no upstream
+source dates an individual word, and `en-vocabulary.md` now states that lexical
+tiers decay and need re-baselining. The premise behind the tier is still
+unverified, and no English pattern, weight or threshold was changed in round 1.
 Probe: `tests/en-detector.parity.test.js` proves identity with upstream, which
 is exactly the point.
 
@@ -309,6 +421,62 @@ Probe: load `dist/humanizer-pro.zip` into Claude apps, or drop
 same system that produced the outputs, and every Arabic eval carries a
 NEEDS-NATIVE-REVIEW flag on the "reads naturally" row.
 Probe: re-run a few evals independently per section 1.7 and compare.
+
+**3.12 The corpus is Wikimedia-only and covers two registers.** All 300
+documents come from Arabic Wikipedia and Arabic Wikinews: 230 encyclopedic and
+70 news, trimmed to at most 600 words. Wikipedia register is its own thing, and
+the `random` class carries whatever machine-translated and bot-generated prose
+Arabic Wikipedia contains, which is why the provenance breakdown is reported
+separately. A `literary` register was planned and not reached. Formal Arabic
+that is not encyclopedic, journalism outside Wikinews, and anything resembling
+ordinary published opinion or fiction are all unmeasured, so the 1.26% upper
+bound does not transfer to them.
+Probe: `corpus/RESULTS.md` "Caveats on the number itself"; fetch 50 documents
+from a source that is not Wikimedia and re-run `fp-measure.js` against them.
+
+**3.13 There is no true-positive corpus.** Round 1 measured only how often the
+engine flags human text. How often it catches AI text is still evidenced by
+this repository's own 15 Arabic AI fixtures, which are synthetic and were
+written with the pattern catalog in hand. Every number in `corpus/RESULTS.md`
+is a false-positive number. The per-pattern cap and the ambiguous-marker guard
+both reduce scores, so both could in principle have cost recall, and nothing
+here measures that; only the fixtures say they did not.
+Probe: collect post-2023 Arabic text of known machine origin and run
+`detect.js` over it. Anything below 25 is a miss.
+
+**3.14 There is no dialect corpus, so the dialect lexicons have no measured
+false-positive rate.** `identify()` returns `msa` for all 300 corpus documents.
+The Egyptian and Levantine lexicons, and the MSA-leakage gates that only run
+for dialect varieties, were never exercised on real dialect writing. This is
+the same gap as 3.1's missing Levantine fixture, one level up.
+Probe: `corpus/RESULTS.md` "Run 3", first paragraph.
+
+**3.15 The ambiguous-marker list can hide short genuine dialect text.** IMP-27
+demoted nine markers, including `يعني`, `دي`, `دول` and `إيه`, which are
+ordinary Egyptian dialect words as well as MSA homographs. Genuine Egyptian or
+Levantine text whose only dialect markers are on that list now routes to `msa`
+and loses the leakage signal entirely. Combined with 3.3, which already needs
+two distinct markers at one per 100 words, short colloquial text is now harder
+to route than it was. No fixture regresses, because every dialect fixture
+carries at least two strong markers, but the narrowing is real and is queued
+for native review.
+Probe: write three sentences of Egyptian using only `يعني`, `دي` and `دول` and
+run `detect.js` without `--variety`. It will be analyzed as MSA.
+
+**3.16 The per-pattern cap can under-score genuine single-pattern AI text.**
+The cap holds any one `patternId` to 24 however often it fires, so a machine
+text whose only tell is one pattern repeated 20 times cannot exceed `HUMAN` on
+that pattern alone. This is the deliberate trade for the `AR-MSA-006` false
+positive, and it makes the engine's corroboration doctrine enforceable rather
+than advisory, but it is a recall cost with no measurement behind it (see
+3.13). Every hit is still reported in `issues[]`; only the score is capped.
+Probe: `corpus/RESULTS.md` "Run 4"; run `detect.js` on a text of 20 تم/يتم
+passives and read the score (24) against the issue count.
+
+**3.17 The register profile exists for Arabic only.** IMP-13's `formal` profile
+relaxes one Arabic gate. The English engine is upstream's and has no register
+notion at all, so formal English prose gets the same thresholds as a blog post.
+Probe: run `detect.js` on a legal or academic English paragraph.
 
 ## 4. Provenance sampling index
 
@@ -539,30 +707,50 @@ Full detail in `docs/DISCREPANCIES.md` (428 lines); one line per item here.
 
 ## 6. What was not done, and why
 
+Updated for improvement round 1. One item from the `1f025cd` list is retired and
+struck through, five are amended in place with what round 1 changed, and six new
+items are added at the end. The rest stand as written.
+
 - **No real Node 18 run:** only Node v25.2.1 was available (`UPSTREAM.md` says
-  so), so the `>=18` claim is untested.
+  so), so the `>=18` claim is untested. Round 1 wrote
+  `.github/workflows/ci.yml` with a Node 18/20/22 matrix and a Windows smoke
+  job, and it has never executed, because nothing has been pushed to a remote.
+  `tools/check-node18.js` is a static API grep over 28 files and says so in its
+  own output. Weak spot 3.9 stays open.
 - **No native-speaker review of any Arabic content.** 33 reference-file markers
   are queued in `docs/NATIVE-REVIEW.md` (1 MSA, 5 Egyptian, 25 Levantine, 2
   shared) plus eval-output and fixture items. MSA and Egyptian await the
-  project owner; no Levantine reviewer exists.
+  project owner; no Levantine reviewer exists. Round 1 (IMP-08) turned the
+  queue into two fillable ballots, `docs/native-review/ballot-egyptian.md` (18
+  items) and `ballot-levantine.md` (35 items), and **no reviewer has run
+  either one**. Building the ballot and never running it is the failure the
+  IMP-08 risk column named, and that is where this stands.
 - **Hebrew excluded by design:** `humanizer-he` ships in the same upstream
   package and is deliberately not ported.
-- **`.claude-plugin/plugin.json` was not created.** The build prompt lists it
-  as optional, and the exact key set a marketplace manifest requires was never
-  verified against a spec, so nothing was guessed.
+- ~~**`.claude-plugin/plugin.json` was not created.**~~ RETIRED by IMP-05.
+  `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json` and
+  `agents/openai.yaml` all exist, and the keys are kept minimal for the same
+  reason the file was skipped before. No manifest has been loaded by a host, so
+  weak spot 3.10 is unaffected.
 - **Levantine regional sub-variant rules are not implemented in the engine:**
   `ar-levantine.md` documents Syrian / Lebanese / Palestinian differences, but
   the detector has one `shami` lexicon and cannot tell them apart.
 - **Wrong-dialect detection does not exist.** Egyptian text forced to `shami`
   (or the reverse) scores `HUMAN` because the two share most leakage-side
   vocabulary (`skills/humanizer-pro/scripts/README.md:329-333`).
-- **`dist/humanizer-pro.zip` was not rebuilt after `da36da5`** (section 1.8).
-  Rebuilding belongs in the Phase 11 commit step; it was left alone here to
-  keep this handoff's diff to three files.
+- **`dist/humanizer-pro.zip` is stale again.** The phase-11 commit `84f666a`
+  rebuilt it, which closed the `da36da5` gap described in section 1.8. Round 1
+  then changed `lexicons.js`, `index.js`, `signals.js`, `lang.js` and
+  `detect.js`, and the zip was not rebuilt after that. Run
+  `node tools/build-zip.js` before uploading it anywhere.
 - **No independent review, and no release claim:** eval grading is builder
   self-assessment; nothing here is reviewed, validated or production-ready.
-- **The final commit is not tagged:** `v0.1.0-build` is the Phase 11 commit
-  step and was deliberately not created here.
+- **Nothing is tagged, and nothing is published.** `v0.1.0-build` was never
+  created, and round 1 did not create `v0.2.0-build` either: the version bump,
+  the CHANGELOG section and `tools/check-version.js` are in place, and the tag
+  is the next step. `npm pack --dry-run` passes; the package is not published
+  to any registry, so the `npx skills add` path in `README.md` still does not
+  work.
 - **`STATE.md` was not updated.** It still describes the Phase 6b/README state
   and names `e90dc73` as last verified; it was outside this task's allowed file
   set. Treat `docs/PROGRESS.md` as authoritative.
@@ -570,7 +758,38 @@ Full detail in `docs/DISCREPANCIES.md` (428 lines); one line per item here.
   leakage-versus-score inconsistency (weak spot 3.4) and `validate.js`
   auto-detecting the wrong dialect on a mixed-signal document, both written up
   with proposed fixes in `evals/runs/iteration-1/SUMMARY-egt-shami.md`. The MSA
-  hedge-variant defect from the other batch was fixed in `da36da5`.
+  hedge-variant defect from the other batch was fixed in `da36da5`. Neither was
+  touched in round 1.
+
+Added by round 1:
+
+- **IMP-24 (Gulf variety) was not started.** Its stated precondition in the
+  plan's sequencing note is that IMP-08 lands first, and IMP-08 has not been
+  run. Starting it would repeat the Levantine mistake of shipping an unreviewed
+  variety. `docs/LANGUAGE-CODES.md` and `references/_TEMPLATE.md` (IMP-25) were
+  written so the naming convention exists before anyone does start it.
+- **No sourced Levantine false-positive fixture.** Searched for and not found:
+  paragraph-length published Levantine prose that can be cached under a usable
+  licence is close to nonexistent, the reasons are itemized in
+  `tests/fixtures/human-sourced/_provenance.md`, and the variety was skipped
+  rather than filled with something that is not Levantine. Levantine remains
+  the least evidenced of the three varieties.
+- **`AR-SH-008` misses its own acceptance criterion.** IMP-23 asked that a
+  human fixture be able to score between 1 and 24. No fixture trips either
+  gate, the corpus is the demonstration instead, and the reason the gates were
+  not loosened is recorded in `corpus/RESULTS.md` "Run 5" and weak spot 3.6.
+- **`AR-MSA-006`'s density gate was not built.** The corpus shows the pattern
+  accumulating to a false `AI` verdict on its own, and the per-pattern cap
+  stops the verdict without addressing the cause. The real remedy is hits per
+  hundred words rather than a flat `minCount: 2`, and it is recorded in
+  `corpus/RESULTS.md` rather than implemented.
+- **`detect.js` does not consume `guardPassed`.** IMP-27's MSA-dominance guard
+  publishes `msaHits`, `msaHitsPer100` and a per-variety `guardPassed` from
+  `lib/lang.js`, and `detect.js`'s own register-mix promotion gate still reads
+  only `distinct` and `hits`. `detect.js` was owned by a concurrent pass during
+  that wave. Wiring the two together is left to that file's owner.
+- **`STATE.md` is still stale** and was not in the allowed file set for this
+  pass either. Treat `docs/PROGRESS.md` as authoritative.
 
 ## 7. Acceptance criteria checklist
 
@@ -598,3 +817,54 @@ The 16 boxes from `docs/BUILD-PROMPT.md` section 4; raw output for every command
 Summary: 12 met, 3 partial or caveated (4, 8, 14), 1 not verified in a host (12).
 The only outright NOT MET item is the `v0.1.0-build` tag, which is the next step
 rather than a gap.
+
+Round 1 moved three of these boxes and moved none of them to MET. Box 8 (Node
+18) now has a CI workflow that has never run. Box 12 (loads in a host) now has
+three manifests that no host has loaded. Box 14 (tagged final commit) is
+unchanged: `v0.2.0-build` is prepared and not created. Box 6 is worth re-reading
+against the corpus: the human fixtures still score 0, which is now weak spot
+3.6's finding rather than a passing assertion.
+
+### Round-1 acceptance
+
+One row per improvement item. `done` means the plan's own acceptance criterion
+in `docs/COMPETITIVE-ANALYSIS.md` section 6 is met and evidenced.
+`prepared-not-run` means the artifact exists and the criterion needs an action
+nobody has taken. `deferred` means not started. IMP-27 is not in the section-6
+plan: it was added mid-round from corpus finding 1.
+
+| IMP | Status | Evidence or commit |
+|---|---|---|
+| IMP-01 Arabic FP corpus, Wilson CI | done | `corpus/RESULTS.md`; `docs/evidence/round1-fp-measure.txt`; `0e63a64`. 300 documents against the criterion's 200 |
+| IMP-02 sourced FP fixtures | done for MSA and Egyptian, not for Levantine | `tests/fixtures/human-sourced/{msa-01,egt-01}.md` and `_provenance.md`; `0e63a64`. The criterion asks for one per variety where available; Levantine was searched for and not found, and the shortfall is written up rather than filled |
+| IMP-03 CI matrix, Node 18/20/22 | prepared-not-run | `.github/workflows/ci.yml`; `4589438`. Never pushed, so never green. Weak spot 3.9 is not retired. `docs/evidence/round1-check-node18.txt` is a static grep only |
+| IMP-04 deterministic eval invariants | done | `evals/benchmark.json`, `evals/run-benchmark.js`, `tests/benchmark.test.js`; `docs/evidence/round1-benchmark.txt`; `7821f63`. 16/16 pass, and an injected invented number and a verbatim echo each fail the suite |
+| IMP-05 packaging, npm bin plus manifests | prepared-not-run | `docs/evidence/round1-npm-pack.txt`; `4589438`. The pack smoke test runs both CLIs from the tarball. The second half of the criterion, that each manifest loads in its host, is unverified: see weak spot 3.10 |
+| IMP-06 release discipline | done except the tag | `CHANGELOG.md` `[0.2.0-build]`, `tools/check-version.js`, version 0.2.0 in four files; `4589438` and this pass. The criterion requires a tagged release; the tag is the next step |
+| IMP-07 blinded pairwise kit | done | `tools/prepare-pairwise.js`, `evals/human/{pairs.json,ballot.md,key.json}`, `tests/pairwise.test.js`; `docs/evidence/round1-pairwise.txt`; `7821f63`. Seed 42 reproduces byte-identical output over 12 pairs. No ballot has been filled in |
+| IMP-08 native-speaker review | prepared-not-run | `docs/native-review/ballot-egyptian.md` (18 items), `ballot-levantine.md` (35 items); `7821f63`. No named reviewer, no completed item, `ar-levantine.md` keeps `status: experimental` |
+| IMP-09 fidelity validation | done | `tests/validate.test.js` fidelity block; `docs/evidence/round1-waveD-tests.txt`; `3388a16`, documented in `ccf1441`. WARN by default, FAIL under `--strict-fidelity`: decision 41 |
+| IMP-10 overlap grouping, coverage percent | done | `tests/detect-grouping.test.js`; `docs/evidence/round1-waveD-tests.txt`; `3388a16` |
+| IMP-11 coverage map, parity test | done | `docs/COVERAGE-MAP.md`, `tools/check-skill.js --refs`, `tests/coverage-map.test.js`; `docs/evidence/round1-waveE-checks.txt`; `5532f4f`. The `EN-*` half is a correlation, not an ID lookup: `docs/discrepancies/round1-docs.md` section 4 |
+| IMP-12 classical rhetoric layer | done | `AR-MSA-029` to `AR-MSA-033` with provenance rows; `docs/evidence/round1-fp-measure-imp12.txt`; `0e63a64`. The light-verb regex does not fire on قام بسرعة, and the corpus rate did not move |
+| IMP-13 register-conditional thresholds | done | `tests/register-profile.test.js`; `skills/humanizer-pro/scripts/README.md:425-450`; `3388a16`. One gate, two profiles, CV 0.35 to 0.22: decision 40 |
+| IMP-14 uncalibrated-signal labelling | done | `authorshipClaim: false` and `calibration` on every `--json` report; `skills/humanizer-pro/scripts/detect.js:391-392`; `3388a16` |
+| IMP-15 family cross-index, P2-only stop rule | done | `docs/COVERAGE-MAP.md`, family tags on all 58 AR entries; `5532f4f`. Assignment is editorial: decision 42 |
+| IMP-16 voice profile provenance and privacy | done | `references/voice-matching.md`; `docs/evidence/round1-waveE-checks.txt`; `5532f4f` |
+| IMP-17 definite-article clitic matching | done | `stemPhrases` on two `AR-SH-001` entries; `docs/evidence/round1-fp-measure.txt`; `0e63a64`. No new false positive on the corpus, which is what the criterion asked |
+| IMP-18 claims-added line, not-flagged list | done | `references/modes.md`, `references/core-principles.md`; `5532f4f` |
+| IMP-19 substitutability and distinctiveness gate | done | `references/core-principles.md`; `5532f4f`. Bound to never-invent, per the risk column |
+| IMP-20 self-scan with regression budgets | done | `tools/self-scan.js`, `tools/self-scan-budgets.json`, ignore regions in `detect.js`; `docs/evidence/round1-wave2G-self-scan.txt`; `949da07`. 30 files, all inside budget, exits non-zero over budget |
+| IMP-21 era tagging and decay notes | done, with nothing to tag | `references/en-vocabulary.md` Era column, 49 of 49 `unknown`; `docs/discrepancies/round1-docs.md` section 1; `5532f4f`. Decision 43 |
+| IMP-22 prompt-injection principle | done | `references/core-principles.md`; `5532f4f` |
+| IMP-23 vocabulary-concentration signal | done, acceptance criterion missed and recorded | `AR-SH-008` in `signals.js`; `corpus/RESULTS.md` "Run 5"; `docs/evidence/round1-wave2F-vocab-distribution.txt`; `9de5d8f`. Fires on 15 of 300 human documents at weight 1 and on no fixture: weak spot 3.6 |
+| IMP-24 Gulf variety | deferred | Not started. Precondition is IMP-08, which has not run. Section 6 |
+| IMP-25 BCP 47 note, contributor template | done | `docs/LANGUAGE-CODES.md`, `references/_TEMPLATE.md`; `docs/evidence/round1-waveE-checks.txt`; `5532f4f` |
+| IMP-26 shared-core/thin-adapter architecture | done | `references/core-principles.md`; `5532f4f` |
+| IMP-27 ambiguous-marker routing guard | done, added mid-round | `lib/lang.js:111-152`; `docs/evidence/round1-wave2F-marker-homographs.txt`; `9de5d8f`. Removed four of the five false positives. Trade-off in weak spot 3.15 |
+
+Summary: 20 done, 2 done with a stated shortfall (IMP-02 Levantine, IMP-23
+fixture), 4 prepared-not-run (IMP-03, IMP-05, IMP-06's tag, IMP-08), 1 deferred
+(IMP-24). The four prepared-not-run items are the same two facts stated four
+ways: nothing has been pushed to a remote, and no native speaker has read any
+Arabic in this repository.
