@@ -27,6 +27,106 @@ code-switching into English is a documented dialect feature
 (`AR-EGT-016`, `AR-SHM-017`), not a tell. Latin-script terms are left alone
 by the Arabic engine. `en` and `unknown` go to `lib/en-detector`.
 
+### Register-mix detection (auto-routing only)
+
+`identify()` picks a single `variety` for the whole document from dialect
+marker density. That is the right call most of the time, but it misses a
+specific, common AI failure: **register collapse** (`references/ar-egyptian.md`
+Category 1, "Register Collapse — AI Defaults to MSA") — an AI asked to write
+Egyptian or Levantine Arabic instead writes something that reads, lexically,
+as close to 100% MSA. There are no dialect function words to count, so
+`identify()` correctly (given what it can see) reports `variety: 'msa'` with
+little or no dialect evidence, even though the text is a textbook AI
+dialect-tell.
+
+To catch this, `analyze()` runs a **register-mix check**
+(`registerMixCheck()` in `detect.js`) whenever ALL of the following hold:
+
+- no `--lang`/`--variety` was passed (auto-routing only — an explicit
+  override always wins outright, no second-guessing);
+- `identify()` resolved to `variety: 'msa'`;
+- and either `identify()` found at least one dialect marker
+  (`dialectEvidence.{egt,shami}.distinct >= 1`) OR the `msa`-variety analysis
+  itself already found a `P0`/`P1` issue (register-collapsed AI text still
+  trips the generic AR-MSA-\* tells — hedging, transitions, uniform rhythm —
+  even with zero dialect vocabulary).
+
+When it runs, it scores the document under the strongest dialect candidate
+(the dialect(s) with lexical evidence, when there is any; both `egt` and
+`shami` as a guess when there is none — pure-MSA text with a P0/P1 `msa`
+issue but no dialect vocabulary at all scores similarly under either, so
+there's no principled way to prefer one from content alone) and compares
+against the `msa` score. **Promotion is gated in two layers**, and failing
+either leaves the result exactly as the `msa` engine scored it:
+
+1. **Lexical dialect intent (gate 1).** The winning variety must itself show
+   real lexical evidence: `dialectEvidence[variety].distinct >= 2`, OR
+   `distinct >= 1 AND hits >= 3`. This is the gate that matters most: msa's
+   own P0/P1 issues (hedges, transitions, passive constructions) say nothing
+   about *which* dialect, if any, the text was meant to be — only lexical
+   markers do. A document with a single hedge phrase and zero dialect words
+   fails this gate outright and is never promoted, no matter how high the
+   dialect engine happens to score it (see the regression below).
+2. **Score floors, leakage excluded (gate 2).** Even past gate 1, the
+   dialect analysis's full score must outscore `msa` and clear
+   `THRESHOLDS.AI`, AND its score *with `msa-leakage` issues excluded*
+   (`stats.scoreWithoutLeakage`, computed by `ar-detector` with the same
+   weighting/repeat-discount pass minus any `AR-EGT-026`/`AR-SHM-001` hits)
+   must independently clear `THRESHOLDS.MIXED`. Rationale: the `msaLeakage`
+   signal fires almost identically against near-pure-MSA text regardless of
+   which dialect lexicon is forced on it, so leakage alone is not evidence
+   the document was *meant* as that dialect — only that it isn't cleanly
+   that dialect. A dialect verdict has to be backed by real non-leakage
+   signal, not leakage by itself.
+
+**Documented regression this gate fixes:** inserting a single hedge phrase
+(`من المهم الإشارة إلى أن `) at the start of a clean human MSA fixture used
+to get promoted to `egt` at score 59 (`msaScore` 6, `dialectScore` 59) —
+carried almost entirely by `msaLeakage`, with zero lexical dialect evidence
+in the text. Under the two-gate check this never promotes: gate 1 fails
+(`dialectEvidence.egt.distinct` is 0), so the result stays `msa`/`HUMAN`.
+Covered by `tests/detect-autoroute.test.js`'s hedge-injection test across
+all five `tests/fixtures/ar-msa/human-*.md` fixtures, plus a companion test
+that appends a single stray dialect word (`وكان الجو كده.`) to the same
+fixtures and asserts the verdict still stays `HUMAN` (one incidental word
+gives `distinct: 1, hits: 1`, which also fails gate 1's `hits >= 3`
+fallback).
+
+`stats.registerMix = { msaScore, dialectScore, scoreWithoutLeakage, variety,
+promoted, note, noteEn }` is attached whenever the check runs, whether or
+not it ends up promoting — `promoted` records the outcome explicitly, `note`
+is the Arabic summary line, `noteEn` its English equivalent. See
+`docs/evidence/phase6b-fixture-scores.txt` for the auto-routed score table
+this produces across every fixture, and `tests/detect-autoroute.test.js` for
+the tests. Note that the `ar-egt/ai-*.md` and `ar-shami/ai-*.md` fixtures
+themselves now carry 2-4 genuine dialect markers each (realistic
+register-collapsed AI text still drops *some* dialect vocabulary even while
+defaulting to MSA grammar) — dense enough that `identify()` routes most of
+them to the dialect engine directly, so the register-mix comparison line is
+mostly absent from their rows in that table; it still fires for weaker
+cases such as `tests/fixtures/false-positives/ar-technical-en-terms.md`.
+
+### Quoted-speech masking (routing only)
+
+A narrator writing in one register — typically MSA — who quotes a speaker
+verbatim in another (a dialect) is not "mixing" registers at the document
+level; only the quoted speaker is. Before counting dialect markers,
+`identify()` masks quoted spans (Arabic guillemets `«...»`, straight `"..."`
+and curly `"..."` double quotes) so a quoted speaker's dialect words never
+route the whole document to that dialect's engine. Without this, a
+faithfully human-quoted interview gets routed to the quoted speaker's
+dialect engine, and the narrator's own (genuinely correct) MSA prose is then
+flagged as `msa-leakage` against a register it was never written in — see
+`tests/fixtures/false-positives/ar-quoted-speech.md`, which is built for
+exactly this case. Bare colon-led dialogue with no quote marks is
+deliberately *not* masked: colons also introduce lists and definitions in
+plain MSA prose, and masking on the colon alone would blind the detector to
+real narration.
+
+This masking affects marker-counting inside `identify()` only. It does not
+touch the Arabic engine's own lexicon matching, which still sees the full
+text once a variety (forced or auto-picked) is chosen for `analyzeText()`.
+
 ### Exit codes
 
 - `0` — always, including for an `AI` verdict. A detection result is not an
@@ -38,9 +138,11 @@ by the Arabic engine. `en` and `unknown` go to `lib/en-detector`.
 
 The report prints the language/variety and language-ID confidence, the score
 and label, a stats line, and the issues grouped `P0` / `P1` / `P2` with
-`line:col`, pattern id, type, excerpt and suggestion. Arabic is written to
-stdout as UTF-8 by `process.stdout.write` — no console codepage handling is
-needed on Windows.
+`line:col`, pattern id, type, excerpt and suggestion. When the register-mix
+check (above) ran, the stats line also prints a `register-mix:` line with
+the `msa` vs. dialect scores and the Arabic summary note. Arabic is written
+to stdout as UTF-8 by `process.stdout.write` — no console codepage handling
+is needed on Windows.
 
 `--json` prints `{ lang, variety, confidence, engine, arabicRatio, score,
 label, issues, stats }`. The two engines' `issues` and `stats` differ in
@@ -203,7 +305,12 @@ Masked in **both** modes, because the engine must never flag inside them:
   needs at least two distinct dialect markers at a density of one per 100
   Arabic words before it leaves the `msa` default. A short Egyptian or
   Levantine snippet will usually be analysed as MSA, which suppresses the
-  MSA-leakage signal entirely. Pass `--variety` when you know the target.
+  MSA-leakage signal entirely. `detect.js`'s `analyze()` (not
+  `ar-detector.analyzeText()` called directly) mitigates the common case of
+  this — register-collapsed AI text — with the register-mix check described
+  above, but it is a `detect.js`-level compensation, not a fix to
+  `lib/lang.js`'s underlying routing threshold. Pass `--variety` when you
+  know the target and want to bypass auto-routing entirely.
 - **Levantine is experimental.** `references/ar-levantine.md` is marked
   "experimental — pending native Levantine review", and the regional split
   (Syrian / Lebanese / Palestinian) is not modelled here: the engine treats

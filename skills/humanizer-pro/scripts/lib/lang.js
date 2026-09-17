@@ -9,7 +9,13 @@
  *   confidence: 0..1,
  *   evidence: [{ marker, count, variety }],
  *   arabicRatio: 0..1,
+ *   dialectEvidence: { egt: { distinct, hits }, shami: { distinct, hits } } | null,
  * }
+ *
+ * dialectEvidence reports marker evidence per dialect REGARDLESS of whether
+ * it cleared the strong-evidence threshold below — so a caller can see weak
+ * dialect evidence even when `variety` came back 'msa'. null for lang
+ * 'en'/'unknown' or when `override` was used (no scoring ran).
  *
  * Routing rule: Arabic-script ratio is computed over LETTERS only (Arabic
  * script letters + Latin letters; digits, punctuation, and whitespace are
@@ -90,6 +96,48 @@ const LEVANTINE_MARKERS = [
   'هيك', 'منيح', 'منيحة',
 ];
 
+// ─── Quoted-speech masking ───────────────────────────────────────────────
+//
+// A narrator writing in one register (typically MSA) who quotes a speaker
+// verbatim in another (a dialect) is not "mixing" registers at the document
+// level — only the quoted speaker is. Dialect markers that appear ONLY
+// inside quoted/reported speech must not count as evidence of the
+// document's own variety, or a faithfully-quoted human interview gets
+// routed to the quoted speaker's dialect engine and the narrator's own
+// (genuinely correct) MSA prose is then flagged as "leakage" against a
+// register it was never written in. See
+// tests/fixtures/false-positives/ar-quoted-speech.md, and the inverse
+// failure this guards against — an AI defaulting undialogued MSA into
+// quotes where a human would naturally quote dialect — documented in
+// references/ar-egyptian.md Category 1 ("Register Collapse — AI Defaults
+// to MSA").
+//
+// Scope: Arabic guillemets «...» (the MSA-default quoting convention per
+// ar-shared.md) and straight/curly double quotes "...". Bare colon-led
+// dialogue without quote marks is deliberately NOT masked — colons also
+// introduce lists and definitions in plain MSA prose, and masking on colon
+// alone would blind the detector to real narration text.
+const QUOTED_SPAN_RES = [
+  /«[^»]*»/gu,
+  /"[^"\n]*"/gu,
+  /“[^”\n]*”/gu,
+];
+
+function maskQuotedSpans(text) {
+  const chars = text.split('');
+  for (const re of QUOTED_SPAN_RES) {
+    re.lastIndex = 0;
+    let m;
+    while ((m = re.exec(text)) !== null) {
+      if (m[0].length === 0) { re.lastIndex += 1; continue; }
+      for (let i = m.index; i < m.index + m[0].length; i += 1) {
+        if (chars[i] !== '\n' && chars[i] !== '\r') chars[i] = ' ';
+      }
+    }
+  }
+  return chars.join('');
+}
+
 function buildMarkerIndex(markers, variety) {
   const set = new Map();
   for (const marker of markers) {
@@ -149,6 +197,7 @@ function identify(text, options) {
       confidence: 1,
       evidence: [{ marker: 'override' }],
       arabicRatio: null,
+      dialectEvidence: null,
     };
   }
 
@@ -166,6 +215,7 @@ function identify(text, options) {
       confidence: 0,
       evidence: [],
       arabicRatio: totalLetters === 0 ? 0 : arabicCount / totalLetters,
+      dialectEvidence: null,
     };
   }
 
@@ -187,12 +237,14 @@ function identify(text, options) {
       confidence: 1 - arabicRatio, // more purely English -> higher confidence
       evidence: [],
       arabicRatio,
+      dialectEvidence: null,
     };
   }
 
   // lang is 'ar' or 'mixed': score dialect markers over the Arabic-script
-  // portion of the text.
-  const { normalized } = normalize(text, { taMarbuta: false });
+  // portion of the text, excluding quoted speech (see maskQuotedSpans
+  // above) so a quoted speaker's dialect never routes the whole document.
+  const { normalized } = normalize(maskQuotedSpans(text), { taMarbuta: false });
   const words = tokenizeArabicWords(normalized);
   const wordCount = words.length;
 
@@ -215,6 +267,18 @@ function identify(text, options) {
   for (const [marker, count] of counts) {
     const variety = varietyOf.get(marker);
     varietyTotals.set(variety, (varietyTotals.get(variety) || 0) + count);
+  }
+
+  // Per-variety evidence, independent of the strong-evidence threshold, so
+  // a caller can see WEAK dialect evidence even when MSA wins outright
+  // (e.g. detect.js's register-mix check, ar-egyptian.md Category 1).
+  const dialectEvidence = { egt: { distinct: 0, hits: 0 }, shami: { distinct: 0, hits: 0 } };
+  for (const [marker, count] of counts) {
+    const variety = varietyOf.get(marker);
+    if (dialectEvidence[variety]) {
+      dialectEvidence[variety].distinct += 1;
+      dialectEvidence[variety].hits += count;
+    }
   }
 
   const hasStrongEvidence = distinctMarkers >= 2 && density >= 1;
@@ -265,6 +329,7 @@ function identify(text, options) {
     confidence,
     evidence,
     arabicRatio,
+    dialectEvidence,
   };
 }
 

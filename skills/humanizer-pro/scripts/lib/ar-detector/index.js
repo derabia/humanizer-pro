@@ -367,16 +367,31 @@ function analyzeText(text, options) {
   // ── Scoring ───────────────────────────────────────────────────────────
   const seen = new Map(); // patternId -> occurrences so far
   let rawScore = 0;
+  // scoreWithoutLeakage: same weighting/repeat-discount pass, but skipping
+  // every issue of type 'msa-leakage' (AR-EGT-026 / AR-SHM-001) — used by
+  // detect.js's registerMixCheck so that leakage alone (which fires almost
+  // identically against near-pure-MSA text regardless of which dialect is
+  // forced) can never by itself justify promoting a dialect verdict to AI.
+  const seenNoLeakage = new Map();
+  let rawScoreNoLeakage = 0;
   for (const issue of issues) {
     const n = seen.get(issue.patternId) || 0;
     seen.set(issue.patternId, n + 1);
     rawScore += WEIGHTS[issue.severity] * repeatFactor(n);
+
+    if (issue.type !== 'msa-leakage') {
+      const nl = seenNoLeakage.get(issue.patternId) || 0;
+      seenNoLeakage.set(issue.patternId, nl + 1);
+      rawScoreNoLeakage += WEIGHTS[issue.severity] * repeatFactor(nl);
+    }
   }
 
   let score = Math.min(100, Math.round(rawScore));
+  let scoreWithoutLeakage = Math.min(100, Math.round(rawScoreNoLeakage));
   const tooShort = wordCount < THRESHOLDS.TOO_SHORT_WORDS;
   if (tooShort) {
     score = Math.min(score, THRESHOLDS.TOO_SHORT_CAP);
+    scoreWithoutLeakage = Math.min(scoreWithoutLeakage, THRESHOLDS.TOO_SHORT_CAP);
     stats.tooShort = true;
   } else {
     stats.tooShort = false;
@@ -385,6 +400,7 @@ function analyzeText(text, options) {
   const label = score >= THRESHOLDS.AI ? 'AI' : score >= THRESHOLDS.MIXED ? 'MIXED' : 'HUMAN';
 
   stats.rawScore = Math.round(rawScore * 100) / 100;
+  stats.scoreWithoutLeakage = scoreWithoutLeakage;
   stats.issueCount = issues.length;
   stats.p0Count = issues.filter((i) => i.severity === 'P0').length;
   stats.p1Count = issues.filter((i) => i.severity === 'P1').length;

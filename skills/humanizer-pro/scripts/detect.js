@@ -44,6 +44,119 @@ const lang = require(path.join(__dirname, 'lib', 'lang.js'));
  * AR-EGT-016 / AR-SHM-017), and the Arabic engine leaves Latin-script terms
  * untouched. 'en' and 'unknown' go to the English engine.
  */
+// Arabic display names for the register-mix note (detect.js only knows
+// egt/shami as candidate ids; ar-detector's own dialect names live in
+// lexicons.js issue text, this is just for the summary line).
+const DIALECT_LABEL_AR = { egt: 'العامية المصرية', shami: 'العامية الشامية' };
+const DIALECT_LABEL_EN = { egt: 'Egyptian', shami: 'Levantine' };
+
+/**
+ * Register-mix check — auto-routing only (never when the caller forced
+ * --lang/--variety).
+ *
+ * ar-egyptian.md Category 1, "Register Collapse — AI Defaults to MSA": an
+ * AI asked to write Egyptian/Levantine text frequently produces text that
+ * is, on the surface, close to 100% MSA vocabulary — no dialect function
+ * words to route on at all. lib/lang.js's `identify()` therefore picks
+ * 'msa' with EMPTY (or weak) dialectEvidence for these documents.
+ *
+ * GATE 1 — dialect intent (lexical). Promotion may only be CONSIDERED for a
+ * variety the text itself gives some lexical evidence of:
+ *   dialectEvidence[variety].distinct >= 2
+ *   OR (dialectEvidence[variety].distinct >= 1 AND dialectEvidence[variety].hits >= 3)
+ * A bare MSA text with, say, one stray hedge phrase or one incidental
+ * dialect-looking word gives NEITHER msa's own P0/P1 issues NOR lexical
+ * evidence any standing to promote a dialect — this is exactly the false
+ * positive documented in tests/detect-autoroute.test.js (a single hedge
+ * phrase inserted into a clean human MSA fixture must never flip the
+ * verdict to AI). When no variety clears this gate, the check still runs
+ * (so a caller can see the comparison) but never promotes: stats.registerMix
+ * is attached with promoted:false and score/label are left as msa's own.
+ *
+ * GATE 2 — even for a variety that clears gate 1, promotion additionally
+ * requires:
+ *   (a) the dialect analysis's FULL score >= THRESHOLDS.AI, and
+ *   (b) the dialect analysis's score EXCLUDING msa-leakage-type issues
+ *       (ar-detector's stats.scoreWithoutLeakage) >= THRESHOLDS.MIXED.
+ * Rationale for (b): msaLeakage fires almost identically regardless of
+ * which dialect lexicon is forced against near-pure-MSA text (verified:
+ * forcing 'egt' or 'shami' on register-collapsed AI fixtures both score
+ * high on msaLeakage alone) — leakage by itself is not evidence the DOCUMENT
+ * was meant as that dialect, only that it isn't cleanly that dialect. A
+ * dialect verdict must be backed by real non-leakage signal (transitions,
+ * uniform rhythm, hedges, etc. scored under that variety), not leakage
+ * alone.
+ *
+ * When lexical evidence (gate 1) names exactly one variety, only that
+ * variety is analyzed. When both egt and shami clear gate 1 (rare), both are
+ * tried and the higher full-score dialect wins the comparison, subject to
+ * gate 2.
+ *
+ * stats.registerMix is attached whenever this check finds ANY dialect with
+ * lexical evidence to compare against msa, whether or not it ends up
+ * promoting — `promoted` records the outcome explicitly.
+ */
+function registerMixCheck(text, sourceMode, msaAnalysis, dialectEvidence) {
+  if (msaAnalysis.score >= arDetector.THRESHOLDS.AI) return null; // already conclusive as msa
+
+  // Whether to even RUN the comparison: msa's own verdict was non-trivial
+  // (P0/P1 issue, e.g. register-collapsed AI text tripping generic AR-MSA-*
+  // tells), OR there is at least SOME lexical dialect evidence (possibly too
+  // weak to promote on its own — that is gate 1 below). Neither present ->
+  // nothing points at register collapse or a dialect at all.
+  const hasP01 = msaAnalysis.issues.some((i) => i.severity === 'P0' || i.severity === 'P1');
+  const lexicalCandidates = dialectEvidence
+    ? Object.entries(dialectEvidence).filter(([, ev]) => ev.distinct >= 1).map(([variety]) => variety)
+    : [];
+  if (!hasP01 && lexicalCandidates.length === 0) return null;
+
+  // When lexical evidence names specific varieties, only those are tried.
+  // Otherwise (hasP01 only, no lexical evidence at all) both are tried as a
+  // guess for the COMPARISON note — but per gate 1 below such a guess can
+  // never be promoted, since it carries no lexical evidence either.
+  const candidates = lexicalCandidates.length ? lexicalCandidates : ['egt', 'shami'];
+  let best = null;
+  for (const variety of candidates) {
+    const dialectAnalysis = arDetector.analyzeText(text, { variety, sourceMode });
+    if (!best || dialectAnalysis.score > best.analysis.score) {
+      best = { variety, analysis: dialectAnalysis };
+    }
+  }
+
+  const noteAr = `النص يخلط بين الفصحى و${DIALECT_LABEL_AR[best.variety]}؛ إن كان المقصود ${DIALECT_LABEL_AR[best.variety]} فهذا تسرّب فصحى`;
+  const noteEn = `Text mixes MSA and ${DIALECT_LABEL_EN[best.variety]} markers; if the intended variety is ${DIALECT_LABEL_EN[best.variety]}, MSA leakage is P0`;
+
+  // GATE 1 — dialect intent: the winning variety itself must show real
+  // lexical evidence, not just "it scored highest of two guesses" or msa's
+  // own P0/P1 issues (which say nothing about which dialect, if any, was
+  // intended).
+  const bestEvidence = (dialectEvidence && dialectEvidence[best.variety]) || { distinct: 0, hits: 0 };
+  const passesDialectIntent = bestEvidence.distinct >= 2 || (bestEvidence.distinct >= 1 && bestEvidence.hits >= 3);
+
+  // GATE 2 — even with dialect intent, leakage alone must never carry an AI
+  // verdict: the dialect analysis's score with msa-leakage issues excluded
+  // must independently clear THRESHOLDS.MIXED, and the full score must
+  // clear THRESHOLDS.AI and outscore msa.
+  const scoreWithoutLeakage = best.analysis.stats.scoreWithoutLeakage;
+  const promote =
+    passesDialectIntent
+    && best.analysis.score > msaAnalysis.score
+    && best.analysis.score >= arDetector.THRESHOLDS.AI
+    && scoreWithoutLeakage >= arDetector.THRESHOLDS.MIXED;
+
+  const registerMix = {
+    msaScore: msaAnalysis.score,
+    dialectScore: best.analysis.score,
+    scoreWithoutLeakage,
+    variety: best.variety,
+    promoted: promote,
+    note: noteAr,
+    noteEn,
+  };
+
+  return { promote, variety: best.variety, analysis: best.analysis, registerMix };
+}
+
 function analyze(text, opts) {
   const options = opts || {};
   const sourceMode = options.markdown ? 'rendered-markdown' : 'plain';
@@ -54,16 +167,34 @@ function analyze(text, opts) {
     override.variety = options.variety;
     if (!override.lang) override.lang = 'ar';
   }
+  const isAutoRouted = Object.keys(override).length === 0;
 
-  const id = Object.keys(override).length
-    ? lang.identify(text, { override: { lang: override.lang, variety: override.variety || null } })
-    : lang.identify(text);
+  const id = isAutoRouted
+    ? lang.identify(text)
+    : lang.identify(text, { override: { lang: override.lang, variety: override.variety || null } });
 
   const useArabic = id.lang === 'ar' || id.lang === 'mixed';
 
   if (useArabic) {
     const variety = options.variety || id.variety || 'msa';
     const analysis = arDetector.analyzeText(text, { variety, sourceMode });
+
+    if (isAutoRouted && variety === 'msa') {
+      const mix = registerMixCheck(text, sourceMode, analysis, id.dialectEvidence);
+      if (mix) {
+        const primary = mix.promote ? mix.analysis : analysis;
+        primary.stats.registerMix = mix.registerMix;
+        return {
+          lang: id.lang,
+          variety: mix.promote ? mix.variety : variety,
+          confidence: id.confidence,
+          engine: 'ar',
+          arabicRatio: id.arabicRatio,
+          ...primary,
+        };
+      }
+    }
+
     return {
       lang: id.lang,
       variety,
@@ -161,6 +292,10 @@ function renderReport(text, result, sourceLabel) {
     if (s.msaLeakage && s.msaLeakage.applicable) {
       out.push(`msa-leakage: ${(s.msaLeakage.ratio * 100).toFixed(0)}% `
         + `(${s.msaLeakage.msaHits} MSA vs ${s.msaLeakage.dialectHits} dialect function words)`);
+    }
+    if (s.registerMix) {
+      out.push(`register-mix: msa ${s.registerMix.msaScore} vs ${s.registerMix.variety} ${s.registerMix.dialectScore}`);
+      out.push(`              ${s.registerMix.note}`);
     }
   }
   out.push('');
