@@ -1,0 +1,15 @@
+{
+  "name": "humanizer-pro",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node tools/run-tests.js",
+    "detect": "node skills/humanizer-pro/scripts/detect.js",
+    "validate": "node skills/humanizer-pro/scripts/validate.js",
+    "check-upstream": "node tools/check-upstream.js"
+  }
+}

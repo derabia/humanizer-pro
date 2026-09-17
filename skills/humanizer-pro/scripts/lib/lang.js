@@ -1,0 +1,275 @@
+/**
+ * humanizer-pro — language / Arabic-dialect identifier
+ *
+ * origin: humanizer-pro
+ *
+ * identify(text, options?) -> {
+ *   lang: 'en' | 'ar' | 'mixed' | 'unknown',
+ *   variety: 'msa' | 'egt' | 'shami' | null,
+ *   confidence: 0..1,
+ *   evidence: [{ marker, count, variety }],
+ *   arabicRatio: 0..1,
+ * }
+ *
+ * Routing rule: Arabic-script ratio is computed over LETTERS only (Arabic
+ * script letters + Latin letters; digits, punctuation, and whitespace are
+ * excluded from both the numerator and denominator).
+ *   - ratio >= 0.6  -> lang: 'ar'
+ *   - ratio <= 0.15 -> lang: 'en'
+ *   - otherwise     -> lang: 'mixed' (routed to the Arabic engine, so
+ *                       'mixed' still carries a best-guess `variety`)
+ *   - fewer than 3 letters total (or empty text) -> lang: 'unknown'
+ *
+ * Dialect scoring uses whole-word marker matching against the normalized
+ * text (via lib/arabic-normalize.js) so tashkeel/alef-form variation
+ * doesn't cause misses. Default variety is 'msa' unless dialect evidence
+ * clears BOTH thresholds: at least 2 distinct markers found, AND marker
+ * density >= 1 per 100 Arabic words. Confidence rises with distinct-marker
+ * count and density; it never reaches 1 except via override.
+ *
+ * override: { lang, variety } short-circuits everything and returns that
+ * exact lang/variety with confidence 1 and evidence [{ marker: 'override' }].
+ */
+
+'use strict';
+
+const { normalize } = require('./arabic-normalize.js');
+
+// ─── Marker lexicons ─────────────────────────────────────────────────────
+//
+// Sourced from docs/inventory/semitic.md §5 ("Dialect marker words used to
+// characterize each variety") and, for exact spellings/citations, the three
+// upstream SKILL.md files directly:
+//   _sources/semitic/skills/humanizer-ar-egt/SKILL.md
+//   _sources/semitic/skills/humanizer-ar-shami/SKILL.md
+//
+// Each list cites the SKILL.md line(s) it was read from at the time of
+// writing (2026-09-17, upstream commit pinned per docs/inventory/semitic.md).
+
+// Egyptian Arabic (humanizer-ar-egt/SKILL.md).
+const EGYPTIAN_MARKERS = [
+  // Philosophy section core deictic/lexical set (line 50). ("يا سلام" is a
+  // two-word phrase and is not covered by this single-word matcher; بس
+  // "سلام" alone is a common plain-MSA greeting/noun and is deliberately
+  // excluded here to avoid false Egyptian hits.)
+  'يعني', 'بقى', 'خلاص', 'ماشي',
+  // MSA -> Egyptian substitution table (lines 80-100).
+  'دلوقتي', 'عايز', 'عايزة', 'روح', 'اشوف', 'ده', 'دي', 'دول', 'ايه', 'ازاي',
+  'كده', 'ايوه', 'اوي', 'كمان', 'بس', 'وبعدين', 'بعدين',
+  // Discourse particles, Pattern 9 (lines 241-248). ("زي مثلاً" is excluded:
+  // "مثلا" alone is common plain-register MSA ("for example") and not a
+  // distinctive Egyptian tell on its own.)
+  'طب', 'والله',
+  // Negation system, Pattern 7 (lines 203-211): مش, and the future-negation
+  // compound مش حـ (matched here as the bare مش marker; مش already covers
+  // both forms since حـ attaches to the following verb).
+  'مش',
+  // Pattern 14 (lines 345-354): عشان replacing MSA لأن/لكي.
+  'عشان', 'علشان',
+  // Additional Egyptian-specific terms named directly in the task brief and
+  // attested in-file per docs/inventory/semitic.md §5: بتاع (possessive,
+  // MSA substitution family), ليه (why), فين (where).
+  'بتاع', 'ليه', 'فين',
+];
+
+// Levantine Arabic (humanizer-ar-shami/SKILL.md).
+const LEVANTINE_MARKERS = [
+  // Philosophy section cross-regional core vocabulary (line 42).
+  'شو', 'هلق', 'رايح',
+  // Pattern 6 marker-word table, per-region column (lines 272-288).
+  'ايش', 'وين', 'شلون', 'ايمتا', 'هلا', 'كتير', 'ليش', 'هاد', 'هيدا',
+  'هدول', 'هيدول', 'قديش', 'اديش',
+  // Vocabulary bullets (line 40, 61-66, 74, 84-87): بدّ (want) and its
+  // inflected forms بدي/بدك/بدو (lines 138-139, 301-303, 747, 958), هلأ
+  // (Lebanese spelling of "now", line 66/195), هاي (this-f, line 61),
+  // مو (nominal negation, line 62), رح (future particle, line 40/205-206),
+  // لهيك (therefore, line 74).
+  'بدي', 'بدك', 'بدو', 'بدها', 'بدهم', 'بدّي', 'بدّك', 'بدّو',
+  'هاي', 'مو', 'رح', 'لهيك',
+];
+
+function buildMarkerIndex(markers, variety) {
+  const set = new Map();
+  for (const marker of markers) {
+    set.set(marker, variety);
+  }
+  return set;
+}
+
+const DIALECT_INDEX = new Map([
+  ...buildMarkerIndex(EGYPTIAN_MARKERS, 'egt'),
+  ...buildMarkerIndex(LEVANTINE_MARKERS, 'shami'),
+]);
+
+// ─── Script ratio ────────────────────────────────────────────────────────
+
+// Arabic-script letters (not digits/punct). Covers the main Arabic block
+// letters, ignoring presentation forms (out of scope for source text).
+const ARABIC_LETTER_RE = /[ء-يٮ-ۓەۮۯۺ-ۼۿ]/;
+const LATIN_LETTER_RE = /[A-Za-z]/;
+
+function classifyLetters(text) {
+  let arabicCount = 0;
+  let otherLetterCount = 0;
+  for (const ch of text) {
+    if (ARABIC_LETTER_RE.test(ch)) {
+      arabicCount += 1;
+    } else if (LATIN_LETTER_RE.test(ch)) {
+      otherLetterCount += 1;
+    }
+  }
+  return { arabicCount, otherLetterCount };
+}
+
+// ─── Whole-word Arabic tokenizer ─────────────────────────────────────────
+//
+// A "word" here is a maximal run of Arabic-letter code points (post
+// normalization). Punctuation, digits, tatweel remnants (already stripped
+// by normalize()), and whitespace all act as separators.
+const ARABIC_WORD_RE = /[ء-يٮ-ۓەۮۯۺ-ۼۿ]+/g;
+
+function tokenizeArabicWords(normalizedText) {
+  const matches = normalizedText.match(ARABIC_WORD_RE);
+  return matches || [];
+}
+
+/**
+ * identify(text, options?) -> result (see module header)
+ */
+function identify(text, options) {
+  const opts = options || {};
+
+  if (opts.override) {
+    const { lang, variety } = opts.override;
+    return {
+      lang,
+      variety: variety == null ? null : variety,
+      confidence: 1,
+      evidence: [{ marker: 'override' }],
+      arabicRatio: null,
+    };
+  }
+
+  if (typeof text !== 'string') {
+    throw new TypeError('identify(text, options) expects a string');
+  }
+
+  const { arabicCount, otherLetterCount } = classifyLetters(text);
+  const totalLetters = arabicCount + otherLetterCount;
+
+  if (totalLetters < 3) {
+    return {
+      lang: 'unknown',
+      variety: null,
+      confidence: 0,
+      evidence: [],
+      arabicRatio: totalLetters === 0 ? 0 : arabicCount / totalLetters,
+    };
+  }
+
+  const arabicRatio = arabicCount / totalLetters;
+
+  let lang;
+  if (arabicRatio >= 0.6) {
+    lang = 'ar';
+  } else if (arabicRatio <= 0.15) {
+    lang = 'en';
+  } else {
+    lang = 'mixed';
+  }
+
+  if (lang === 'en') {
+    return {
+      lang: 'en',
+      variety: null,
+      confidence: 1 - arabicRatio, // more purely English -> higher confidence
+      evidence: [],
+      arabicRatio,
+    };
+  }
+
+  // lang is 'ar' or 'mixed': score dialect markers over the Arabic-script
+  // portion of the text.
+  const { normalized } = normalize(text, { taMarbuta: false });
+  const words = tokenizeArabicWords(normalized);
+  const wordCount = words.length;
+
+  const counts = new Map(); // marker -> count
+  const varietyOf = new Map(); // marker -> variety
+  for (const word of words) {
+    const variety = DIALECT_INDEX.get(word);
+    if (!variety) continue;
+    counts.set(word, (counts.get(word) || 0) + 1);
+    varietyOf.set(word, variety);
+  }
+
+  const distinctMarkers = counts.size;
+  const totalMarkerHits = Array.from(counts.values()).reduce((a, b) => a + b, 0);
+  const density = wordCount > 0 ? (totalMarkerHits / wordCount) * 100 : 0; // per 100 words
+
+  // Tally by variety to pick the dominant dialect when evidence clears the
+  // threshold.
+  const varietyTotals = new Map(); // variety -> hit count
+  for (const [marker, count] of counts) {
+    const variety = varietyOf.get(marker);
+    varietyTotals.set(variety, (varietyTotals.get(variety) || 0) + count);
+  }
+
+  const hasStrongEvidence = distinctMarkers >= 2 && density >= 1;
+
+  let resultVariety = 'msa';
+  let confidence;
+  const evidence = [];
+
+  if (hasStrongEvidence) {
+    // Dominant variety by total hit count; ties broken by first-seen key
+    // order (stable, deterministic given Map iteration order == insertion
+    // order, which here follows token order in the text).
+    let bestVariety = null;
+    let bestCount = -1;
+    for (const [variety, count] of varietyTotals) {
+      if (count > bestCount) {
+        bestCount = count;
+        bestVariety = variety;
+      }
+    }
+    resultVariety = bestVariety;
+
+    for (const [marker, count] of counts) {
+      const variety = varietyOf.get(marker);
+      if (variety === resultVariety) {
+        evidence.push({ marker, count, variety });
+      }
+    }
+
+    // Confidence rises with distinct-marker count and density, capped
+    // below 1 (reserved for explicit override).
+    const markerTerm = Math.min(distinctMarkers / 8, 1); // saturates at 8 distinct markers
+    const densityTerm = Math.min(density / 10, 1); // saturates at 10 hits / 100 words
+    confidence = Math.min(0.5 + 0.3 * markerTerm + 0.19 * densityTerm, 0.99);
+  } else {
+    // Default to MSA. Confidence reflects how "clean" of dialect markers
+    // the text is combined with how much Arabic-script signal we saw.
+    for (const [marker, count] of counts) {
+      evidence.push({ marker, count, variety: varietyOf.get(marker) });
+    }
+    const arabicStrength = lang === 'ar' ? 1 : (arabicRatio - 0.15) / (0.6 - 0.15);
+    confidence = Math.max(0.3, Math.min(0.7, 0.4 + 0.3 * arabicStrength));
+  }
+
+  return {
+    lang,
+    variety: resultVariety,
+    confidence,
+    evidence,
+    arabicRatio,
+  };
+}
+
+module.exports = {
+  identify,
+  LEXICONS: {
+    egt: EGYPTIAN_MARKERS.slice(),
+    shami: LEVANTINE_MARKERS.slice(),
+  },
+};
