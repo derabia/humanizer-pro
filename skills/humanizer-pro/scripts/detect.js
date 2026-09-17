@@ -6,12 +6,16 @@
  *
  * Usage:
  *   node detect.js <file|-> [--lang en|ar] [--variety msa|egt|shami]
+ *                           [--register default|formal]
  *                           [--json] [--markdown]
  *
  *   <file>      path to a UTF-8 text/Markdown file
  *   -           read the document from stdin
  *   --lang      force the engine instead of auto-detecting
  *   --variety   force the Arabic variety (implies the Arabic engine)
+ *   --register  threshold profile for the Arabic engine (IMP-13); 'formal'
+ *               relaxes the sentence-rhythm gate only. Accepted but inert for
+ *               the English engine, and always echoed in stats.register.
  *   --json      print the raw analysis object plus { lang }
  *   --markdown  analyse as rendered Markdown (sourceMode:'rendered-markdown')
  *
@@ -19,13 +23,42 @@
  * stdin, unknown flag). A detection result is never an error.
  *
  * Also exported for programmatic use:
- *   analyze(text, opts) -> { lang, variety, confidence, engine, ...analysis }
+ *   analyze(text, opts) -> { lang, variety, confidence, engine,
+ *                            authorshipClaim, calibration, engineVersion,
+ *                            groups, ...analysis }
+ *
+ * LABELLING CONTRACT (IMP-14)
+ * ---------------------------
+ * Every result -- programmatic or `--json` -- carries three fields that make
+ * the epistemic status of `score` explicit and machine-readable:
+ *
+ *   authorshipClaim: false      always false. This tool never claims to know
+ *                               who or what wrote a document.
+ *   calibration:     string     'uncalibrated-review-signal' for the Arabic
+ *                               engine. The English engine's own calibration
+ *                               note is used when it exposes one; it does
+ *                               not today (its class_probabilities are, by
+ *                               its own comment, not calibrated against a
+ *                               labeled corpus) so it gets the same label.
+ *   engineVersion:   string     git short SHA of the working tree, read at
+ *                               runtime; falls back to 'v<package.json
+ *                               version>' when git is unavailable (installed
+ *                               skill, exported zip), then to 'unknown'.
+ *
+ * These are ADDITIVE. No existing field was renamed or removed. The readable
+ * report prints one matching line:
+ *   note: score is a review signal, not an authorship claim
+ *
+ * GROUPING AND COVERAGE (IMP-10)
+ * ------------------------------
+ * Post-processing, engine-agnostic: see `groupIssues` / `postProcess` below.
  */
 
 'use strict';
 
 const fs = require('fs');
 const path = require('path');
+const childProcess = require('child_process');
 
 const enDetector = require(path.join(__dirname, 'lib', 'en-detector', 'index.js'));
 const arDetector = require(path.join(__dirname, 'lib', 'ar-detector', 'index.js'));
@@ -96,7 +129,7 @@ const DIALECT_LABEL_EN = { egt: 'Egyptian', shami: 'Levantine' };
  * lexical evidence to compare against msa, whether or not it ends up
  * promoting — `promoted` records the outcome explicitly.
  */
-function registerMixCheck(text, sourceMode, msaAnalysis, dialectEvidence) {
+function registerMixCheck(text, sourceMode, msaAnalysis, dialectEvidence, register) {
   if (msaAnalysis.score >= arDetector.THRESHOLDS.AI) return null; // already conclusive as msa
 
   // Whether to even RUN the comparison: msa's own verdict was non-trivial
@@ -117,7 +150,7 @@ function registerMixCheck(text, sourceMode, msaAnalysis, dialectEvidence) {
   const candidates = lexicalCandidates.length ? lexicalCandidates : ['egt', 'shami'];
   let best = null;
   for (const variety of candidates) {
-    const dialectAnalysis = arDetector.analyzeText(text, { variety, sourceMode });
+    const dialectAnalysis = arDetector.analyzeText(text, { variety, sourceMode, register });
     if (!best || dialectAnalysis.score > best.analysis.score) {
       best = { variety, analysis: dialectAnalysis };
     }
@@ -157,9 +190,208 @@ function registerMixCheck(text, sourceMode, msaAnalysis, dialectEvidence) {
   return { promote, variety: best.variety, analysis: best.analysis, registerMix };
 }
 
+// == Labelling (IMP-14) ====================================================
+
+const AUTHORSHIP_CLAIM = false;
+const AR_CALIBRATION = 'uncalibrated-review-signal';
+const REVIEW_SIGNAL_NOTE = 'score is a review signal, not an authorship claim';
+
+/**
+ * Calibration label for an engine. The English engine is asked for its own
+ * note first (`enDetector.CALIBRATION`); it does not publish one today -- its
+ * `class_probabilities` are, by its own comment, "not calibrated against a
+ * labeled corpus" -- so it receives the same uncalibrated label.
+ */
+function calibrationFor(engine) {
+  if (engine === 'en' && typeof enDetector.CALIBRATION === 'string' && enDetector.CALIBRATION) {
+    return enDetector.CALIBRATION;
+  }
+  return AR_CALIBRATION;
+}
+
+let ENGINE_VERSION_CACHE;
+
+/**
+ * engineVersion() -> 'abc1234' | 'v0.1.0' | 'unknown'
+ *
+ * Read once per process. `git rev-parse --short HEAD` runs with this file's
+ * directory as cwd so it resolves the repository this file lives in, with
+ * stdio piped (a git error must never reach the caller's stderr). When git is
+ * unavailable -- no binary, not a repository, an installed skill, an exported
+ * zip -- the package.json version is used, prefixed 'v' so the two shapes are
+ * never confused. If neither is readable the value is 'unknown'; the field is
+ * always present and always a string.
+ *
+ * A git answer is only trusted when `git rev-parse --show-toplevel` names a
+ * humanizer-pro checkout. An installed skill can live inside an unrelated
+ * repository (a dotfiles repo under ~/.claude, say), and a SHA from that repo
+ * would be actively misleading rather than merely absent.
+ *
+ * Note: `tools/build-zip.js` archives only `skills/humanizer-pro/`, so the
+ * exported zip carries no package.json. A skill installed from that zip,
+ * outside a humanizer-pro checkout, therefore reports 'unknown'.
+ */
+function engineVersion() {
+  if (ENGINE_VERSION_CACHE !== undefined) return ENGINE_VERSION_CACHE;
+  try {
+    const git = (args) => childProcess.execFileSync('git', args, {
+      cwd: __dirname,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+      timeout: 5000,
+    }).trim();
+    // An installed skill can sit inside SOMEONE ELSE'S repository (a dotfiles
+    // repo under ~/.claude, for instance). git would answer happily with a
+    // SHA that has nothing to do with this engine, which is worse than no
+    // answer at all — so the repository is only trusted when it is a
+    // humanizer-pro checkout, i.e. it contains this very script at its
+    // canonical path.
+    const toplevel = git(['rev-parse', '--show-toplevel']);
+    const marker = path.join(toplevel, 'skills', 'humanizer-pro', 'scripts', 'detect.js');
+    if (toplevel && fs.existsSync(marker)) {
+      const sha = git(['rev-parse', '--short', 'HEAD']);
+      if (/^[0-9a-f]{4,40}$/.test(sha)) {
+        ENGINE_VERSION_CACHE = sha;
+        return ENGINE_VERSION_CACHE;
+      }
+    }
+  } catch (_) { /* fall through to package.json */ }
+  for (const up of ['..', '../..', '../../..', '../../../..']) {
+    try {
+      const pkg = JSON.parse(fs.readFileSync(path.join(__dirname, up, 'package.json'), 'utf8'));
+      if (pkg && typeof pkg.version === 'string' && pkg.version) {
+        ENGINE_VERSION_CACHE = `v${pkg.version}`;
+        return ENGINE_VERSION_CACHE;
+      }
+    } catch (_) { /* try the next level up */ }
+  }
+  ENGINE_VERSION_CACHE = 'unknown';
+  return ENGINE_VERSION_CACHE;
+}
+
+// == Grouping and coverage (IMP-10) ========================================
+
+const GROUP_SEVERITY_RANK = { P0: 4, P1: 3, P2: 2, P3: 1 };
+
+/**
+ * issueSpan(issue, engine) -> [start, end] | null
+ *
+ * Engine-agnostic span extraction. The Arabic engine reports `start`/`end`
+ * directly. The English engine reports `index` plus the matched `text`, so the
+ * end is derived from the excerpt length. An issue with no usable offset (the
+ * English engine emits document-level findings with a null index) returns
+ * null: it cannot be placed, so it is neither grouped nor counted towards
+ * coverage, and `stats.ungroupedIssueCount` records how many.
+ */
+function issueSpan(issue, engine) {
+  if (engine === 'ar') {
+    if (!Number.isInteger(issue.start) || !Number.isInteger(issue.end)) return null;
+    return [issue.start, Math.max(issue.start, issue.end)];
+  }
+  if (!Number.isInteger(issue.index)) return null;
+  const len = typeof issue.text === 'string' ? issue.text.length : 0;
+  return [issue.index, issue.index + len];
+}
+
+function groupSeverityOf(issue, engine) {
+  if (engine === 'ar') return issue.severity;
+  return enDetector.SEVERITY_LABELS[issue.severity] || 'P2';
+}
+
+/**
+ * groupIssues(issues, engine) -> { groups, unionLength, ungroupedIssueCount }
+ *
+ * Issues whose spans OVERLAP or merely TOUCH (previous `end` === next `start`)
+ * are merged into one group:
+ *
+ *   groups: [{ start, end, issueIds: [...], topSeverity }]
+ *
+ * `issueIds` are zero-based indices into `result.issues`, in document order --
+ * the only identifier guaranteed unique per finding (`patternId` repeats
+ * whenever a pattern fires more than once).
+ *
+ * `unionLength` is the sum of the MERGED spans, so two overlapping hits
+ * contribute their union exactly once and can never double-count in
+ * `stats.affectedCoveragePercent` or in `stats.groupCount`.
+ */
+function groupIssues(issues, engine) {
+  const spans = [];
+  let ungroupedIssueCount = 0;
+  (issues || []).forEach((issue, id) => {
+    const span = issueSpan(issue, engine);
+    if (span === null) { ungroupedIssueCount += 1; return; }
+    spans.push({ start: span[0], end: span[1], id, severity: groupSeverityOf(issue, engine) });
+  });
+  spans.sort((a, b) => a.start - b.start || a.end - b.end || a.id - b.id);
+
+  const groups = [];
+  for (const span of spans) {
+    const last = groups[groups.length - 1];
+    // `span.start <= last.end` merges overlapping AND touching ranges.
+    if (last && span.start <= last.end) {
+      last.end = Math.max(last.end, span.end);
+      last.issueIds.push(span.id);
+      if ((GROUP_SEVERITY_RANK[span.severity] || 0) > (GROUP_SEVERITY_RANK[last.topSeverity] || 0)) {
+        last.topSeverity = span.severity;
+      }
+      continue;
+    }
+    groups.push({
+      start: span.start,
+      end: span.end,
+      issueIds: [span.id],
+      topSeverity: span.severity,
+    });
+  }
+
+  for (const g of groups) g.issueIds.sort((a, b) => a - b);
+  const unionLength = groups.reduce((acc, g) => acc + (g.end - g.start), 0);
+  return { groups, unionLength, ungroupedIssueCount };
+}
+
+/**
+ * postProcess(text, result) -- adds the IMP-14 labelling fields and the
+ * IMP-10 grouping/coverage fields to a raw engine result. Additive only.
+ *
+ * Coverage denominator: the engine's own scored-character count when it
+ * publishes one (the Arabic engine exposes `stats.scoredCharCount`, i.e. total
+ * length minus masked URLs, inline code, fences and frontmatter); otherwise
+ * the full text length, because the English engine does not publish masked
+ * region lengths. `stats.coverageBasis` records which was used.
+ */
+function postProcess(text, result) {
+  const { groups, unionLength, ungroupedIssueCount } = groupIssues(result.issues, result.engine);
+  const stats = result.stats && typeof result.stats === 'object' ? result.stats : {};
+
+  const hasScored = Number.isInteger(stats.scoredCharCount) && stats.scoredCharCount > 0;
+  const scored = hasScored ? stats.scoredCharCount : text.length;
+
+  stats.groupCount = groups.length;
+  stats.affectedCharCount = unionLength;
+  stats.coverageBasis = hasScored ? 'scored-chars-excluding-masked' : 'total-chars';
+  stats.affectedCoveragePercent = scored > 0
+    ? Math.min(100, Math.round((unionLength / scored) * 1000) / 10)
+    : 0;
+  if (ungroupedIssueCount > 0) stats.ungroupedIssueCount = ungroupedIssueCount;
+
+  return {
+    ...result,
+    stats,
+    groups,
+    authorshipClaim: AUTHORSHIP_CLAIM,
+    calibration: calibrationFor(result.engine),
+    engineVersion: engineVersion(),
+  };
+}
+
 function analyze(text, opts) {
+  return postProcess(typeof text === 'string' ? text : '', analyzeRaw(text, opts));
+}
+
+function analyzeRaw(text, opts) {
   const options = opts || {};
   const sourceMode = options.markdown ? 'rendered-markdown' : 'plain';
+  const register = options.register || 'default';
 
   const override = {};
   if (options.lang) override.lang = options.lang;
@@ -177,10 +409,10 @@ function analyze(text, opts) {
 
   if (useArabic) {
     const variety = options.variety || id.variety || 'msa';
-    const analysis = arDetector.analyzeText(text, { variety, sourceMode });
+    const analysis = arDetector.analyzeText(text, { variety, sourceMode, register });
 
     if (isAutoRouted && variety === 'msa') {
-      const mix = registerMixCheck(text, sourceMode, analysis, id.dialectEvidence);
+      const mix = registerMixCheck(text, sourceMode, analysis, id.dialectEvidence, register);
       if (mix) {
         const primary = mix.promote ? mix.analysis : analysis;
         primary.stats.registerMix = mix.registerMix;
@@ -206,6 +438,11 @@ function analyze(text, opts) {
   }
 
   const analysis = enDetector.analyzeText(text, { sourceMode });
+  // The English engine has no register profile; echo the requested value so a
+  // caller reading stats.register never sees the field silently vanish.
+  if (analysis.stats && typeof analysis.stats === 'object' && analysis.stats.register === undefined) {
+    analysis.stats.register = register;
+  }
   return {
     lang: id.lang === 'unknown' ? 'unknown' : 'en',
     variety: null,
@@ -281,14 +518,22 @@ function renderReport(text, result, sourceLabel) {
   const conf = typeof result.confidence === 'number' ? result.confidence.toFixed(2) : 'n/a';
   out.push(`language:   ${result.lang}${varietyPart}  (confidence ${conf}, engine ${result.engine})`);
   out.push(`score:      ${result.score}   label: ${result.label}`);
+  out.push(`note:       ${REVIEW_SIGNAL_NOTE}`);
+  out.push(`calibration:${result.calibration ? ` ${result.calibration}` : ' n/a'}`
+    + `  engine-version ${result.engineVersion || 'unknown'}  authorship-claim ${result.authorshipClaim === true}`);
   if (result.stats) {
     const s = result.stats;
     const bits = [`words ${s.wordCount ?? 0}`];
     if (s.sentenceCount !== undefined) bits.push(`sentences ${s.sentenceCount}`);
     if (s.paragraphCount !== undefined) bits.push(`paragraphs ${s.paragraphCount}`);
     if (s.sourceMode) bits.push(`sourceMode ${s.sourceMode}`);
+    if (s.register) bits.push(`register ${s.register}`);
     if (s.tooShort) bits.push('tooShort');
     out.push(`stats:      ${bits.join(', ')}`);
+    if (s.groupCount !== undefined) {
+      out.push(`coverage:   ${s.groupCount} group(s), `
+        + `${s.affectedCoveragePercent}% of scored text affected (${s.coverageBasis})`);
+    }
     if (s.msaLeakage && s.msaLeakage.applicable) {
       out.push(`msa-leakage: ${(s.msaLeakage.ratio * 100).toFixed(0)}% `
         + `(${s.msaLeakage.msaHits} MSA vs ${s.msaLeakage.dialectHits} dialect function words)`);
@@ -326,22 +571,27 @@ function renderReport(text, result, sourceLabel) {
 
 // ═══ CLI ══════════════════════════════════════════════════════════════════
 
-const USAGE = 'usage: node detect.js <file|-> [--lang en|ar] [--variety msa|egt|shami] [--json] [--markdown]';
+const USAGE = 'usage: node detect.js <file|-> [--lang en|ar] [--variety msa|egt|shami] [--register default|formal] [--json] [--markdown]';
 
 function parseArgs(argv) {
-  const parsed = { file: null, lang: null, variety: null, json: false, markdown: false };
+  const parsed = { file: null, lang: null, variety: null, register: null, json: false, markdown: false };
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i];
     if (arg === '--json') { parsed.json = true; continue; }
     if (arg === '--markdown') { parsed.markdown = true; continue; }
     if (arg === '--help' || arg === '-h') { parsed.help = true; continue; }
-    if (arg === '--lang' || arg === '--variety') {
+    if (arg === '--lang' || arg === '--variety' || arg === '--register') {
       const value = argv[i + 1];
       if (value === undefined) throw new Error(`${arg} requires a value`);
       i += 1;
       if (arg === '--lang') {
         if (value !== 'en' && value !== 'ar') throw new Error(`--lang must be en or ar, got "${value}"`);
         parsed.lang = value;
+      } else if (arg === '--register') {
+        if (!['default', 'formal'].includes(value)) {
+          throw new Error(`--register must be default or formal, got "${value}"`);
+        }
+        parsed.register = value;
       } else {
         if (!['msa', 'egt', 'shami'].includes(value)) {
           throw new Error(`--variety must be msa, egt or shami, got "${value}"`);
@@ -350,7 +600,7 @@ function parseArgs(argv) {
       }
       continue;
     }
-    const eq = /^--(lang|variety)=(.*)$/.exec(arg);
+    const eq = /^--(lang|variety|register)=(.*)$/.exec(arg);
     if (eq) {
       argv.splice(i + 1, 0, eq[2]);
       argv[i] = `--${eq[1]}`;
@@ -398,6 +648,7 @@ function main(argv) {
   const result = analyze(text, {
     lang: args.lang,
     variety: args.variety,
+    register: args.register || 'default',
     markdown: args.markdown,
   });
 
@@ -413,4 +664,16 @@ if (require.main === module) {
   process.exitCode = main(process.argv.slice(2));
 }
 
-module.exports = { analyze, renderReport, lineCol, lineIndex, main };
+module.exports = {
+  analyze,
+  renderReport,
+  lineCol,
+  lineIndex,
+  main,
+  // exported for unit testing / reuse by callers that post-process themselves
+  groupIssues,
+  issueSpan,
+  engineVersion,
+  AR_CALIBRATION,
+  REVIEW_SIGNAL_NOTE,
+};

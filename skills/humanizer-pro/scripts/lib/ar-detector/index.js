@@ -13,6 +13,17 @@
  * options:
  *   variety:    'msa' (default) | 'egt' | 'shami'
  *   sourceMode: 'plain' (default) | 'rendered-markdown'
+ *   register:   'default' (default) | 'formal'
+ *
+ * REGISTER PROFILES (IMP-13)
+ * -------------------------
+ * `register` selects a threshold profile. Exactly TWO profiles exist and no
+ * more are planned; see REGISTER_PROFILES below for the numbers and
+ * scripts/README.md for the rationale. A formal register (legal, academic,
+ * contractual MSA) legitimately writes long, evenly-weighted sentences, so
+ * the *sentence-rhythm* gate — and only that gate — is relaxed. Lexicon
+ * patterns, their severities and their weights are IDENTICAL in both
+ * profiles: a register profile can never make an AI tell cheaper.
  *
  * LABELS AND THRESHOLDS
  * ---------------------
@@ -64,6 +75,41 @@ const signals = require('./signals.js');
 
 const VALID_VARIETIES = new Set(['msa', 'egt', 'shami']);
 const VALID_SOURCE_MODES = new Set(['plain', 'rendered-markdown']);
+
+/**
+ * REGISTER_PROFILES — IMP-13. Capped at two profiles by design.
+ *
+ * `burstinessCvThreshold` is the LOWER BOUND on sentence-length coefficient
+ * of variation below which AR-SH-004 ('uniform-rhythm', P0) fires.
+ *   default: 0.35 — signals.GATES.BURSTINESS_CV_THRESHOLD, unchanged.
+ *   formal:  0.22 — relaxed by 0.13 absolute (37% lower). Formal MSA (legal,
+ *            academic, contractual) is written in long clauses of similar
+ *            weight; a CV in the 0.22–0.35 band is normal there and is not
+ *            evidence of generation. Below 0.22 the sentences are close to
+ *            mechanically identical and AR-SH-004 still fires.
+ *
+ * `maxSentenceWordsThreshold` is `null` in BOTH profiles: this engine has no
+ * maximum-sentence-length / run-on trigger to relax. The key is present so
+ * the profile shape documents that absence explicitly rather than leaving a
+ * reader to grep for it. If such a trigger is ever added, the `formal`
+ * profile is where it gets its relaxed bound.
+ *
+ * Nothing else differs. Paragraph-length uniformity (AR-MSA-014),
+ * trigram repetition (AR-MSA-028), transition density (AR-SH-002), MSA
+ * leakage, punctuation and diacritic signals and every lexicon weight are
+ * profile-independent.
+ */
+const REGISTER_PROFILES = {
+  default: {
+    burstinessCvThreshold: signals.GATES.BURSTINESS_CV_THRESHOLD,
+    maxSentenceWordsThreshold: null,
+  },
+  formal: {
+    burstinessCvThreshold: 0.22,
+    maxSentenceWordsThreshold: null,
+  },
+};
+const VALID_REGISTERS = new Set(Object.keys(REGISTER_PROFILES));
 
 const WEIGHTS = {
   P0: 14,
@@ -193,15 +239,26 @@ function analyzeText(text, options) {
   const sourceMode = VALID_SOURCE_MODES.has(requestedSourceMode) ? requestedSourceMode : 'plain';
   const sourceModeFallback = requestedSourceMode !== sourceMode ? requestedSourceMode : undefined;
 
+  const requestedRegister = opts.register === undefined ? 'default' : opts.register;
+  const register = VALID_REGISTERS.has(requestedRegister) ? requestedRegister : 'default';
+  const registerFallback = requestedRegister !== register ? requestedRegister : undefined;
+  const profile = REGISTER_PROFILES[register];
+
   const baseStats = {
     wordCount: 0,
     sentenceCount: 0,
     paragraphCount: 0,
     variety,
     sourceMode,
+    register,
+    registerGates: {
+      burstinessCvThreshold: profile.burstinessCvThreshold,
+      maxSentenceWordsThreshold: profile.maxSentenceWordsThreshold,
+    },
   };
   if (varietyFallback !== undefined) baseStats.varietyFallback = varietyFallback;
   if (sourceModeFallback !== undefined) baseStats.sourceModeFallback = sourceModeFallback;
+  if (registerFallback !== undefined) baseStats.registerFallback = registerFallback;
 
   if (typeof text !== 'string' || text.trim().length === 0) {
     return {
@@ -214,6 +271,14 @@ function analyzeText(text, options) {
 
   // ── Masking (original coordinates preserved) ──────────────────────────
   const { masked, stats: maskStats } = signals.mask(text, sourceMode);
+  // Number of characters the masker blanked out. detect.js uses this as the
+  // exclusion term when it computes stats.affectedCoveragePercent (IMP-10):
+  // a URL or a code fence is not scored text, so it must not sit in the
+  // denominator.
+  let maskedCharCount = 0;
+  for (let i = 0; i < text.length; i += 1) {
+    if (masked[i] !== text[i]) maskedCharCount += 1;
+  }
 
   // ── Normalization, with an exact map back to the original ─────────────
   const { normalized, toOriginalRange } = normalize(masked, { taMarbuta: false });
@@ -230,6 +295,8 @@ function analyzeText(text, options) {
     sentenceCount: sentences.length,
     paragraphCount: paragraphs.length,
     hasArabic: arabicPresent,
+    maskedCharCount,
+    scoredCharCount: Math.max(0, text.length - maskedCharCount),
   };
 
   if (!arabicPresent) {
@@ -249,7 +316,13 @@ function analyzeText(text, options) {
   // ── (c) Sentence-length burstiness — AR-SH-004 ────────────────────────
   const burstiness = signals.sentenceBurstiness(sentences);
   stats.sentenceLengthCv = burstiness.cv;
-  if (burstiness.applicable && burstiness.uniform) {
+  // Register-conditional (IMP-13): the uniformity verdict is re-derived here
+  // against the active profile's threshold instead of using
+  // `burstiness.uniform`, which signals.js computes against the default gate.
+  const rhythmUniform = burstiness.applicable
+    && burstiness.cv !== null
+    && burstiness.cv < profile.burstinessCvThreshold;
+  if (burstiness.applicable && rhythmUniform) {
     const [s, e] = trimmedSpan(text, ...anchorSpan(sentences, text.length), 120);
     issues.push(makeIssue(
       'uniform-rhythm', 'AR-SH-004', s, e, text, 'P0',
@@ -449,5 +522,6 @@ module.exports = {
   PATTERNS,
   WEIGHTS,
   THRESHOLDS,
+  REGISTER_PROFILES,
   GATES: signals.GATES,
 };

@@ -194,3 +194,58 @@ test('report renders line:col positions', () => {
   assert.deepEqual(lineCol(starts, text.indexOf('ثان')), { line: 2, col: 5 });
   assert.equal(lineCol(starts, text.length - 1).line, 3);
 });
+
+// ══ IMP-13 / IMP-14 CLI surface ══════════════════════════════════════════
+
+test('CLI: --help lists --register', () => {
+  const r = run(['--help']);
+  assert.equal(r.status, 0, r.stderr);
+  assert.match(r.stdout, /--register default\|formal/);
+});
+
+test('CLI: stdin + --json carries the labelling fields and grouping stats', () => {
+  const text = fs.readFileSync(AR_FIXTURE, 'utf8');
+  const { result } = runJson(['-', '--markdown', '--json'], text);
+  assert.equal(result.authorshipClaim, false);
+  assert.equal(result.calibration, 'uncalibrated-review-signal');
+  assert.equal(typeof result.engineVersion, 'string');
+  assert.ok(Array.isArray(result.groups));
+  assert.equal(result.stats.groupCount, result.groups.length);
+  assert.equal(typeof result.stats.affectedCoveragePercent, 'number');
+  for (const g of result.groups) {
+    for (const key of ['start', 'end', 'issueIds', 'topSeverity']) {
+      assert.ok(key in g, `group missing ${key}`);
+    }
+    assert.ok(Array.isArray(g.issueIds) && g.issueIds.length > 0);
+    assert.ok(g.end >= g.start);
+    assert.ok(['P0', 'P1', 'P2', 'P3'].includes(g.topSeverity));
+  }
+});
+
+test('CLI: group spans slice back to real text and match their issues', () => {
+  const text = fs.readFileSync(AR_FIXTURE, 'utf8');
+  const { result } = runJson([AR_FIXTURE, '--markdown', '--json']);
+  for (const g of result.groups) {
+    assert.ok(g.start >= 0 && g.end <= text.length, `group ${g.start}-${g.end} out of range`);
+    for (const id of g.issueIds) {
+      const issue = result.issues[id];
+      assert.ok(issue, `issueId ${id} does not index an issue`);
+      assert.ok(issue.start >= g.start && issue.end <= g.end, 'issue falls outside its group');
+    }
+  }
+});
+
+test('CLI: the Egyptian fixture also carries the additive fields', () => {
+  const { result } = runJson([AR_EGT_FIXTURE, '--markdown', '--variety', 'egt', '--json']);
+  assert.equal(result.authorshipClaim, false);
+  assert.equal(result.calibration, 'uncalibrated-review-signal');
+  assert.equal(result.stats.register, 'default');
+  assert.equal(typeof result.stats.affectedCoveragePercent, 'number');
+});
+
+test('CLI: --register combines with --variety and --markdown', () => {
+  const { result } = runJson([AR_EGT_FIXTURE, '--markdown', '--variety', 'egt', '--register', 'formal', '--json']);
+  assert.equal(result.variety, 'egt');
+  assert.equal(result.stats.register, 'formal');
+  assert.equal(result.stats.sourceMode, 'rendered-markdown');
+});

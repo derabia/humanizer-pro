@@ -7,6 +7,16 @@
  * Usage:
  *   node validate.js before.md after.md [--seo keywords.txt] [--json]
  *                     [--lang en|ar] [--variety msa|egt|shami] [--strict-digits]
+ *                     [--strict-fidelity] [--mode rewrite|edit|seo]
+ *
+ * --strict-fidelity  promotes the `names-dates-citations` check (IMP-09) from
+ *                    its default WARN tier to FAIL. Proper-name extraction is
+ *                    heuristic, so the blocking tier is opt-in.
+ * --mode             records which humanizer mode produced the rewrite. When
+ *                    omitted it is inferred: `seo` if --seo was given, else
+ *                    `edit`. In `rewrite` mode the summary line carries the
+ *                    reminder that the validator is recommended for every
+ *                    rewrite (references/modes.md, SKILL.md step 6).
  *
  * Wraps `lib/en-validate.js` (adapted verbatim from avoid-ai-writing's
  * detector/validate.js, MIT — not edited here) for the checks it already
@@ -30,13 +40,36 @@ const lang = require('./lib/lang.js');
 
 function usageError(message) {
   console.error(message);
-  console.error('usage: node validate.js before.md after.md [--seo keywords.txt] [--json] [--lang en|ar] [--variety msa|egt|shami] [--strict-digits]');
+  console.error('usage: node validate.js before.md after.md [--seo keywords.txt] [--json] [--lang en|ar] [--variety msa|egt|shami] [--strict-digits] [--strict-fidelity] [--mode rewrite|edit|seo]');
   process.exit(2);
+}
+
+// Humanizer modes the validator can be told about. `rewrite` is the only one
+// that changes the output text: it adds the "recommended for every rewrite"
+// reminder to the summary line.
+const VALID_MODES = ['rewrite', 'edit', 'seo'];
+
+/**
+ * resolveMode(opts) -> 'rewrite' | 'edit' | 'seo'
+ * Explicit --mode wins. Otherwise: `seo` when --seo keywords were supplied,
+ * `edit` in every other case (the documented default).
+ */
+function resolveMode(opts) {
+  if (opts.mode) return opts.mode;
+  return opts.seo ? 'seo' : 'edit';
 }
 
 function parseArgs(argv) {
   const positional = [];
-  const opts = { seo: null, json: false, lang: null, variety: null, strictDigits: false };
+  const opts = {
+    seo: null,
+    json: false,
+    lang: null,
+    variety: null,
+    strictDigits: false,
+    strictFidelity: false,
+    mode: null,
+  };
   for (let i = 0; i < argv.length; i++) {
     const arg = argv[i];
     if (arg === '--seo') {
@@ -52,6 +85,13 @@ function parseArgs(argv) {
       if (!['msa', 'egt', 'shami'].includes(opts.variety)) usageError(`--variety must be one of msa|egt|shami, got "${opts.variety}"`);
     } else if (arg === '--strict-digits') {
       opts.strictDigits = true;
+    } else if (arg === '--strict-fidelity') {
+      opts.strictFidelity = true;
+    } else if (arg === '--mode') {
+      opts.mode = argv[++i];
+      if (!VALID_MODES.includes(opts.mode)) {
+        usageError(`--mode must be one of ${VALID_MODES.join('|')}, got "${opts.mode}"`);
+      }
     } else if (arg.startsWith('--')) {
       usageError(`unknown flag: ${arg}`);
     } else {
@@ -177,11 +217,14 @@ function scoreCheck(before, after, resolvedLang, variety) {
   };
 }
 
-function formatReport(checks, scores) {
+function formatReport(checks, scores, mode) {
   const lines = [];
   const fails = checks.filter((c) => c.status === 'FAIL').length;
   const warns = checks.filter((c) => c.status === 'WARN').length;
-  lines.push(fails === 0 ? `PASS — 0 violation(s), ${warns} warning(s)` : `FAIL — ${fails} violation(s), ${warns} warning(s)`);
+  const suffix = mode ? `  [mode ${mode}${mode === 'rewrite' ? ' — recommended for every rewrite' : ''}]` : '';
+  lines.push((fails === 0
+    ? `PASS — 0 violation(s), ${warns} warning(s)`
+    : `FAIL — ${fails} violation(s), ${warns} warning(s)`) + suffix);
   lines.push('');
   for (const c of checks) {
     lines.push(`  [${c.status.padEnd(4)}] ${c.name}: ${c.details}`);
@@ -214,6 +257,8 @@ function main() {
   let seoKeywords = null;
   if (opts.seo) seoKeywords = readKeywordsOrExit(opts.seo);
 
+  const mode = resolveMode(opts);
+
   let baseResult;
   try {
     baseResult = enValidate.validate(before, after, { skipResidual: true });
@@ -224,7 +269,11 @@ function main() {
 
   const checks = [
     ...baseChecksFromEnValidate(baseResult),
-    ...checkExtra(before, after, { seoKeywords, strictDigits: opts.strictDigits }),
+    ...checkExtra(before, after, {
+      seoKeywords,
+      strictDigits: opts.strictDigits,
+      strictFidelity: opts.strictFidelity,
+    }),
   ];
 
   const score = scoreCheck(before, after, resolvedLang, resolvedVariety);
@@ -239,9 +288,12 @@ function main() {
       scores: score.scores,
       lang: resolvedLang,
       variety: resolvedLang === 'ar' ? resolvedVariety : null,
+      mode,
+      strictFidelity: opts.strictFidelity,
+      note: mode === 'rewrite' ? 'recommended for every rewrite' : null,
     }, null, 2));
   } else {
-    console.log(formatReport(checks, score.scores));
+    console.log(formatReport(checks, score.scores, mode));
   }
 
   process.exit(ok ? 0 : 1);
@@ -251,4 +303,6 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { parseArgs, baseChecksFromEnValidate, scoreCheck, formatReport };
+module.exports = {
+  parseArgs, baseChecksFromEnValidate, scoreCheck, formatReport, resolveMode, VALID_MODES,
+};

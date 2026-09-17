@@ -493,12 +493,242 @@ function checkSeo(original, rewritten, keywords) {
   return results;
 }
 
+
+// -- names / dates / citations fidelity (IMP-09) -----------------------
+//
+// A rewrite may reshape prose freely, but it must not silently lose or alter
+// a DATE, a PROPER NAME or a CITATION MARKER. This check extracts candidates
+// from the original, extracts them from the rewrite, and reports what the
+// original had and the rewrite does not.
+//
+// Severity by design: a missing item is a WARN by default, not a FAIL.
+// Proper-name extraction without a morphological analyzer over-fires in
+// Arabic (and, in English, on title-case headings), so the default tier is a
+// warning a human reads. `--strict-fidelity` promotes the same finding to
+// FAIL for pipelines that want it blocking. This is the "ship it as a
+// warning tier first" mitigation recorded against IMP-09.
+//
+// All three extractors run over a canonicalized copy of the text:
+// Arabic-Indic and extended Arabic-Indic digits folded to western, and
+// Arabic letter forms folded by `lib/arabic-normalize.js`. A date rewritten
+// across digit systems (12 May 2023 <-> the same date in Arabic-Indic
+// digits) therefore produces the SAME key and does not warn here; the
+// digit-system change itself is already reported by the `numbers` check.
+
+const EN_MONTHS = [
+  'january', 'february', 'march', 'april', 'may', 'june',
+  'july', 'august', 'september', 'october', 'november', 'december',
+  'jan', 'feb', 'mar', 'apr', 'jun', 'jul', 'aug', 'sep', 'sept', 'oct', 'nov', 'dec',
+];
+
+// Gregorian month names as used in Egypt/the Gulf, the Syriac-origin set
+// used in the Levant, and the twelve Hijri months.
+const AR_MONTHS = [
+  'يناير', 'فبراير', 'مارس', 'ابريل', 'أبريل', 'مايو', 'يونيو', 'يوليو',
+  'اغسطس', 'أغسطس', 'سبتمبر', 'اكتوبر', 'أكتوبر', 'نوفمبر', 'ديسمبر',
+  'كانون الثاني', 'شباط', 'اذار', 'آذار', 'نيسان', 'ايار', 'أيار', 'حزيران',
+  'تموز', 'اب', 'آب', 'ايلول', 'أيلول', 'تشرين الاول', 'تشرين الأول',
+  'تشرين الثاني', 'كانون الاول', 'كانون الأول',
+  'محرم', 'صفر', 'ربيع الاول', 'ربيع الأول', 'ربيع الثاني', 'جمادى الاولى',
+  'جمادى الأولى', 'جمادى الاخرة', 'جمادى الآخرة', 'رجب', 'شعبان', 'رمضان',
+  'شوال', 'ذو القعدة', 'ذي القعدة', 'ذو الحجة', 'ذي الحجة',
+];
+
+// Arabic honorifics/titles whose FOLLOWING token(s) are a proper-name
+// candidate. Both the ال-prefixed and the bare form are listed because a
+// heading or a vocative drops the article.
+const AR_HONORIFICS = [
+  'الدكتور', 'دكتور', 'الدكتورة', 'دكتورة',
+  'الأستاذ', 'الاستاذ', 'أستاذ', 'استاذ', 'الأستاذة', 'الاستاذة',
+  'السيد', 'سيد', 'السيدة', 'سيدة',
+  'الشيخ', 'شيخ', 'الشيخة',
+  'المهندس', 'مهندس', 'المهندسة', 'مهندسة',
+];
+
+// Left contexts after which the following token(s) name a place or an
+// organization.
+const AR_ENTITY_CONTEXTS = ['في مدينة', 'في جامعة', 'جامعة', 'شركة', 'مدينة'];
+
+// English tokens that start a sentence or a heading far more often than they
+// start a name. A candidate whose FIRST token is one of these is dropped --
+// the conservative half of the heuristic.
+const EN_NAME_STOPWORDS = new Set([
+  'the', 'this', 'that', 'these', 'those', 'a', 'an', 'in', 'on', 'at', 'for',
+  'and', 'but', 'or', 'if', 'when', 'while', 'after', 'before', 'because',
+  'however', 'therefore', 'moreover', 'furthermore', 'additionally', 'also',
+  'we', 'you', 'they', 'it', 'he', 'she', 'i', 'our', 'your', 'their', 'his',
+  'her', 'its', 'there', 'here', 'what', 'which', 'who', 'how', 'why',
+  'first', 'second', 'third', 'finally', 'overall', 'note', 'warning',
+  'table', 'figure', 'chapter', 'section', 'appendix', 'usage', 'example',
+]);
+
+/**
+ * Fold Arabic-Indic and extended Arabic-Indic digits to western WITHOUT
+ * touching punctuation. `toWesternValue` also strips thousands separators,
+ * which would destroy the comma in "(Smith, 2020)", so this check uses its
+ * own narrower fold.
+ */
+function foldDigits(text) {
+  let out = '';
+  for (const ch of text) {
+    const code = ch.codePointAt(0);
+    if (code >= 0x0660 && code <= 0x0669) out += String(code - 0x0660);
+    else if (code >= 0x06f0 && code <= 0x06f9) out += String(code - 0x06f0);
+    else out += ch;
+  }
+  return out;
+}
+
+function canonicalizeForFidelity(text) {
+  return normalizeArabic(foldDigits(stripCode(text))).normalized;
+}
+
+function canonKey(prefix, raw) {
+  return prefix + ':' + String(raw).toLowerCase().replace(/\s+/g, ' ').trim();
+}
+
+const DATE_PATTERNS = [
+  // ISO 8601 date (a trailing time part, if any, is ignored).
+  /\b\d{4}-\d{2}-\d{2}\b/g,
+  // dd/mm/yyyy, mm/dd/yyyy, dd-mm-yyyy, dd.mm.yyyy (2- or 4-digit year).
+  /\b\d{1,2}[/.-]\d{1,2}[/.-]\d{2,4}\b/g,
+];
+
+function datePatternsWithMonthNames() {
+  const en = EN_MONTHS.slice().sort((a, b) => b.length - a.length).join('|');
+  const ar = AR_MONTHS.slice().sort((a, b) => b.length - a.length).join('|');
+  return [
+    // "12 May 2023" / "12 مايو 2023"  (digits already folded to western)
+    new RegExp('\\b\\d{1,2}\\s+(?:' + en + ')\\.?,?\\s+\\d{3,4}\\b', 'gi'),
+    new RegExp('\\d{1,2}\\s+(?:' + ar + ')\\s+\\d{3,4}', 'g'),
+    // "May 12, 2023"
+    new RegExp('\\b(?:' + en + ')\\.?\\s+\\d{1,2},?\\s+\\d{3,4}\\b', 'gi'),
+    // Bare "May 2023" / "مايو 2023" -- a month+year is still a date claim.
+    new RegExp('\\b(?:' + en + ')\\.?\\s+\\d{3,4}\\b', 'gi'),
+    new RegExp('(?:' + ar + ')\\s+\\d{3,4}', 'g'),
+    // Hijri year with the هـ marker.
+    /\d{3,4}\s*(?:هـ|هجري|هجرية)/g,
+  ];
+}
+
+function extractDateKeys(canonical) {
+  const keys = [];
+  const all = DATE_PATTERNS.concat(datePatternsWithMonthNames());
+  for (const re of all) {
+    for (const m of extractAll(re, canonical)) keys.push(canonKey('date', m[0]));
+  }
+  // The same span can match two patterns ("12 May 2023" also matches
+  // "May 2023"), so a nested duplicate must not become a phantom missing
+  // item: dates are compared as a SET, not a multiset.
+  return Array.from(new Set(keys));
+}
+
+const CITATION_PATTERNS = [
+  // Numeric reference markers [1], [12], [1,2], [1-3]
+  /\[\d{1,3}(?:\s*[,-]\s*\d{1,3})*\]/g,
+  // (Smith, 2020) / (Smith & Jones, 2020) / (Smith et al., 2020)
+  /\([A-Z][A-Za-z.'-]+(?:\s+(?:et\s+al\.?|and|&|de|van)\s*[A-Za-z.'-]*)*,\s*\d{4}[a-z]?\)/g,
+  // Bare "et al." anywhere (a narrative citation)
+  /\bet\s+al\.?/gi,
+  // Arabic source attribution
+  /المصدر\s*:/g,
+  /المراجع\s*:/g,
+  // DOI and ISBN
+  /\b10\.\d{4,9}\/[^\s"'<>)\]]+/g,
+  /\bISBN(?:-1[03])?\s*:?\s*\d[\d -]{8,20}[\dXx]/gi,
+];
+
+function extractCitationKeys(canonical) {
+  const keys = [];
+  for (const re of CITATION_PATTERNS) {
+    for (const m of extractAll(re, canonical)) keys.push(canonKey('citation', m[0]));
+  }
+  return Array.from(new Set(keys));
+}
+
+function extractNameKeys(canonical) {
+  const keys = [];
+
+  // (b1) English: runs of two or more capitalized words.
+  const EN_NAME_RE = /\b[A-Z][a-z][A-Za-z'-]*(?:\s+(?:of\s+|the\s+|and\s+|de\s+|van\s+|bin\s+|al-|ibn\s+|von\s+)?[A-Z][a-z][A-Za-z'-]*)+/g;
+  for (const m of extractAll(EN_NAME_RE, canonical)) {
+    const tokens = m[0].split(/\s+/).filter(Boolean);
+    if (tokens.length < 2) continue;
+    if (EN_NAME_STOPWORDS.has(tokens[0].toLowerCase())) continue;
+    keys.push(canonKey('name', m[0]));
+  }
+
+  // (b2) Arabic: the 1-2 tokens following an honorific/title.
+  const hon = AR_HONORIFICS.slice().sort((a, b) => b.length - a.length).join('|');
+  const AR_HON_RE = new RegExp('(?:' + hon + ')\\s+([\\u0621-\\u064a]+(?:\\s+[\\u0621-\\u064a]+)?)', 'g');
+  for (const m of extractAll(AR_HON_RE, canonical)) keys.push(canonKey('name', m[1]));
+
+  // (b3) Arabic: the 1-2 tokens following a place/organization context.
+  const ctx = AR_ENTITY_CONTEXTS.slice().sort((a, b) => b.length - a.length).join('|');
+  const AR_CTX_RE = new RegExp('(?:' + ctx + ')\\s+([\\u0621-\\u064a]+(?:\\s+[\\u0621-\\u064a]+)?)', 'g');
+  for (const m of extractAll(AR_CTX_RE, canonical)) keys.push(canonKey('name', m[1]));
+
+  // Nested/overlapping candidates make a multiset unreliable (a three-word
+  // name yields both the full run and a two-word prefix under another
+  // pattern), so names are compared as a SET too.
+  return Array.from(new Set(keys));
+}
+
+/**
+ * names-dates-citations -- one check covering (a) dates, (b) proper-name
+ * candidates, (c) citation markers. WARN when something present in the
+ * original is absent from the rewrite; FAIL instead when
+ * `options.strictFidelity` is set.
+ */
+function checkNamesDatesCitations(original, rewritten, options) {
+  const opts = options || {};
+  const origCanon = canonicalizeForFidelity(original);
+  const newCanon = canonicalizeForFidelity(rewritten);
+
+  const origDates = extractDateKeys(origCanon);
+  const newDates = new Set(extractDateKeys(newCanon));
+  const missingDates = origDates.filter((k) => !newDates.has(k));
+
+  const origNames = extractNameKeys(origCanon);
+  const newNames = new Set(extractNameKeys(newCanon));
+  const missingNames = origNames.filter((k) => !newNames.has(k));
+
+  const origCites = extractCitationKeys(origCanon);
+  const newCites = new Set(extractCitationKeys(newCanon));
+  const missingCites = origCites.filter((k) => !newCites.has(k));
+
+  const strip = (k) => k.slice(k.indexOf(':') + 1);
+  const parts = [];
+  if (missingDates.length) parts.push('date(s): ' + sample(missingDates.map(strip)));
+  if (missingNames.length) parts.push('name(s): ' + sample(missingNames.map(strip)));
+  if (missingCites.length) parts.push('citation(s): ' + sample(missingCites.map(strip)));
+
+  const scanned = origDates.length + ' date(s), ' + origNames.length
+    + ' name candidate(s), ' + origCites.length + ' citation marker(s)';
+
+  if (parts.length === 0) {
+    return {
+      name: 'names-dates-citations',
+      status: 'PASS',
+      details: 'All preserved (' + scanned + ' scanned).',
+    };
+  }
+  return {
+    name: 'names-dates-citations',
+    status: opts.strictFidelity ? 'FAIL' : 'WARN',
+    details: 'Missing or altered after the rewrite -- ' + parts.join('; ') + '. ('
+      + scanned + ' scanned; WARN by default, FAIL under --strict-fidelity.)',
+  };
+}
+
 // ─── entry point ───────────────────────────────────────────────────────
 
 function checkExtra(original, rewritten, options = {}) {
   const orig = normalizeCRLF(original);
   const rew = normalizeCRLF(rewritten);
-  const opts = { strictDigits: false, seoKeywords: null, ...options };
+  const opts = {
+    strictDigits: false, strictFidelity: false, seoKeywords: null, ...options,
+  };
 
   const results = [
     checkJsonLd(orig, rew),
@@ -510,6 +740,7 @@ function checkExtra(original, rewritten, options = {}) {
     checkFrontmatterMeta(orig, rew),
     checkHeadingsArabicAware(orig, rew),
     ...checkNumbers(orig, rew, opts),
+    checkNamesDatesCitations(orig, rew, opts),
   ];
 
   results.push(...checkSeo(orig, rew, opts.seoKeywords));
@@ -519,7 +750,12 @@ function checkExtra(original, rewritten, options = {}) {
 
 module.exports = {
   checkExtra,
+  checkNamesDatesCitations,
   // exported for unit testing
+  extractDateKeys,
+  extractNameKeys,
+  extractCitationKeys,
+  canonicalizeForFidelity,
   extractJsonLd,
   extractShortcodes,
   extractWpComments,

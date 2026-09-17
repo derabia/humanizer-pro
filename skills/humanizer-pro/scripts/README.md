@@ -5,7 +5,7 @@ dependencies.
 
 ## detect.js
 
-`node detect.js <file|-> [--lang en|ar] [--variety msa|egt|shami] [--json] [--markdown]`
+`node detect.js <file|-> [--lang en|ar] [--variety msa|egt|shami] [--register default|formal] [--json] [--markdown]`
 
 Scores one document for AI-writing tells and prints a report. It routes to
 one of two engines and never edits anything.
@@ -14,6 +14,10 @@ one of two engines and never edits anything.
   from stdin.
 - `--lang en|ar` — force the engine instead of auto-detecting it.
 - `--variety msa|egt|shami` — force the Arabic variety. Implies `--lang ar`.
+- `--register default|formal` — threshold profile for the Arabic engine
+  (IMP-13). `formal` relaxes the sentence-rhythm gate and nothing else; see
+  "Register profiles" below. Accepted but inert for the English engine, and
+  always echoed as `stats.register`. Bad values exit `2`.
 - `--json` — print the raw analysis object with a `lang` field in front of
   it, instead of the human-readable report.
 - `--markdown` — analyse as *rendered* Markdown
@@ -137,19 +141,95 @@ text once a variety (forced or auto-picked) is chosen for `analyzeText()`.
 ### Output
 
 The report prints the language/variety and language-ID confidence, the score
-and label, a stats line, and the issues grouped `P0` / `P1` / `P2` with
-`line:col`, pattern id, type, excerpt and suggestion. When the register-mix
+and label, the review-signal note, a calibration line, a stats line, a
+coverage line, and the issues grouped `P0` / `P1` / `P2` with `line:col`,
+pattern id, type, excerpt and suggestion. The note is printed verbatim on
+every run, for every engine:
+
+```
+note:       score is a review signal, not an authorship claim
+calibration: uncalibrated-review-signal  engine-version 7f3a91c  authorship-claim false
+stats:      words 146, sentences 10, paragraphs 1, sourceMode rendered-markdown, register default
+coverage:   16 group(s), 27.4% of scored text affected (scored-chars-excluding-masked)
+```
+ When the register-mix
 check (above) ran, the stats line also prints a `register-mix:` line with
 the `msa` vs. dialect scores and the Arabic summary note. Arabic is written
 to stdout as UTF-8 by `process.stdout.write` — no console codepage handling
 is needed on Windows.
 
 `--json` prints `{ lang, variety, confidence, engine, arabicRatio, score,
-label, issues, stats }`. The two engines' `issues` and `stats` differ in
+label, issues, stats, groups, authorshipClaim, calibration, engineVersion }`. The two engines' `issues` and `stats` differ in
 shape (the English engine reports `{type, text, index, severity:
 'critical'|'high'|…}`; the Arabic engine reports `{type, patternId, start,
 end, excerpt, severity: 'P0'|'P1'|'P2', suggestion}`); `lang`, `score`,
 `label`, `issues` and `stats` are common to both.
+
+### Uncalibrated-signal labelling (IMP-14)
+
+Three fields are present on **every** `detect.js --json` result and on every
+`analyze()` return, for both engines. They were **added**; nothing was renamed
+or removed, so pre-IMP-14 callers keep working.
+
+| field | value | meaning |
+|---|---|---|
+| `authorshipClaim` | always `false` | this tool never claims to know who or what wrote a document. The score is evidence for a human reviewer, not a verdict on authorship. |
+| `calibration` | `"uncalibrated-review-signal"` | the Arabic engine's weights are reasoned from the reference documents, not fitted to a labelled corpus, so no false-positive/false-negative rate is claimed. The English engine is asked for its own calibration note first (`enDetector.CALIBRATION`); it publishes none today — its `class_probabilities` are, by its own source comment, "not calibrated against a labeled corpus" — so it receives the same label. If it ever publishes one, that string is used verbatim. |
+| `engineVersion` | e.g. `"7f3a91c"` (a git short SHA) or `"v0.1.0"` | `git rev-parse --short HEAD`, read once per process with this file's directory as cwd and with git's stderr discarded. When git is unavailable (no binary, not a repository, an installed skill, an exported zip) the `package.json` version is used, prefixed `v` so the two shapes can never be confused. A git answer is only trusted when `git rev-parse --show-toplevel` names a humanizer-pro checkout — an installed skill can live inside an unrelated repository (a dotfiles repo under `~/.claude`, say), and a SHA from that repo would be actively misleading rather than merely absent. `tools/build-zip.js` archives only `skills/humanizer-pro/`, so the exported zip carries no `package.json`: a skill installed from that zip, outside a humanizer-pro checkout, reports `"unknown"`. The field is always present and always a string. |
+
+The readable report carries the same commitment as one line:
+
+```
+note: score is a review signal, not an authorship claim
+```
+
+### Issue grouping and affected coverage (IMP-10)
+
+Engine-agnostic **post-processing** in `detect.js`, applied to whichever engine
+ran. Additive: `issues` is untouched and keeps its order.
+
+`groups` is a new top-level array:
+
+```json
+"groups": [
+  { "start": 147, "end": 234, "issueIds": [0, 1, 2], "topSeverity": "P0" },
+  { "start": 235, "end": 239, "issueIds": [3],       "topSeverity": "P1" }
+]
+```
+
+- Spans that **overlap** *or merely **touch*** (`previous.end === next.start`)
+  are merged into one group. Merging is a single left-to-right pass over the
+  spans sorted by `start`.
+- `issueIds` are zero-based indices into `result.issues`, ascending. Indices,
+  not `patternId`s: a pattern that fires twice produces two findings with the
+  same `patternId`, so `patternId` is not an identifier.
+- `topSeverity` is the worst severity in the group (`P0 > P1 > P2 > P3`),
+  normalized across engines — the English engine's `critical`/`high`/… labels
+  are mapped through `enDetector.SEVERITY_LABELS` first.
+- Spans come from `issue.start`/`issue.end` (Arabic engine) or
+  `issue.index` + `issue.text.length` (English engine). A finding with no
+  usable offset (the English engine emits document-level findings with a null
+  index) cannot be placed: it is left out of `groups` and out of coverage, and
+  counted in `stats.ungroupedIssueCount` (the key is absent when zero).
+
+Three new `stats` fields:
+
+| field | meaning |
+|---|---|
+| `stats.groupCount` | `groups.length`. Two overlapping hits count as **one** group. |
+| `stats.affectedCharCount` | sum of the **merged** span lengths. Because the spans are merged first, an overlap contributes its union exactly once and can never be double-counted. |
+| `stats.affectedCoveragePercent` | `affectedCharCount / denominator × 100`, rounded to one decimal and clamped to `100`. |
+| `stats.coverageBasis` | which denominator was used: `scored-chars-excluding-masked` or `total-chars`. |
+
+**Coverage denominator.** The Arabic engine publishes `stats.maskedCharCount`
+and `stats.scoredCharCount` (total length minus masked URLs, inline code,
+fenced blocks and initial frontmatter), and that scored count is used — a URL
+or a code fence is not scored text, so it must not sit in the denominator. The
+English engine does not publish masked-region **lengths** (only booleans/counts
+of masked *items*), so for `engine: 'en'` the denominator is the full text
+length and `coverageBasis` says `total-chars`. `affectedCoveragePercent` is
+therefore comparable across documents on the same engine, and comparable across
+engines only up to that difference in basis.
 
 ### Programmatic use
 
@@ -163,8 +243,9 @@ underlying engines directly.
 
 ## The Arabic engine (`lib/ar-detector/`)
 
-`analyzeText(text, { variety, sourceMode }) -> { score, label, issues, stats }`,
-plus `PATTERNS`, `WEIGHTS`, `THRESHOLDS` and `GATES` for tests and docs.
+`analyzeText(text, { variety, sourceMode, register }) -> { score, label, issues, stats }`,
+plus `PATTERNS`, `WEIGHTS`, `THRESHOLDS`, `REGISTER_PROFILES` and `GATES` for
+tests and docs.
 Split across three files: `lexicons.js` (phrase lists per pattern id, per
 variety), `signals.js` (masking, segmentation, stylometry) and `index.js`
 (orchestration and scoring).
@@ -222,13 +303,64 @@ technical text. And per `ar-shared.md`, "Rhetorical devices that are NOT
 tells in Arabic", rhetorical and reader-directed questions are never a
 signal in Arabic; the English-language rule is explicitly inverted here.
 
+### Register profiles (IMP-13)
+
+`opts.register` selects a threshold profile. **Exactly two profiles exist and
+no third is planned** — the cap is the mitigation for threshold sprawl recorded
+against IMP-13. Both numbers are stated here and asserted in
+`tests/register-profile.test.js`.
+
+| gate | `default` | `formal` | change |
+|---|---|---|---|
+| burstiness CV lower bound (`AR-SH-004`, `P0`) | `0.35` | `0.22` | relaxed by `0.13` absolute, i.e. the bound is **37% lower** |
+| max-sentence-length / run-on trigger | `null` | `null` | **no such trigger exists in this engine**, so there is nothing to relax |
+| everything else (lexicon phrases, severities, `P0/P1/P2` weights, `minCount`s, paragraph CV `0.22`, trigram ratio, transition density, MSA leakage, punctuation, diacritics) | unchanged | unchanged | — |
+
+Why: formal MSA — legal, academic, contractual — is written in long clauses of
+deliberately similar weight. A sentence-length coefficient of variation in the
+`0.22`–`0.35` band is normal in that register and is **not** evidence of
+generation, so the default profile over-fires a `P0` on it. Below `0.22` the
+sentences are close to mechanically identical and `AR-SH-004` still fires under
+`formal` too. A register profile can only ever make the engine *quieter*: it
+cannot add a finding and cannot make any AI tell cheaper.
+
+The `maxSentenceWordsThreshold: null` key is carried in both profiles
+deliberately, so the absence of a run-on trigger is documented in the profile
+table rather than left for a reader to grep for. If one is ever added, `formal`
+is where it gets its relaxed bound.
+
+Measured on `tests/fixtures/register/formal-human-msa.md`, a human-authored
+administrative-law passage in MSA (`<!-- NATIVE-REVIEW: msa -->`, line 2),
+sentence-length CV **0.244**:
+
+| profile | score | label | `AR-SH-004` |
+|---|---|---|---|
+| `default` | **31** | `MIXED` | fires (over-fire) |
+| `formal` | **17** | `HUMAN` | does not fire |
+
+The difference is exactly `WEIGHTS.P0` (14) — the one rhythm finding — and no
+other finding is added or removed. The over-fire was reproducible: the fixture
+scores above the `MIXED` threshold under `default` purely because of rhythm,
+with the remaining 17 points coming from three `AR-SH-007` passive-voice hits
+(`6 + 3 + 1.5`, diminishing returns), two `AR-SH-002-B` `P2` transitions
+(`2 + 1`) and two `AR-SH-TYPO` `P2` typography observations (`2 + 1`, a Latin
+comma and mixed digit systems) — all of which are ordinary in a legal text.
+
+Regression guard, also asserted: `tests/fixtures/ar-msa/ai-01.md` still scores
+**100** / `AI` under `formal`, well above the `AI` threshold of 55. Relaxing the
+rhythm gate does not let a generated document through.
+
+`stats.register` echoes the active profile, `stats.registerGates` echoes its
+numbers, and an unrecognized value falls back to `default` with
+`stats.registerFallback` recording what was asked for.
+
 ### Signals
 
 | # | signal | pattern id(s) | tier | gate |
 |---|---|---|---|---|
 | a | phrase-lexicon hits, matched on the normalized string and mapped back to original offsets | `AR-SH-001/002/003/006/007`, `AR-MSA-002/006/007/008/012`, `AR-EGT-001/003/005/007/013/014/024`, `AR-SHM-001/004/005/006/007/022` | per pattern | some patterns carry a `minCount` (passive voice 2, تم/يتم 2, MSA-vocabulary runs 2, syntactic template 3) — below it they report nothing |
 | b | weighted tiers `P0 > P1 > P2` with per-pattern diminishing returns | — | — | — |
-| c | sentence-length burstiness (coefficient of variation; split on `.` `؟` `!` `؛` and newlines) | `AR-SH-004` | `P0` | ≥ 5 sentences; fires below CV 0.35 |
+| c | sentence-length burstiness (coefficient of variation; split on `.` `؟` `!` `؛` and newlines) | `AR-SH-004` | `P0` | ≥ 5 sentences; fires below CV 0.35 (`register: 'formal'` → 0.22 — the only register-conditional gate) |
 | d | paragraph-length uniformity | `AR-MSA-014` | `P2` | ≥ 4 paragraphs; fires below CV 0.22 |
 | e | word-trigram repetition | `AR-MSA-028` | `P2` | ≥ 40 words; fires above a 0.04 repeat ratio |
 | f | transition-phrase density per 100 words | `AR-SH-002` | `P1` | ≥ 60 words; fires above 2 per 100 words (`ar-levantine.md` `AR-SHM-012`, shm:509-510 — kept because that reference explicitly retains it as an editing rule, not as a claim about AI behaviour) |
@@ -369,6 +501,8 @@ node validate.js before.md after.md --seo keywords.txt
 node validate.js before.md after.md --json
 node validate.js before.md after.md --lang ar --variety egt
 node validate.js before.md after.md --strict-digits
+node validate.js before.md after.md --strict-fidelity
+node validate.js before.md after.md --mode rewrite
 ```
 
 - `before.md` / `after.md` — required positional arguments, in that order.
@@ -387,6 +521,17 @@ node validate.js before.md after.md --strict-digits
   (Western `0-9` ↔ Arabic-Indic `٠-٩` / Extended Arabic-Indic `۰-۹`)
   without changing its value fails instead of warning. See "Arabic digit
   handling" below.
+- `--strict-fidelity` — promotes the `names-dates-citations` check (IMP-09)
+  from its default `WARN` tier to `FAIL`. Off by default because proper-name
+  extraction is heuristic; see "Names, dates and citations" below.
+- `--mode rewrite|edit|seo` — records which humanizer mode produced the
+  rewrite. When omitted it is **inferred**: `seo` if `--seo` was given,
+  `edit` in every other case. `rewrite` is the only value that changes the
+  output: the summary line gains `[mode rewrite — recommended for every
+  rewrite]`, and `--json` gains `"note": "recommended for every rewrite"`.
+  A bad value exits `2`.
+
+`--json` gains `mode` and `strictFidelity` alongside the existing fields.
 
 ### Exit codes
 
@@ -423,7 +568,57 @@ Each check appears in the report/`--json` output as one of
 | `seo-keyword-placement` | (only with `--seo`) the primary keyword dropped out of the title/H1, the first 100 words, or every H2 where it used to appear | validate-extra.js |
 | `seo-stuffing` | (only with `--seo`) a keyword's occurrence count more than doubled | validate-extra.js |
 | `seo-thin-sections` | (only with `--seo`) a heading's section shrank below 40 words — always WARN, never FAIL | validate-extra.js |
+| `names-dates-citations` | a date, proper-name candidate or citation marker present in the original is absent from the rewrite — `WARN` by default, `FAIL` under `--strict-fidelity` | validate-extra.js (Arabic-aware) |
 | `detector-score` | the rewrite's AI-detector score is higher (more AI-like) than the original's | validate.js, via `lib/en-detector` or `lib/ar-detector` |
+
+### Names, dates and citations (IMP-09)
+
+One check, `names-dates-citations`, covering three families. It runs on every
+invocation, not only with `--seo`.
+
+**(a) Dates.** ISO `2023-05-12`; `dd/mm/yyyy` and its `-` / `.` separators with
+a 2- or 4-digit year; `12 May 2023`, `May 12, 2023` and the bare `May 2023`,
+over the full English month-name set plus common abbreviations; `12 مايو 2023`
+over the Egyptian/Gulf Gregorian names, the Syriac-origin Levantine set
+(`كانون الثاني`, `شباط`, `آذار`, …) and the twelve Hijri month names; and Hijri
+years carrying the `هـ` / `هجري` / `هجرية` marker.
+
+**(b) Proper names — conservative heuristics, deliberately so.**
+
+- English: a run of **two or more** capitalized words, optionally joined by
+  `of`/`the`/`and`/`de`/`van`/`bin`/`ibn`/`von`. A candidate whose *first*
+  token is a common sentence- or heading-initial word (`The`, `This`, `In`,
+  `However`, `Table`, `Section`, `Usage`, …) is dropped.
+- Arabic: the next one or two tokens after an honorific or title —
+  `الدكتور`, `الأستاذ`, `السيد`, `الشيخ`, `المهندس` and their bare and
+  feminine forms — or after a place/organization context: `في مدينة`,
+  `في جامعة`, `جامعة`, `شركة`, `مدينة`. There is no morphological analyzer
+  here, so nothing else is treated as a name.
+
+**(c) Citation markers.** `[1]`, `[12]`, `[1,2]`, `[1-3]`;
+`(Smith, 2020)`, `(Smith & Jones, 2020)`, `(Smith et al., 2020)`; a bare
+`et al.`; `المصدر:` and `المراجع:`; DOIs (`10.1016/j.example.2019.04.002`);
+and ISBN-10/13.
+
+**Comparison.** All three extractors run over a canonicalized copy of both
+texts: fenced and inline code stripped, Arabic-Indic (`٠-٩`) and extended
+Arabic-Indic (`۰-۹`) digits folded to western, and Arabic letter forms folded
+by `lib/arabic-normalize.js`. Punctuation is *not* normalized, so the comma in
+`(Smith, 2020)` survives. Consequence: **a date rewritten across digit systems
+does not warn here** — `١٢ مايو ٢٠٢٣` and `12 مايو 2023` produce the same key.
+The digit-system change itself is already reported by the `numbers` check, and
+reporting it twice would be noise. Dates, names and citations are each compared
+as a **set**, not a multiset, because the patterns nest (`12 May 2023` also
+matches `May 2023`) and a nested duplicate must not become a phantom missing
+item.
+
+**Tiering.** A missing item is `WARN` by default and `FAIL` under
+`--strict-fidelity`. This is the "ship it as a warning tier first" mitigation
+recorded against IMP-09: proper-name extraction without a morphological
+analyzer over-fires in Arabic and, in English, on title-case headings, so the
+blocking tier is opt-in. The check reports what it scanned (`N date(s), N name
+candidate(s), N citation marker(s)`) so an over-firing count is visible rather
+than hidden.
 
 ### SEO keyword semantics (`--seo keywords.txt`)
 
