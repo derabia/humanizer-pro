@@ -1,0 +1,12 @@
+round1-check-node18.txt — static Node-18-API-compatibility grep
+Generated: 2026-09-17T19:21:56Z by tools/check-node18.js
+This is a STATIC TEXT GREP ONLY. It does not run the code under Node 18.
+A real Node 18 CI run (see .github/workflows/ci.yml, node18 matrix job)
+is still required to confirm actual runtime compatibility.
+
+check-node18: scanned 28 file(s) under skills, tools, tests
+
+  ok      no post-Node-18 API usage found
+
+result: 0 hit(s)
+note: this is a static grep; a real Node 18 run in CI is still required

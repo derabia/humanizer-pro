@@ -1,0 +1,31 @@
+{
+  "name": "humanizer-pro",
+  "version": "0.1.0",
+  "description": "Humanize AI-generated writing and strip AI-isms, in English and Arabic (MSA, Egyptian, Levantine).",
+  "license": "MIT",
+  "keywords": [
+    "humanizer",
+    "ai-detection",
+    "writing",
+    "editing",
+    "arabic"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "humanizer-pro",
+    "shortDescription": "Make AI-generated writing read as human, in English and Arabic",
+    "longDescription": "Humanize AI-generated writing and strip AI-isms, in English and Arabic. Three modes: detect (audit plus 0-100 score), rewrite, and edit (in-place edits to a prose file), plus an seo modifier that protects keywords, headings, links, anchor text, schema and CMS markup. Arabic covers MSA, Egyptian, and Levantine (experimental) with automatic variety detection.",
+    "category": "Productivity",
+    "capabilities": [
+      "Detect",
+      "Rewrite",
+      "Edit",
+      "SEO-safe rewrite"
+    ],
+    "defaultPrompt": [
+      "Humanize this draft and remove AI tells without changing its meaning",
+      "Detect whether this text reads as AI-generated and score it",
+      "Rewrite this article to sound human while keeping its SEO markup intact"
+    ]
+  }
+}

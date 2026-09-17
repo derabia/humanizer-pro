@@ -262,6 +262,8 @@ npm test
 node tools/check-skill.js
 node tools/check-upstream.js
 node tools/merge-docs.js
+node tools/check-version.js
+node tools/check-node18.js
 ```
 
 - `npm test`: runs `tools/run-tests.js`, which enumerates
@@ -278,6 +280,13 @@ node tools/merge-docs.js
   `docs/provenance/`, `docs/dedup-log/`, `docs/native-review/`, and
   `docs/discrepancies/` into the canonical top-level `docs/*.md`
   files; run it after editing any fragment.
+- `node tools/check-version.js`: asserts `package.json` version,
+  `SKILL.md` frontmatter `metadata.version`, and the latest
+  `CHANGELOG.md` heading agree (a `-build`/`-rc` suffix is tolerated);
+  pass `--require-tag` to also require a matching git tag.
+- `node tools/check-node18.js`: statically greps `skills/`, `tools/`,
+  and `tests/` for JS/Node APIs newer than Node 18; a real Node 18 CI
+  run is still the actual compatibility gate.
 
 ## Credits and license
 

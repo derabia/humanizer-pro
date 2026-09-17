@@ -1,16 +1,40 @@
 {
   "name": "humanizer-pro",
   "version": "0.1.0",
+  "description": "Humanize AI-generated writing and strip AI-isms, in English and Arabic (MSA, Egyptian, Levantine).",
   "private": true,
   "license": "MIT",
+  "keywords": [
+    "humanizer",
+    "ai-detection",
+    "writing",
+    "editing",
+    "arabic",
+    "agent-skill",
+    "claude"
+  ],
   "engines": {
     "node": ">=18"
   },
+  "bin": {
+    "humanizer-pro-detect": "skills/humanizer-pro/scripts/detect.js",
+    "humanizer-pro-validate": "skills/humanizer-pro/scripts/validate.js"
+  },
+  "files": [
+    "skills/humanizer-pro",
+    "tools",
+    "README.md",
+    "LICENSE",
+    "CREDITS.md",
+    "CHANGELOG.md"
+  ],
   "scripts": {
     "test": "node tools/run-tests.js",
     "detect": "node skills/humanizer-pro/scripts/detect.js",
     "validate": "node skills/humanizer-pro/scripts/validate.js",
     "check-upstream": "node tools/check-upstream.js",
+    "check:version": "node tools/check-version.js",
+    "check:node18": "node tools/check-node18.js",
     "build:zip": "node tools/build-zip.js"
   }
 }

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-plugin-manifest.json",
+  "name": "humanizer-pro",
+  "description": "Humanize AI-generated writing and strip AI-isms, in English and Arabic (MSA, Egyptian, Levantine).",
+  "version": "0.1.0",
+  "license": "MIT",
+  "keywords": [
+    "humanizer",
+    "ai-detection",
+    "writing",
+    "editing",
+    "arabic"
+  ],
+  "skills": ["./skills/humanizer-pro"]
+}
