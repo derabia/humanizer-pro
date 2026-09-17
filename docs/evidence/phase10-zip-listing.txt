@@ -1,0 +1,31 @@
+Archive:  dist/humanizer-pro.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+     1092  2026-09-17 17:13   humanizer-pro/LICENSES/avoid-ai-writing.MIT.txt
+     1087  2026-09-17 17:13   humanizer-pro/LICENSES/blader-humanizer.MIT.txt
+     1087  2026-09-17 17:14   humanizer-pro/LICENSES/humanizer-semitic.MIT.txt
+    33163  2026-09-17 18:24   humanizer-pro/references/ar-egyptian.md
+    40059  2026-09-17 18:26   humanizer-pro/references/ar-levantine.md
+    39324  2026-09-17 18:25   humanizer-pro/references/ar-msa.md
+    26793  2026-09-17 18:27   humanizer-pro/references/ar-shared.md
+     6227  2026-09-17 18:24   humanizer-pro/references/core-principles.md
+    78913  2026-09-17 18:25   humanizer-pro/references/en-patterns.md
+    17457  2026-09-17 18:21   humanizer-pro/references/en-vocabulary.md
+     9461  2026-09-17 18:20   humanizer-pro/references/modes.md
+    19894  2026-09-17 18:24   humanizer-pro/references/precedence.md
+     8087  2026-09-17 18:21   humanizer-pro/references/seo-mode.md
+    10814  2026-09-17 18:21   humanizer-pro/references/voice-matching.md
+     9740  2026-09-17 18:40   humanizer-pro/scripts/detect.js
+    18804  2026-09-17 18:40   humanizer-pro/scripts/lib/ar-detector/index.js
+    26064  2026-09-17 18:37   humanizer-pro/scripts/lib/ar-detector/lexicons.js
+    14257  2026-09-17 18:38   humanizer-pro/scripts/lib/ar-detector/signals.js
+     5488  2026-09-17 18:24   humanizer-pro/scripts/lib/arabic-normalize.js
+   144117  2026-09-17 18:28   humanizer-pro/scripts/lib/en-detector/index.js
+    21388  2026-09-17 18:28   humanizer-pro/scripts/lib/en-validate.js
+    10323  2026-09-17 18:38   humanizer-pro/scripts/lib/lang.js
+    19793  2026-09-17 18:34   humanizer-pro/scripts/lib/validate-extra.js
+    21556  2026-09-17 18:56   humanizer-pro/scripts/README.md
+     8720  2026-09-17 18:35   humanizer-pro/scripts/validate.js
+    13580  2026-09-17 18:36   humanizer-pro/SKILL.md
+---------                     -------
+   607288                     26 files

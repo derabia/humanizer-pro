@@ -10,6 +10,7 @@
     "test": "node tools/run-tests.js",
     "detect": "node skills/humanizer-pro/scripts/detect.js",
     "validate": "node skills/humanizer-pro/scripts/validate.js",
-    "check-upstream": "node tools/check-upstream.js"
+    "check-upstream": "node tools/check-upstream.js",
+    "build:zip": "node tools/build-zip.js"
   }
 }
