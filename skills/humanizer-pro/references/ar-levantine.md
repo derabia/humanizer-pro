@@ -40,6 +40,7 @@ variant was requested," shm:124–125 — unlike Egyptian, which has no single n
 pattern; see `ar-egyptian.md` AR-EGT-026 for the Egyptian equivalent). Also cites the
 non-negotiable-fixes list (shm:1236–1242) and the Stage-3 residual-failures list
 (shm:1041–1048).
+**Family:** register-flattening
 **What it looks like:** Full MSA grammatical structures in ostensibly Levantine text:
 case-ending vowels, formal conjugation يُريدُ أن/يستطيعُ أن, Classical syntax order,
 formal relative pronouns الذي/التي/الذين where Levantine uses اللي.
@@ -73,6 +74,7 @@ negated form would actually look like here.
 
 ### AR-SHM-002 — Missing ب-prefix (Present Tense)
 **Severity:** P0  **Provenance:** SM-SHM-002 (shm:143–172)
+**Family:** register-flattening
 **What it looks like:** Bare imperfect (يشتغل، تاكل، نروح) for present indicative,
 without ب-prefix.
 **Why it reads as AI:** "This is the single most reliable AI marker in Levantine Arabic
@@ -91,6 +93,7 @@ or after عم (progressive) (shm:164–166).
 
 ### AR-SHM-003 — Missing عم Progressive Marker
 **Severity:** P0  **Provenance:** SM-SHM-003 (shm:174–197)
+**Family:** register-flattening
 **What it looks like:** Continuous actions described with bare imperfect, or with
 الآن/هلق appended instead of عم.
 **Why it reads as AI:** "Without عم, 'he is eating now' and 'he eats' are expressed
@@ -114,6 +117,7 @@ artifact from the source.
 
 ### AR-SHM-004 — Wrong Future: سوف/سـ instead of رح
 **Severity:** P0  **Provenance:** SM-SHM-004 (shm:199–218)
+**Family:** register-flattening
 **What it looks like:** سوف or سـ prefix for future tense.
 **Why it reads as AI:** "سوف is one of the most formal MSA markers. Its presence in
 Levantine text has zero ambiguity — it is an AI artifact." (shm:208–209)
@@ -129,6 +133,7 @@ bare imperfect — no ب-prefix (shm:205–206).
 
 ### AR-SHM-005 — Wrong Negation System
 **Severity:** P0  **Provenance:** SM-SHM-005 (shm:220–255)
+**Family:** register-flattening
 **What it looks like:** لا، لم، لن، ليس (MSA negation particles) in Levantine context.
 **Why it reads as AI:** "Using لم/لن/ليس in Levantine is as jarring as using 'shall' or
 'doth' in modern casual English writing." (shm:242–243)
@@ -156,6 +161,7 @@ negation with مش (Leb/Syr) or مو (Syrian).
 
 ### AR-SHM-006 — MSA Question Words and Demonstratives
 **Severity:** P1  **Provenance:** SM-SHM-006 (shm:265–304)
+**Family:** register-flattening
 **What it looks like:** ماذا، متى، كيف، أين، هذا/هذه/هؤلاء، كم، لماذا — full MSA
 interrogative/demonstrative inventory.
 **Why it reads as AI:** "Using ماذا in a Levantine text is like using 'whom' in a casual
@@ -179,6 +185,7 @@ grammar still coheres after substitution.
 
 ### AR-SHM-007 — أريد instead of بدّ
 **Severity:** P1  **Provenance:** SM-SHM-007 (shm:307–343)
+**Family:** register-flattening
 **What it looks like:** أريد، أودّ، أتمنى، أرغب for "I want" in informal contexts.
 **Why it reads as AI:** "AI almost never produces [the بدّ system] spontaneously —
 defaulting instead to أريد even when the surrounding text is otherwise Levantine."
@@ -197,6 +204,7 @@ imperfect.
 
 ### AR-SHM-008 — MSA Pronouns and Verb Agreement
 **Severity:** P1  **Provenance:** SM-SHM-008 (shm:345–374)
+**Family:** register-flattening
 **What it looks like:** MSA أنتم، هم، هن and dual forms هما/أنتما; missing -و on
 2nd/3rd plural verb agreement.
 **Why it reads as AI:** "Levantine انتو is so obligatory that its absence — in any
@@ -217,6 +225,7 @@ to plural verbs.
 
 ### AR-SHM-009 — MSA Prepositions (إلى/من instead of عـ)
 **Severity:** P1  **Provenance:** SM-SHM-009 (shm:377–401)
+**Family:** register-flattening
 **What it looks like:** إلى for motion-to (ذهب إلى البيت).
 **Why it reads as AI:** "إلى البيت in casual Levantine text reads like 'I am going to
 mine domicile' in English — technically correct but register-wrong." (shm:390–391)
@@ -233,6 +242,7 @@ Levantine writing but not casual (shm:383–388).
 
 ### AR-SHM-010 — Active Participle as Present State
 **Severity:** P1  **Provenance:** SM-SHM-010 (shm:403–439)
+**Family:** register-flattening
 **What it looks like:** Conjugated verbs for stative predicates (أنا أعرف، أنا أذهب،
 أنا أفهم) instead of active-participle forms.
 **Why it reads as AI:** "AI almost never produces [the participle-as-present-state]
@@ -253,6 +263,7 @@ the conjugated verb with the gender-agreed participle.
 
 ### AR-SHM-011 — Missing Discourse Fillers
 **Severity:** P1  **Provenance:** SM-SHM-011 (shm:448–483)
+**Family:** register-flattening
 **What it looks like:** Clean, particle-free clause chains.
 **Why it reads as AI:** "AI Arabic has particle desert — long clause chains with zero
 particles. Humans sprinkle particles every 2-3 clauses minimum in informal registers."
@@ -280,6 +291,7 @@ table, since it diverges from both MSA's and Egyptian's fix sets for the same so
 phrase family (see `docs/CONFLICTS.md` C-11 — MSA, Egyptian, and Levantine each supply a
 different, dialect-specific replacement for the same underlying من المهم أن نلاحظ /
 تجدر الإشارة إلى / علاوة على ذلك phrase family; do not collapse into one universal fix).
+**Family:** stock-units
 **Regional table** (shm:493–501): من ناحية أخرى→بس من ناحية تانية (all); علاوة على
 ذلك→وكمان/وبعدين (all); في هذا السياق→يعني بهاد الموضوع (Syr/Pal) / بهيدا الموضوع (Leb);
 من المهم أن→المهم/بدّنا (all); لذلك/لهذا→مشان هيك (Syr/Pal) / لهيك (Leb); بالإضافة إلى
@@ -298,6 +310,7 @@ since it functions as an editing rule, not a claim about AI/human behavior.
 
 ### AR-SHM-013 — Uniform Register
 **Severity:** P1  **Provenance:** SM-SHM-013 (shm:518–542)
+**Family:** register-flattening
 **What it looks like:** Flat, consistent formal-casual register throughout; no emotional
 peaks, no sudden informality, no register drops.
 **Why it reads as AI:** "Humans shift register constantly: they start casual, get
@@ -322,6 +335,7 @@ variance (that is AR-SHM-024, which is deferred).
 
 ### AR-SHM-014 — Heavy Passive Voice
 **Severity:** P1  **Provenance:** SM-SHM-014 (shm:545–571)
+**Family:** register-flattening
 **What it looks like:** يُعتبَر، يُستخدَم، يُلاحَظ، يُقال، يُفترَض — MSA passive forms
 carried over into Levantine generation.
 **Why it reads as AI:** "Passive voice in Arabic is a written-register feature. In
@@ -340,6 +354,7 @@ general subject (كل واحد بيستخدم...).
 
 ### AR-SHM-015 — No Reader-Directed Questions
 **Severity:** P1  **Provenance:** SM-SHM-015 (shm:574–602)
+**Family:** register-flattening
 **What it looks like:** Monologic text — statements, explanations, arguments, but no
 question or confirmation check directed at the reader.
 **Why it reads as AI:** "Levantine Arabic has a strong oral/dialogic tradition... AI
@@ -361,6 +376,7 @@ is explicitly inverted for Levantine text and must not be applied here.
 
 ### AR-SHM-016 — Lebanese: Missing French Code-Switching
 **Severity:** P0  **Provenance:** SM-SHM-016 (shm:612–652)
+**Family:** register-flattening
 **What it looks like:** Pure Arabic in Lebanese-target text.
 **Why it reads as AI:** "Producing pure Arabic when writing Lebanese is the single
 strongest tell that the text is AI-generated." (shm:640–641)
@@ -384,6 +400,7 @@ insertions, integrated naturally (not translated or glossed).
 
 ### AR-SHM-017 — Syrian/Palestinian: Missing English Code-Switching
 **Severity:** P1  **Provenance:** SM-SHM-017 (shm:655–691)
+**Family:** register-flattening
 **What it looks like:** Formal Arabic tech/work vocabulary (الحاسوب، البريد الإلكتروني،
 الهاتف المحمول، الاجتماع) where English is natural.
 **Why it reads as AI:** "The formal Arabic equivalents... are used in formal MSA
@@ -406,6 +423,7 @@ emotion/family/social.
 
 ### AR-SHM-018 — Diacritics Present (Tashkeel)
 **Severity:** P0  **Provenance:** SM-SHM-018 (shm:693–715)
+**Family:** typography
 **What it looks like:** Full or partial tashkeel (fatha, kasra, damma, sukun, tanwin) in
 non-Quranic, non-pedagogical text.
 **Why it reads as AI:** "AI models sometimes add diacritics because MSA training text
@@ -426,6 +444,7 @@ consonants carrying meaning (بدّي, هلّق) (shm:700–701).
 
 ### AR-SHM-019 — Formal Hamza Writing
 **Severity:** P2  **Provenance:** SM-SHM-019 (shm:718–748)
+**Family:** typography
 **What it looks like:** Precise initial hamza (أنا، إلى، أكل، إنّ، أيضاً) where informal
 Levantine simplifies or drops it.
 **Why it reads as AI:** "Formal hamza writing is an orthographic marker of formal
@@ -452,6 +471,7 @@ form is standard.
 
 ### AR-SHM-020 — ث/ذ Not Phonologically Shifted
 **Severity:** P2  **Provenance:** SM-SHM-020 (shm:751–779)
+**Family:** typography
 **What it looks like:** MSA interdentals ث/ذ preserved where Levantine speech/informal
 writing shifts them.
 **Why it reads as AI:** "In casual Levantine, especially Syrian, these sounds are merged
@@ -473,6 +493,7 @@ words retain ذ/ث in Levantine even when pronounced differently (shm:770–771)
 
 ### AR-SHM-021 — Missing Interjections
 **Severity:** P1  **Provenance:** SM-SHM-021 (shm:789–827)
+**Family:** register-flattening
 **What it looks like:** Emotionally flat text — descriptions of food, news, events, or
 feats with no interjective response. "AI describes; humans react." (shm:793)
 **Why it reads as AI:** "The emotional punctuation of a text through interjections is not
@@ -495,6 +516,7 @@ Syrian-only or Palestinian-only items in other-variant text.
 
 ### AR-SHM-022 — Wrong Terms of Address
 **Severity:** P1  **Provenance:** SM-SHM-022 (shm:830–864)
+**Family:** register-flattening
 **What it looks like:** يا صديقي (formal), يا أخي (somewhat formal), يا سيدي (very
 formal) — MSA address conventions.
 **Why it reads as AI:** "No casual Levantine speaker addresses a friend as يا صديقي."
@@ -515,6 +537,7 @@ shopkeeper) without romantic implication (shm:851–852).
 
 ### AR-SHM-023 — Missing Turkish Loanwords (Syrian)
 **Severity:** P2  **Provenance:** SM-SHM-023 (shm:867–902)
+**Family:** register-flattening
 **What it looks like:** Standard Arabic vocabulary used in Syrian-target text where
 Turkish loanwords are the natural Levantine choice.
 **Why it reads as AI:** "Turkish loanwords in Syrian are not archaic or formal — they are
@@ -541,6 +564,7 @@ sentence-length-variance tell. The source's stated "15–25 word" AI band (shm:9
 "most robust machine-learning feature" claim (shm:923–924) are uncited numeric/stylometric
 claims and are dropped per the statistic-drop rule; the paratactic-structure nuance below
 is kept as Levantine-specific.
+**Family:** register-flattening
 **Levantine nuance kept here:** "Levantine human text is particularly extreme in this
 variation because of its paratactic structure — native speakers link clauses indefinitely
 with وبعدين... without feeling the need to end sentences." (shm:911–914) Required range
@@ -559,6 +583,7 @@ merge others into long paratactic chains; range 3 to 50+ words across the text.
 
 ### AR-SHM-025 — Consistent Spelling of Variable Words
 **Severity:** P2  **Provenance:** SM-SHM-025 (shm:939–976)
+**Family:** typography
 **What it looks like:** AI always spells a variable word identically throughout a text
 (هلق is always هلق; مش is always مش).
 **Why it reads as AI:** "Perfect spelling consistency is an AI artifact. Human keyboard

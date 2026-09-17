@@ -37,7 +37,32 @@ zero editing passes.
    script cannot run, write exactly: "Score: not computed: scripts
    unavailable" and say the audit above was model-only
    (`_sources/avoid-ai-writing/SKILL.md:255`, "State whether the detector
-   actually ran or the audit was model-only").
+   actually ran or the audit was model-only"). State plainly that the score
+   is a **review signal, not an authorship claim**: it estimates how much of
+   the text matches AI-associated patterns, not who wrote it. When the JSON
+   form (`--json`) is used, this corresponds to `authorshipClaim: false` in
+   the output; say so in the prose report too, not only when JSON is
+   requested (idea credited to amanmaqsood's uncalibrated-signal labelling,
+   MIT; wording here is original).
+
+**P2-only stop rule.** If every finding in a report is P2 (see
+`precedence.md`'s Severity mapping), the report closes with "no verdict;
+weak signals only" instead of a HUMAN/MIXED/AI-style label or a confident
+summary sentence. This is a reporting rule, not a scoring change: the
+underlying findings and the numeric score, if computed, are reported exactly
+as found; only the closing verdict language is suppressed when nothing above
+P2 corroborates it. Taxonomy idea credited to
+finestructure-ai/humanizer-multilingual (MIT); see `precedence.md`'s
+"How to apply" for the cross-variety family tags this rule reads.
+
+**Not flagged on purpose.** Close every `detect` report with a short list of
+things a careless pass might have flagged but this one deliberately left
+alone, and why: a rhetorical question kept because Arabic treats it as a
+native device rather than a tell, a hedge kept because it names a real,
+specific uncertainty, a passage inside a quotation, a genre where a rule is
+suspended. If nothing was deliberately spared, say so in one line rather
+than omitting the section. Idea credited to yoloshii's "Not flagged"
+transparency list (`SKILL.md:583`).
 
 Report zero editing passes; detect mode performs no marks normalization or
 rewriting (`_sources/avoid-ai-writing/SKILL.md:256`).
@@ -82,6 +107,17 @@ final version, `docs/inventory/blader.md:359`).
    specifically for the tells that most often survive a rewrite (a
    not-X-but-Y contrast, a one-line closer, a dash, a triad, a bold label —
    `_sources/blader/SKILL.md:33`) before finalizing.
+5. **Claims added: 0** (mandatory closing line), the last line of every
+   `rewrite` response is exactly `Claims added: 0`, or, if the second-pass
+   audit found any new fact, number, name, quote, or citation that was not
+   in the source, a list of each one with where it came from. A non-zero
+   list is only ever user-supplied content (an explicit correction or
+   addition given in this request); the never-invent rule in
+   `core-principles.md` means a claim traced to the assistant's own
+   invention is a bug to fix before delivery, not a line to report. This
+   line is what makes "never invent" checkable rather than a promise taken
+   on faith. Idea credited to yoloshii (`SKILL.md:575`, which itself credits
+   AgriciDaniel/anti-slop, `SKILL.md:914`); wording here is original.
 
 ## `edit`
 
@@ -105,11 +141,27 @@ Adapted from `_sources/avoid-ai-writing/SKILL.md:117,258-276`.
    anything left alone because it was already human, intentional,
    protected, source-blocked, or beyond the pass limit
    (`_sources/avoid-ai-writing/SKILL.md:262-263`). Run
-   `node scripts/validate.js <original> <rewritten>` if the skill's scripts
-   are installed and runnable; report its exit code and any listed
-   violation. If the script cannot run, use the manual fallback checklist
-   below and say so explicitly — never claim a file is verified when the
-   check did not run (`_sources/avoid-ai-writing/SKILL.md:275`).
+   `node scripts/validate.js <original> <rewritten>` when a shell is
+   available, and this is **mandatory** for `edit` and for any `seo` run, not
+   optional; report its exit code and any listed violation. If the script
+   cannot run, use the manual fallback checklist below and say so
+   explicitly — never claim a file is verified when the check did not run
+   (`_sources/avoid-ai-writing/SKILL.md:275`).
+5. **Claims added: 0** (mandatory closing line), same contract as
+   `rewrite`: close with `Claims added: 0`, or a list of user-supplied
+   additions only. See `rewrite`'s step 5 above for the full statement.
+
+## Verify with the validator
+
+`edit` and any `seo` run **must** run `node scripts/validate.js <original>
+<rewritten>` when a shell is available; this is not optional (see `edit`
+step 4 above and `seo-mode.md`). For a plain `rewrite` with no `seo`
+modifier, running the same validator on the source text and the delivered
+rewrite is **recommended, not mandatory**, whenever a shell exists: it
+catches the same preservation regressions (dropped numbers, altered code
+blocks, a shrunk word count) that `edit` gets for free, and costs one extra
+command. Report its exit code and any violation when it was run; if it was
+skipped for a `rewrite`, say so rather than implying it ran.
 
 ## `seo` modifier
 
@@ -139,6 +191,8 @@ English report headings map to:
 | Verification | التحقق |
 | Protected spans | المقاطع المحمية |
 | SEO check | فحص تحسين محركات البحث |
+| Claims added | الإضافات المزعومة |
+| Not flagged on purpose | ما لم يُرصَد عمدًا |
 <!-- /NATIVE-REVIEW -->
 
 For a dialect-flavored request (e.g. Egyptian or Levantine), still use the
@@ -175,5 +229,5 @@ verification — always say explicitly that the check below was model-only.
 
 ## Provenance and discrepancies
 
-See `docs/provenance/modes-voice-seo.md` and
-`docs/discrepancies/modes-voice-seo.md`.
+See `docs/provenance/modes-voice-seo.md`, `docs/provenance/round1-docs.md`,
+and `docs/discrepancies/modes-voice-seo.md`.

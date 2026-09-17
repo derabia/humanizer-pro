@@ -200,7 +200,55 @@ digits, and do not introduce tashkeel the sample never uses — even though
 a given passage.
 <!-- /NATIVE-REVIEW -->
 
+## Provenance and privacy of the voice sample
+
+**Confidence weighting by source type.** Not every writing sample is equally
+trustworthy evidence of how the user actually writes. Weight the sample's
+authority by where it came from, highest first:
+
+1. **The user's own unpublished draft**, supplied directly in this request.
+   Highest confidence: no editor, no house style, no ghostwriter between the
+   user and the page.
+2. **A published, bylined article** the user identifies as their own
+   writing. High confidence, with one caveat: a publication's copy desk may
+   have smoothed some of the habits worth matching (dash rate, sentence
+   fragments), so treat a strong stylistic choice as more likely genuine
+   than a subtle one.
+3. **A social post** (a thread, a caption, a forum comment) the user points
+   to as theirs. Medium confidence: genuine voice, but a register the user
+   may not want carried into a different kind of piece; confirm the target
+   register still applies before matching it wholesale.
+4. **Forwarded text** the user did not write themselves and is passing
+   along as an example ("write like this") without claiming authorship.
+   Lowest confidence: it is a style target, not evidence of the user's own
+   habits, and should be named as such in the report rather than presented
+   as the user's voice.
+
+When two samples disagree, the higher-confidence source wins for the
+dimensions where they conflict; note the conflict in the report rather than
+silently picking one.
+
+**The sample is analysed for features only.** Read the sample for the five
+(or, for Arabic, seven) dimensions above, then discard the sample text
+itself from anything that leaves this analysis step. Never store the raw
+sample prose, never quote it back to the user as if reporting a summary,
+and never reuse its sentences, clauses, or distinctive phrasing inside the
+delivered rewrite; the rewrite matches the sample's *pattern*, not its
+*words*. The one exception is a short illustrative fragment the user
+themselves pasted back into the conversation for reference, which is
+ordinary conversation, not a persisted store.
+
+**Report the derived profile as features, not text.** When summarizing what
+was matched, list bullet features, not a rendering of the sample: "short
+declarative sentences, contractions throughout, em dashes at roughly one
+per paragraph, opens with a question one time in five," not a paraphrase or
+excerpt of the sample itself. A feature list can be checked and revised; a
+quoted sample cannot be un-quoted once it is in the transcript. Idea
+credited to amanmaqsood's per-source evidence weighting and hash-only voice
+profiles (`lib/prose-core.js:524-629`, MIT); wording and the four-tier
+ranking here are original.
+
 ## Provenance and discrepancies
 
-See `docs/provenance/modes-voice-seo.md` and
-`docs/discrepancies/modes-voice-seo.md`.
+See `docs/provenance/modes-voice-seo.md`, `docs/provenance/round1-docs.md`,
+and `docs/discrepancies/modes-voice-seo.md`.

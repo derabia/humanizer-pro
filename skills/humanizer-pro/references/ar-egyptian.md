@@ -25,6 +25,7 @@ Line references below are to `_sources/semitic/skills/humanizer-ar-egt/SKILL.md`
 
 ### AR-EGT-001 — MSA Vocabulary Substitution
 **Severity:** P0  **Provenance:** SM-EGT-001 (egt:72–105)
+**Family:** register-flattening
 **What it looks like:** Core everyday MSA words used where Egyptian has a wholesale
 different word — not slang substitution, the entire daily lexicon: الآن، أريد، اذهب، أرى،
 هذا، هذه، هؤلاء، ماذا، كيف، هكذا، نعم، جداً، أيضاً، لكن، ثم، بعد، دائماً.
@@ -42,6 +43,7 @@ sounds like a Lebanese news anchor dubbed into Egyptian." (egt:76)
 
 ### AR-EGT-002 — Tanwin and Case Endings
 **Severity:** P1  **Provenance:** SM-EGT-002 (egt:108–119)
+**Family:** register-flattening
 **What it looks like:** Words ending in ـاً/ـٍ/ـٌ or any overt case vowel; specifically
 أيضاً، شكراً جزيلاً، تمامًا، مثلاً.
 **Why it reads as AI:** "Egyptian colloquial Arabic has no case system. Zero. Tanwin does
@@ -57,6 +59,7 @@ the fixed example uses اللي (not الذي/التي) — see AR-EGT-026 MSA-l
 
 ### AR-EGT-003 — Wrong Future Tense Marker
 **Severity:** P0  **Provenance:** SM-EGT-003 (egt:122–138)
+**Family:** register-flattening
 **What it looks like:** سـ prefix (سيذهب، سنتحدث، سأفعل) or سوف before any verb.
 **Why it reads as AI:** "MSA future is formed with سـ or سوف. Egyptian Arabic forms the
 future with حـ prefix... This is a systematic grammatical difference, not a vocabulary
@@ -71,6 +74,7 @@ choice... like writing 'I will to go' in English." (egt:126)
 
 ### AR-EGT-004 — Present Tense Without بـ Prefix
 **Severity:** P0  **Provenance:** SM-EGT-004 (egt:141–157)
+**Family:** register-flattening
 **What it looks like:** Bare imperfect (يكتب، يذهب، يفهم، يعمل) used as descriptive
 present, not future/subjunctive.
 **Why it reads as AI:** "بيكتب means 'he writes / he is writing.' يكتب in Egyptian Arabic
@@ -85,6 +89,7 @@ sounds like a command, a subjunctive, or simply wrong for present tense." (egt:1
 
 ### AR-EGT-005 — Wrong Demonstrative Order
 **Severity:** P0  **Provenance:** SM-EGT-005 (egt:160–176)
+**Family:** register-flattening
 **What it looks like:** هذا/هذه/هؤلاء placed BEFORE the noun (MSA order): هذا الكتاب،
 هذه المشكلة، هؤلاء الناس.
 **Why it reads as AI:** "MSA places the demonstrative before the noun... Egyptian Arabic
@@ -100,6 +105,7 @@ places it after... Placing ده/دي/دول before the noun is simply not Egypti
 
 ### AR-EGT-006 — The Long Formal Arabic Sentence
 **Severity:** P1  **Provenance:** SM-EGT-006 (egt:185–196)
+**Family:** register-flattening
 **What it looks like:** Sentences >25–30 words; heavy الذي/التي/الذين subordination;
 journalistic embedding (يُعدّ X من Y التي Z) — "belongs in Al-Ahram editorial" (egt:187).
 **Why it reads as AI:** "Human Egyptian speech is fragmented. A thought ends. Another
@@ -117,6 +123,7 @@ two words. Make some sentences five." (egt:191)
 
 ### AR-EGT-007 — Wrong Negation System
 **Severity:** P0  **Provenance:** SM-EGT-007 (egt:199–219)
+**Family:** register-flattening
 **What it looks like:** لا، لم، لن، ليس، لست، لسنا used as main negators.
 **Why it reads as AI:** "The negation system is one of the most audible features of the
 dialect." (egt:203) See C-10: Egyptian treats the ما…ش circumfix as universal Egyptian
@@ -133,6 +140,7 @@ existence negation مفيش (مفيش حاجة، مفيش وقت).
 
 ### AR-EGT-008 — Robotic Passive Voice
 **Severity:** P1  **Provenance:** SM-EGT-008 (egt:222–236)
+**Family:** register-flattening
 **What it looks like:** يُفعل passives (يُعتبر، يُستخدم، يُلاحظ، يُقال، يُشار، يُذكر،
 يُرى) and مُ- prefix passives (مُستخدم، مُعتبر، مُلاحظ).
 **Why it reads as AI:** "Egyptian Arabic avoids passive voice heavily... The MSA formal
@@ -148,6 +156,7 @@ passive sounds bureaucratic and non-human in casual Egyptian text." (egt:226)
 
 ### AR-EGT-009 — Missing Discourse Particles
 **Severity:** P0  **Provenance:** SM-EGT-009 (egt:239–257)
+**Family:** register-flattening
 **What it looks like:** Absence of يعني, بقى, خلاص, ماشي, طب, يا سلام, والله, زي مثلاً,
 يعني إيه, بس خلاص across the whole text.
 **Why it reads as AI:** "Zero of these appearing in Egyptian Arabic text is a definitive
@@ -169,6 +178,7 @@ See `ar-shared.md`: uniform sentence rhythm — apply the shared-core rule for t
 sentence-length-variance tell. The Egyptian-specific nuance kept here: the source's stated
 "12–20 word" AI band (egt:262) is an uncited numeric threshold and is dropped per the
 statistic-drop rule (see `docs/dedup-log/ar-egt-shm.md`); the prescriptive fix survives.
+**Family:** register-flattening
 **Egyptian fix/example:** insert one-word or two-word sentences (صح؟, خلاص., بجد., مش كده؟)
 after an explanatory passage (egt:266).
 **Before:** هذا الأمر صعب وغير بسيط وهو يستوجب التفكير الجيد قبل اتخاذ أي قرار
@@ -183,6 +193,7 @@ See `ar-shared.md`: formulaic transitions — apply the shared-core rule for the
 formal-opener/ritual-phrase tell. Source calls these openers "the clearest possible AI
 signature" (egt:292) — kept as P0 for Egyptian despite deferral, since the source's own
 emphasis is stronger than a generic transition-phrase tell.
+**Family:** calque
 **Egyptian phrase set kept here** (egt:283–290): بالتأكيد، من المهم أن نلاحظ، تجدر
 الإشارة إلى، جدير بالذكر، من الجدير بالذكر أن، في هذا السياق، يتضح لنا من ذلك، مما لا
 شك فيه أن — "direct Arabic translations of English AI ritual openers (Certainly!, It is
@@ -198,6 +209,7 @@ important to note...)" (egt:292).
 **Severity:** P1  **Provenance:** SM-EGT-012 (egt:307–328)
 See `ar-shared.md`: formulaic transitions — apply the shared-core rule for the general
 formulaic-conclusion tell. Egyptian nuance kept here: the closing phrase set and fix.
+**Family:** stock-units
 **Egyptian phrase set** (egt:310–315): وفي الختام، خلاصة القول، وبهذا نكون قد، وفي نهاية
 المطاف، مما سبق يتضح أن، آمل أن يكون ذلك مفيداً — "as absurd as ending a text message
 with 'In conclusion.'" (egt:317)
@@ -210,6 +222,7 @@ with 'In conclusion.'" (egt:317)
 
 ### AR-EGT-013 — جداً Instead of أوي
 **Severity:** P0  **Provenance:** SM-EGT-013 (egt:331–342)
+**Family:** register-flattening
 **What it looks like:** جداً anywhere in informal Egyptian text.
 **Why it reads as AI:** "This is one of the simplest and most reliable AI detection
 signals in Egyptian Arabic text. One جداً = AI." (egt:335)
@@ -223,6 +236,7 @@ strong emphasis (أوي أوي); extreme informal: جامد or تقيل (egt:337
 
 ### AR-EGT-014 — لأن and لكي Instead of عشان
 **Severity:** P1  **Provenance:** SM-EGT-014 (egt:345–359)
+**Family:** register-flattening
 **What it looks like:** لأن (because), لكي/كي (in order to), من أجل أن.
 **Why it reads as AI:** "Egyptian Arabic uses عشان for both 'because' AND 'in order to.'
 This is a distinctive feature of the dialect — one word covers both functions." (egt:349)
@@ -246,6 +260,7 @@ text or whether the source's own example is inconsistent.
 
 ### AR-EGT-015 — Sycophantic Opener
 **Severity:** P1  **Provenance:** SM-EGT-015 (egt:362–378)
+**Family:** calque
 **What it looks like:** شكراً على سؤالك الرائع، يسعدني مساعدتك، بكل سرور سأساعدك، سؤال
 ممتاز، سعيد بمساعدتك.
 **Why it reads as AI:** "Arabic translations of ChatGPT-era English sycophancy: 'Great
@@ -263,6 +278,7 @@ there later.
 
 ### AR-EGT-016 — No Code-Switching (English)
 **Severity:** P1  **Provenance:** SM-EGT-016 (egt:387–404)
+**Family:** register-flattening
 **What it looks like:** 100% Arabic where educated urban Cairo speech would code-switch
 to English (deadline, update, meeting, sync, call, presentation, feature, bug, crash;
 stressed, overwhelmed, excited, bored, awkward, vibes; coffee, delivery, cancel,
@@ -280,6 +296,7 @@ Ultra-Casual/Casual, selective in Informal-Professional, light in Semi-Formal Eg
 
 ### AR-EGT-017 — No Arabizi
 **Severity:** P2  **Provenance:** SM-EGT-017 (egt:407–425)
+**Family:** typography
 **What it looks like:** Absence of Latin-script Arabizi/Franco-Arabic in WhatsApp,
 Instagram, Twitter/X, YouTube-comment contexts. Number-letter mapping: 3=ع, 7=ح, 2=ء,
 5=خ, 9=ص (egt:411).
@@ -302,6 +319,7 @@ without a native check.
 
 ### AR-EGT-018 — Perfect Orthographic Consistency
 **Severity:** P2  **Provenance:** SM-EGT-018 (egt:428–444)
+**Family:** typography
 **What it looks like:** AI picks one spelling per word and holds it throughout, unlike
 real Egyptian Arabic which "has no official written standard" (egt:432).
 **Why it reads as AI:** "Different Egyptians spell the same words differently... Artificial
@@ -322,6 +340,7 @@ check before being trusted as real dialectal variation.
 
 ### AR-EGT-019 — Missing Letter Lengthening
 **Severity:** P2  **Provenance:** SM-EGT-019 (egt:447–466)
+**Family:** typography
 **What it looks like:** All words at base length, no letter repetition for emphasis, in
 emotionally significant contexts.
 **Why it reads as AI:** "Letter lengthening expresses emotional emphasis that punctuation
@@ -342,6 +361,7 @@ than a complete AI-style sentence — a native reviewer should confirm this is i
 
 ### AR-EGT-020 — Wrong Laughter Representation
 **Severity:** P2  **Provenance:** SM-EGT-020 (egt:469–480)
+**Family:** typography
 **What it looks like:** Absence of laughter markers, or use of ح instead of ه for laughter.
 **Why it reads as AI:** Convention is ه repeated, length = intensity (هه mild, هههه
 funny, هههههههه losing it); "AI sometimes uses ح for laughter... or omits laughter
@@ -355,6 +375,7 @@ entirely." (egt:473)
 
 ### AR-EGT-021 — No Questions to the Reader
 **Severity:** P1  **Provenance:** SM-EGT-021 (egt:489–509)
+**Family:** register-flattening
 **What it looks like:** Paragraphs/messages with no reader-directed questions; "AI
 monologues." (egt:491)
 **Why it reads as AI:** "Egyptian Arabic communication style is highly dialogic even in
@@ -373,6 +394,7 @@ is explicitly inverted for Egyptian text and must not be applied here.
 
 ### AR-EGT-022 — No Hedge or Disfluency Markers
 **Severity:** P1  **Provenance:** SM-EGT-022 (egt:512–532)
+**Family:** register-flattening
 **What it looks like:** Text that is uniformly certain, smooth, direct, with no hedging.
 **Why it reads as AI:** "AI is confident. It states things. It does not hedge because
 hedging is not rewarded during training... real humans... hedge constantly." (egt:516)
@@ -391,6 +413,7 @@ on different registers and must not be merged.
 
 ### AR-EGT-023 — ج/ق Orthographic Tell
 **Severity:** P2  **Provenance:** SM-EGT-023 (egt:535–544)
+**Family:** typography
 **What it looks like:** Consistent formal ق where Egyptian colloquial pronunciation uses
 a glottal stop (ء); inconsistency around ج pronounced "g" not "j".
 **Why it reads as AI:** "The AI tends to pick one and stick with it uniformly" for ق/ء,
@@ -405,6 +428,7 @@ representation can vary naturally in informal text.
 
 ### AR-EGT-024 — No Terms of Address
 **Severity:** P1  **Provenance:** SM-EGT-024 (egt:547–567)
+**Family:** register-flattening
 **What it looks like:** يا صديقي (formal/distant) or no term of address at all.
 **Why it reads as AI:** "Egyptian Arabic has a warm and rich system of address terms...
 The use of يا صديقي sounds like a poorly dubbed Western movie." (egt:551)
@@ -426,6 +450,7 @@ before treating it as a general-purpose recommendation.
 
 ### AR-EGT-025 — High Word Frequency Repetition
 **Severity:** P2  **Provenance:** SM-EGT-025 (egt:570–581)
+**Family:** stock-units
 **What it looks like:** Stylometric pattern — same 5–10 content words in almost every
 paragraph; specialized/domain vocabulary absent; all word choices from the top-frequency
 tier.
@@ -445,6 +470,7 @@ deadlines بتحاصرنا.
 
 ### AR-EGT-026 — MSA Leakage — Summary Checklist
 **Severity:** P0 (umbrella — see individual entries for per-item severity)
+**Family:** register-flattening
 **Provenance:** origin: humanizer-pro. No single SM id in the source covers this as a
 named pattern (unlike Levantine, where SM-SHM-001 "MSA Reversion" is itself the umbrella
 — see `ar-levantine.md` AR-SHM-001). This entry aggregates and cross-references

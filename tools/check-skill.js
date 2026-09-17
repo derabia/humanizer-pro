@@ -21,6 +21,15 @@
  *   - a scripts/*.js path mentioned in SKILL.md does not exist
  *     (scripts may still be in progress)
  *
+ * `--refs` option (can combine with a path argument, either order):
+ *   Runs the same heading-vs-coverage-map consistency check as
+ *   `tests/coverage-map.test.js` (IMP-11): every `## AR-`/`### AR-`/`## EN-`
+ *   heading in `skills/humanizer-pro/references/*.md` must have a row in
+ *   `docs/COVERAGE-MAP.md`, and every pattern ID compiled in
+ *   `scripts/lib/ar-detector/lexicons.js` must appear both in the coverage
+ *   map and in its reference file. Failures here are hard failures (exit 1),
+ *   same as the checks above.
+ *
  * Node >= 18, no dependencies, CommonJS.
  */
 
@@ -47,8 +56,11 @@ function note(msg) { notes.push(msg); }
 const defaultTarget = path.resolve(
   __dirname, '..', 'skills', 'humanizer-pro', 'SKILL.md'
 );
-const target = process.argv[2]
-  ? path.resolve(process.cwd(), process.argv[2])
+const rawArgs = process.argv.slice(2);
+const runRefsCheck = rawArgs.includes('--refs');
+const pathArg = rawArgs.find((a) => a !== '--refs');
+const target = pathArg
+  ? path.resolve(process.cwd(), pathArg)
   : defaultTarget;
 const skillDir = path.dirname(target);
 
@@ -234,6 +246,94 @@ note('script paths mentioned: ' + (scriptPaths.length || 0));
 for (const rel of scriptPaths) {
   if (!fs.existsSync(path.resolve(skillDir, rel))) {
     warn('script not found (may still be in progress): ' + rel);
+  }
+}
+
+// ─── --refs: heading-vs-coverage-map consistency (IMP-11) ────────────────
+
+if (runRefsCheck) {
+  const repoRoot = path.resolve(__dirname, '..');
+  const refDir = path.resolve(repoRoot, 'skills', 'humanizer-pro', 'references');
+  const mapPath = path.resolve(repoRoot, 'docs', 'COVERAGE-MAP.md');
+  const lexPath = path.resolve(
+    repoRoot, 'skills', 'humanizer-pro', 'scripts', 'lib', 'ar-detector', 'lexicons.js'
+  );
+
+  function readHeadings(file, re) {
+    const p = path.join(refDir, file);
+    if (!fs.existsSync(p)) return [];
+    const t = fs.readFileSync(p, 'utf8');
+    const out = [];
+    for (const line of t.split('\n')) {
+      const m = line.match(re);
+      if (m) out.push(m[1]);
+    }
+    return out;
+  }
+
+  const headingSources = [
+    ['en-patterns.md', /^##\s+(EN-\d+)\s/],
+    ['ar-shared.md', /^##\s+(AR-SH-\d+)\s/],
+    ['ar-msa.md', /^##\s+(AR-MSA-\d+)\s/],
+    ['ar-egyptian.md', /^###\s+(AR-EGT-\d+)\s/],
+    ['ar-levantine.md', /^###\s+(AR-SHM-\d+)\s/],
+  ];
+
+  let allHeadingIds = [];
+  for (const [file, re] of headingSources) {
+    allHeadingIds = allHeadingIds.concat(readHeadings(file, re));
+  }
+
+  if (!fs.existsSync(mapPath)) {
+    fail('--refs: docs/COVERAGE-MAP.md does not exist');
+  } else {
+    const mapText = fs.readFileSync(mapPath, 'utf8');
+    const mapIds = new Set((mapText.match(/^\|\s*([A-Z0-9-]+)\s*\|/gm) || [])
+      .map((row) => row.replace(/^\|\s*/, '').replace(/\s*\|$/, '')));
+
+    for (const id of allHeadingIds) {
+      if (!mapIds.has(id)) {
+        fail('--refs: heading ' + id + ' is missing from docs/COVERAGE-MAP.md');
+      }
+    }
+    note('--refs: ' + allHeadingIds.length + ' reference headings checked against COVERAGE-MAP.md');
+
+    if (fs.existsSync(lexPath)) {
+      let lex;
+      try {
+        lex = require(lexPath);
+      } catch (err) {
+        fail('--refs: scripts/lib/ar-detector/lexicons.js failed to load: ' + err.message);
+        lex = null;
+      }
+      if (lex && lex.RAW_PATTERNS) {
+        const headingSet = new Set(allHeadingIds);
+        for (const bucket of Object.values(lex.RAW_PATTERNS)) {
+          for (const pat of bucket) {
+            const baseId = pat.id.replace(/-[A-Z]$/, '');
+            if (!mapIds.has(baseId)) {
+              fail('--refs: lexicon pattern ' + pat.id + ' is missing from docs/COVERAGE-MAP.md');
+            }
+            if (!headingSet.has(baseId)) {
+              fail('--refs: lexicon pattern ' + pat.id + ' has no matching reference heading (' + baseId + ')');
+            }
+            if (pat.regexes) {
+              for (const spec of pat.regexes) {
+                try {
+                  // eslint-disable-next-line no-new
+                  new RegExp(spec.source, spec.flags || 'gu');
+                } catch (err) {
+                  fail('--refs: pattern ' + pat.id + ' has a regex that fails to compile: ' + err.message);
+                }
+              }
+            }
+          }
+        }
+        note('--refs: lexicon patterns checked for coverage-map/reference/regex parity');
+      }
+    } else {
+      warn('--refs: scripts/lib/ar-detector/lexicons.js not found; skipped lexicon parity check');
+    }
   }
 }
 

@@ -93,6 +93,16 @@ is the lowest level: any explicit statement at levels 1–5 wins against it.
    patch over restructure) and say in the report that the tie was broken this
    way and what the alternative would have been.
 5. Never resolve a tie by inventing a third option that adds content.
+6. **P2-only stop rule.** When a `detect` pass finds nothing above P2 (see
+   Severity mapping below), the report closes with "no verdict; weak signals
+   only" instead of a confident label. This changes only the closing
+   sentence of the report, never the findings themselves or the numeric
+   score: every P2 finding is still listed, with its pattern ID and family
+   tag, exactly as found. See `modes.md`'s `detect` contract for the exact
+   wording and `ar-shared.md` for the five-family tags this rule reads
+   alongside severity. Taxonomy idea (the five-family cross-index and the
+   stop rule together) credited to finestructure-ai/humanizer-multilingual
+   (MIT); wording here is original.
 
 ## Conflict resolution
 

@@ -45,63 +45,93 @@ variant carries a distinct, legitimate meaning (e.g. `real` meaning factual
 is not the intensifier sense). This is why several BL-012 words below are
 marked "already covered by inflection" rather than added as new rows.
 
+## Era column (Tier 1A)
+
+Every Tier 1A row below carries an **Era** tag. It records whether a
+specific upstream source ties that word's AI-frequency claim to a dated
+model generation or a dated measurement, not this project's own opinion of
+when the word became common. `unknown` is the honest default: neither
+`_sources/avoid-ai-writing/` nor `_sources/blader/` ties any individual
+Tier 1A word to a date or model generation. Two things they do date, neither
+of which is a Tier 1A word: the em-dash frequency guidance ("usage has
+varied by model generation and vendor," `_sources/avoid-ai-writing/SKILL.md:182`,
+a formatting rule, not a vocabulary entry) and the Tier 1B false-positive
+baseline ("Measured against 257 paragraphs of verified pre-2023 human
+prose," `_sources/avoid-ai-writing/references/patterns.md:41`, which dates
+the *test corpus*, not any individual word). Tag a row `unknown` unless a
+future source ties that specific word to a date; do not infer a plausible
+date from context. See `docs/discrepancies/round1-docs.md` for how many
+entries carried a sourced era at the end of this pass (currently 0 of 49;
+all `unknown`).
+
+**Decay.** Lexical tiers are a snapshot of one model generation's habits,
+not a permanent property of the words themselves. As models change, the
+words they overuse change with them: a word flagged here today can fall out
+of favor, and a word absent today can become tomorrow's tell. Treat this
+file as needing periodic re-baselining against current model output, the
+same caution the 1A caveat above already applies to the *existence* of the
+5-20x frequency claim; the Era column is where that caution would attach if
+and when a re-baselining effort dates specific words. Idea credited to
+yoloshii (`SKILL.md:185-190`) and eddyplolz (`tell-catalog.md:138-142`);
+wording here is original.
+
 ---
 
 ## Tier 1A — AI frequency markers
 
 Source: `avoid-ai-writing/references/patterns.md:49-99`.
 
-| Replace | With |
-|---|---|
-| delve / delve into | explore, dig into, look at |
-| landscape (metaphor) | field, space, industry, world |
-| tapestry | (describe the actual complexity) |
-| realm | area, field, domain |
-| paradigm | model, approach, framework |
-| embark | start, begin |
-| beacon (metaphor) | example, guide, source of hope (name what provides the example or guidance) |
-| testament to | shows, proves, demonstrates |
-| robust | strong, reliable, solid |
-| comprehensive | thorough, complete, full |
-| cutting-edge | latest, newest, advanced |
-| leverage (verb) | use |
-| pivotal | important, key, critical |
-| underscores | highlights, shows |
-| meticulous / meticulously | careful, detailed, precise |
-| seamless / seamlessly | smooth, easy, without friction |
-| game-changer / game-changing | describe what specifically changed and why it matters |
-| hit differently / hits different | (say what specifically changed, or cut) |
-| watershed moment | turning point, shift (or describe what changed) |
-| marking a pivotal moment | (state what happened) |
-| the future looks bright | (cut — say something specific or nothing) |
-| only time will tell | (cut — say something specific or nothing) |
-| nestled | is located, sits, is in |
-| vibrant | (describe what makes it active, or cut) |
-| thriving | growing, active (or cite a number) |
-| despite challenges… continues to thrive | (name the challenge and the response, or cut) |
-| showcasing | showing, demonstrating (or cut the clause) |
-| deep dive / dive into | look at, examine, explore |
-| unpack / unpacking | explain, break down, walk through |
-| bustling | busy, active (or cite what makes it busy) |
-| intricate / intricacies | complex, detailed (or name the specific complexity) |
-| complexities | (name the actual complexities, or use "problems" / "details") |
-| ever-evolving | changing, growing (or describe how) |
-| enduring | lasting, long-running (or cite how long) |
-| daunting | hard, difficult, challenging |
-| holistic / holistically | complete, full, whole (or describe what's included) |
-| actionable | practical, useful, concrete |
-| impactful | effective, significant (or describe the impact) |
-| learnings | lessons, findings, takeaways |
-| thought leader / thought leadership | expert, authority (or describe their actual contribution) |
-| best practices | what works, proven methods, standard approach |
-| at its core | (cut — just state the thing) |
-| synergy / synergies | (describe the actual combined effect) |
-| interplay | relationship, connection, interaction |
-| keen (as intensifier) | interested, eager, enthusiastic (or cut — just state the interest) |
-| genuinely / genuine (as intensifier) | (cut — just state the fact) |
-| symphony (metaphor) | (describe the actual coordination or combination) |
-| embrace (metaphor) | adopt, accept, use, switch to |
-| load-bearing *(metaphor)* | essential, critical, necessary — or say what breaks if you remove it |
+| Replace | With | Era |
+|---|---|---|
+| delve / delve into | explore, dig into, look at | unknown |
+| landscape (metaphor) | field, space, industry, world | unknown |
+| tapestry | (describe the actual complexity) | unknown |
+| realm | area, field, domain | unknown |
+| paradigm | model, approach, framework | unknown |
+| embark | start, begin | unknown |
+| beacon (metaphor) | example, guide, source of hope (name what provides the example or guidance) | unknown |
+| testament to | shows, proves, demonstrates | unknown |
+| robust | strong, reliable, solid | unknown |
+| comprehensive | thorough, complete, full | unknown |
+| cutting-edge | latest, newest, advanced | unknown |
+| leverage (verb) | use | unknown |
+| pivotal | important, key, critical | unknown |
+| underscores | highlights, shows | unknown |
+| meticulous / meticulously | careful, detailed, precise | unknown |
+| seamless / seamlessly | smooth, easy, without friction | unknown |
+| game-changer / game-changing | describe what specifically changed and why it matters | unknown |
+| hit differently / hits different | (say what specifically changed, or cut) | unknown |
+| watershed moment | turning point, shift (or describe what changed) | unknown |
+| marking a pivotal moment | (state what happened) | unknown |
+| the future looks bright | (cut — say something specific or nothing) | unknown |
+| only time will tell | (cut — say something specific or nothing) | unknown |
+| nestled | is located, sits, is in | unknown |
+| vibrant | (describe what makes it active, or cut) | unknown |
+| thriving | growing, active (or cite a number) | unknown |
+| despite challenges… continues to thrive | (name the challenge and the response, or cut) | unknown |
+| showcasing | showing, demonstrating (or cut the clause) | unknown |
+| deep dive / dive into | look at, examine, explore | unknown |
+| unpack / unpacking | explain, break down, walk through | unknown |
+| bustling | busy, active (or cite what makes it busy) | unknown |
+| intricate / intricacies | complex, detailed (or name the specific complexity) | unknown |
+| complexities | (name the actual complexities, or use "problems" / "details") | unknown |
+| ever-evolving | changing, growing (or describe how) | unknown |
+| enduring | lasting, long-running (or cite how long) | unknown |
+| daunting | hard, difficult, challenging | unknown |
+| holistic / holistically | complete, full, whole (or describe what's included) | unknown |
+| actionable | practical, useful, concrete | unknown |
+| impactful | effective, significant (or describe the impact) | unknown |
+| learnings | lessons, findings, takeaways | unknown |
+| thought leader / thought leadership | expert, authority (or describe their actual contribution) | unknown |
+| best practices | what works, proven methods, standard approach | unknown |
+| at its core | (cut — just state the thing) | unknown |
+| synergy / synergies | (describe the actual combined effect) | unknown |
+| interplay | relationship, connection, interaction | unknown |
+| keen (as intensifier) | interested, eager, enthusiastic (or cut — just state the interest) | unknown |
+| genuinely / genuine (as intensifier) | (cut — just state the fact) | unknown |
+| symphony (metaphor) | (describe the actual coordination or combination) | unknown |
+| embrace (metaphor) | adopt, accept, use, switch to | unknown |
+| load-bearing *(metaphor)* | essential, critical, necessary — or say what breaks if you remove it | unknown |
 
 **Hyphen required:** unhyphenated "load bearing" is ordinary English ("the
 load bearing down on the bridge") — only the hyphenated compound is the tell.

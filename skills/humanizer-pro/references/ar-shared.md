@@ -15,6 +15,24 @@ fixed), **P1** (significant — fix unless there's a stated reason not to),
 **P2** (minor — fix opportunistically). This replaces the upstream 50-point
 rubric, which is dropped per owner decision (see dedup log).
 
+**Family tags.** Every `AR-SH-*` entry below, and every `AR-EGT-*` /
+`AR-SHM-*` entry in the per-variety files, carries a `**Family:**` line
+using one of five cross-variety families: `calque` (a construction
+translated word for word from another language, usually English),
+`stock-units` (a fixed formulaic phrase or closing/opening unit, not a
+single word), `typography` (script, punctuation, diacritics, or orthographic
+representation), `register-flattening` (a dialect or informal text pulled
+toward a more formal or MSA-level register than the context calls for), and
+`english-syntax` (a discourse or sentence structure imported from English
+argument-structure conventions rather than native Arabic rhetoric). A sixth
+tag, `chatbot-residue`, is reserved for an entry that fits none of the five;
+none of the entries in this file, `ar-egyptian.md`, or `ar-levantine.md`
+needed it for this pass. Taxonomy idea credited to
+finestructure-ai/humanizer-multilingual (MIT); the five names and their
+definitions here are this project's own, not reproduced from the source.
+See `precedence.md`'s How-to-apply step 6 for the P2-only stop rule these
+tags support in `detect` reports.
+
 Every uncited statistic, benchmark, or percentage that appeared in the
 upstream prose (BLEU scores, "AI hedges 3-4x the human rate," std-dev
 thresholds, etc.) has been dropped from this document. The underlying
@@ -33,6 +51,8 @@ Over-Formalization) — `_sources/semitic/skills/humanizer-ar-msa/SKILL.md:44-55
 SM-EGT-011 (Formal Openers) — `_sources/semitic/skills/humanizer-ar-egt/SKILL.md:280-304`;
 SM-SHM-012 (Formal Transition Phrases, hedge-opener portion) —
 `_sources/semitic/skills/humanizer-ar-shami/SKILL.md:486-515`.
+
+**Family:** register-flattening
 
 **What it looks like:** A sentence — especially an opening or topic
 sentence — is prefaced with a hedge that adds no information: من المهم
@@ -74,6 +94,8 @@ of the family.
 (Hyper-Formal Closing) — `_sources/semitic/skills/humanizer-ar-egt/SKILL.md:307-328`;
 SM-SHM-012 (Formal Transition Phrases) —
 `_sources/semitic/skills/humanizer-ar-shami/SKILL.md:486-515`.
+
+**Family:** stock-units
 
 **What it looks like:** Mechanical connective tissue at paragraph
 boundaries — transitions like وبالتالي، بالإضافة إلى، مع ذلك، ومن ثَمّ, and
@@ -135,6 +157,8 @@ that assert outsized importance in stock phrasing (يُعد ركيزة أساس�
 العوامل، مما لا شك فيه أن) rather than earning the claim with specifics. See
 the dedup log for the exact reasoning.
 
+**Family:** stock-units
+
 **What it looks like:** A claim's importance is asserted through a fixed,
 grandiose formula — يُعد ركيزة أساسية، من أهم العوامل المؤثرة، أثبتنا أن X
 مهم — instead of demonstrated with a specific consequence, number, or
@@ -171,6 +195,8 @@ the *formula*, not the claim of importance itself.
 `_sources/semitic/skills/humanizer-ar-egt/SKILL.md:260-271`; SM-SHM-024
 (Uniform Sentence Length Distribution) —
 `_sources/semitic/skills/humanizer-ar-shami/SKILL.md:905-936`.
+
+**Family:** register-flattening
 
 **What it looks like:** Every sentence in a paragraph runs roughly the same
 length, with no short punchy sentence and no long paratactic run breaking the
@@ -217,6 +243,8 @@ AI) is a document-formatting issue that is not MSA-specific; it is
 generalized to all three varieties as an editorial judgment, not because two
 upstream files independently made the claim. See the dedup log for this
 single-source generalization.
+
+**Family:** english-syntax
 
 **What it looks like:** Lists making up more than roughly 15% of a text by
 line count; list items that are really sentences pretending to be bullets;
@@ -269,6 +297,8 @@ their English origin. This entry is placed in ar-shared because the
 English" *explanation* is an Egyptian-only claim, reproduced here as
 attributed commentary, not as an independently-verified etiology.
 
+**Family:** calque
+
 **What it looks like:** Openers that read as calqued English chatbot
 ritual — بالتأكيد! (Certainly!), شكراً على سؤالك الرائع (Thank you for that
 great question), يسعدني مساعدتك (I'd be happy to help), من المهم أن نلاحظ (It
@@ -306,6 +336,8 @@ phrase*, not politeness itself.
 a cross-variety pattern in `docs/inventory/semitic.md` §4 ("يُعتبر / يُستخدم /
 يُلاحظ passive-voice family flagged as an AI tell in all three") and
 discussed for its severity mismatch in `docs/CONFLICTS.md` C-07.
+
+**Family:** register-flattening
 
 **What it looks like:** Formal morphological passive beyond the تم/يتم
 periphrastic construction — يُستخدم، يُعتبر، يُلاحَظ، يُشار إلى، يُرى، يُقال —

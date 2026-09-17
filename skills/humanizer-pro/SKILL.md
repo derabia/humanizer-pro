@@ -160,14 +160,19 @@ summary below is for orientation only; follow the file.
 - **`detect`:** Issues found (grouped P0 / P1 / P2, each quoting the text and
   citing a pattern ID, with Tier-1A authorship markers kept visually separate
   from Tier-1B clarity edits), then Assessment (which flags are real problems
-  and which are defensible in context), then Score. Zero editing passes; no
+  and which are defensible in context), then Score (stated as a review
+  signal, not an authorship claim; `authorshipClaim: false` in `--json`
+  output), then Not flagged on purpose. If every finding is P2, close with
+  "no verdict; weak signals only" instead of a label. Zero editing passes; no
   rewriting, no marks normalization.
 - **`rewrite` (default):** Issues found, then the Rewritten version exactly
   once (never a draft superseded by a second full version), then What changed,
-  then the **mandatory second-pass audit**.
+  then the **mandatory second-pass audit**, then the closing line
+  `Claims added: 0` (or a list of user-supplied additions only).
 - **`edit`:** confirm the file is prose and refuse code, config, and data
   files; apply minimal targeted edits to authorized spans only; report Edits
-  made as before and after per location; then Verification.
+  made as before and after per location; then Verification; then the closing
+  line `Claims added: 0` (or a list of user-supplied additions only).
 - **`seo` modifier:** append Protected spans and SEO check to whichever mode
   ran, per `references/seo-mode.md`.
 
@@ -184,15 +189,20 @@ label.
 
 ## 7. Step 6: verify
 
-For `edit` and for any `seo` run, verify with the validator when a shell is
-available:
+For `edit` and for any `seo` run, verification with the validator is
+**mandatory** when a shell is available. For a plain `rewrite` with no `seo`
+modifier, running the same validator on the source and the delivered
+rewrite is **recommended** whenever a shell exists, not mandatory; it
+catches the same preservation regressions `edit` gets for free:
 
 ```
 node scripts/validate.js before.md after.md [--seo keywords.txt] [--json]
 ```
 
 Exit codes: `0` no violation, `1` at least one violation, `2` usage error.
-Report the exit code and every violation it lists.
+Report the exit code and every violation it lists. See `references/modes.md`
+"Verify with the validator" for the full statement of when this is required
+versus recommended.
 
 When no shell is available, work through the manual fallback checklist in
 `references/modes.md` instead, and state plainly that the check was
@@ -203,12 +213,19 @@ model-only. Never call a file verified when the check did not run.
 `references/modes.md` is the contract. Two rules apply to every mode:
 
 - **Report headings follow the language of the request.** An Arabic request
-  gets Arabic headings; `modes.md` carries the exact heading table. Dialect
-  requests still use the MSA heading forms, since headings are scaffolding and
-  not the humanized prose.
+  gets Arabic headings; `modes.md` carries the exact heading table, including
+  `Claims added` and `Not flagged on purpose`. Dialect requests still use the
+  MSA heading forms, since headings are scaffolding and not the humanized
+  prose.
 - **The rewritten text stays in the language and variety of the input.** That
   is a separate choice from the report language. Egyptian input comes back
   Egyptian, MSA input comes back MSA, and mixed input keeps its English terms.
+
+Two more rules apply to every `rewrite` and `edit` response specifically:
+the response closes with `Claims added: 0` (or a list, user-supplied content
+only), and a `detect` response closes with `Not flagged on purpose`, stating
+what was deliberately left alone and why. Full statements in
+`references/modes.md`.
 
 ## 9. When the scripts cannot run
 
