@@ -1,0 +1,8 @@
+evals.json: 16 entries
+Language buckets: {"en":4,"msa":4,"egt":4,"shami":4}
+Mode counts: {"detect":4,"rewrite":6,"edit":6}
+seo:true count: 5
+voiceSample by language family: {"english":1,"arabic":1}
+thinContent:true count: 1
+
+PASS — all checks passed.
