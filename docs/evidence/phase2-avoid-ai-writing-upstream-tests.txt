@@ -1,0 +1,546 @@
+Split skill: canonical parity, size limit, and five mutation controls passed
+Detector fixtures
+  ✓ empty text returns Empty label
+  ✓ text under 10 words returns tooShort flag
+  ✓ text over 10k words returns tooLong flag
+  ✓ AI-heavy paragraph scores in Strong/Heavy range
+  ✓ plain human bug-report prose stays in Minimal range
+  ✓ stats fields sum to issues length
+  ✓ #123: rendered Markdown ignores frontmatter and multiline HTML comments
+  ✓ #123: same-line and unclosed HTML comments are source-only
+  ✓ #123: comment markers inside fenced and inline code remain visible
+  ✓ #123: comment markers in top-level indented code remain visible
+  ✓ #123: an indented HTML comment under a list item stays hidden
+  ✓ #123: list syntax inside a comment cannot hide later indented code
+  ✓ #123: backticks inside an HTML comment do not protect its closing delimiter
+  ✓ #123: code delimiters in one comment cannot hide a later comment
+  ✓ #190: tilde fences and adjacent list markers in comments preserve later context
+  ✓ #123: short HTML comments close at an overlapping delimiter
+  ✓ #123: rendered Markdown preserves issue offsets after masked source
+  ✓ #123: multiline blockquote masking preserves later source offsets
+  ✓ #123: plain mode preserves legacy blockquote paragraph scoring
+  ✓ #123: rendered Markdown recognizes blank-first-line and CR-only frontmatter
+  ✓ #123: rendered Markdown does not mistake a thematic break for frontmatter
+  ✓ #123: unknown source modes fall back visibly to plain
+  ✓ #190: many HTML comments avoid quadratic rescanning
+  ✓ adversarial Markdown scans stay within a bounded time
+  ✓ version-heading dash carve-out does not swallow prose after a closed version label
+  ✓ repeated Tier 1 phrase does not inflate score linearly
+  ✓ em-dash detector skips definition-list separators (bold term / link + dash)
+  ✓ em-dash carve-out covers numbered-list separators too
+  ✓ em-dash carve-out covers a bold lead term with a parenthetical (#67)
+  ✓ em-dash carve-out covers Keep-a-Changelog version headings (#67)
+  ✓ em-dash carve-out stays narrow — prose dashes in a heading still fire (#67)
+  ✓ hedge-stack does not fire on ordinary negation or inverted questions (#69)
+  ✓ em-dash carve-out requires a list marker — line-initial bold splices still fire
+  ✓ smart-punct signature is not corroborated by separator-only em dashes
+  ✓ em-dash detector still fires on mid-sentence splices at the same density
+  ✓ #73: em-dash overuse remains a P2 edit without affecting authorship output
+  ✓ em-dash detector ignores CLI flags like --save-dev
+  ✓ chatbot artifacts score as P0 critical
+  ✓ crypto-shill social post with hashtag block + bullet-NP lists flags
+  ✓ "Interesting part of the project:" header opener flags emotional-flatline
+  ✓ "the line I keep coming back to" flags lingering-attention
+  ✓ "I cannot stop thinking about" flags lingering-attention
+  ✓ bare "I keep coming back to X because ..." does NOT flag lingering-attention
+  ✓ "real on-chain tokenomics" flags real-actual-inflation
+  ✓ hashtag-stuff does not fire on prose with 2-3 hashtags
+  ✓ "load-bearing" flags only allowlisted attributive abstractions (#56)
+  ✓ #107: deterministic unnecessary hyphenation subclasses fire with fixes
+  ✓ #107: standard compound modifiers and open forms do not fire
+  ✓ #107: protected spans are excluded from unnecessary-hyphenation detection
+  ✓ #107: proper nouns, identifiers, and version strings stay protected
+  ✓ #107: punctuation-adjacent flags and single-component paths stay protected
+  ✓ #107: frontmatter, YAML, Markdown tables, and HTML attributes stay protected
+  ✓ #107: adversarial filename masking remains within a linear-time budget
+  ✓ #107: long closed quotations are masked without a length cutoff
+  ✓ #107: copyedit-only findings do not affect score or trinary classification
+  ✓ "verbatim" is Tier 3: single use stays clean, overuse flags by density
+  ✓ "quietly" clusters with another Tier 2 word flags tier2
+  ✓ "deeply" joins a tier2 cluster only in significance collocations
+  ✓ bullet-np-list does not fire on prose containing short verb-form bullets
+  ✓ tier3-phrase fires on per-phrase repetition (>=2 hits)
+  ✓ tier3-phrase-cluster fires on 3 distinct phrases at density 1 each
+  ✓ tier3-phrase span dedup: overlapping regex matches count as one phrase
+  ✓ emotional-flatline opener fires at position 0 (no leading newline)
+  ✓ emotional-flatline stays visible without moving the authorship score
+  ✓ bullet-np-list ignores bullets inside fenced code blocks
+  ✓ bullet-np-list flushes on 2+ blank lines between bullet sections
+  ✓ hashtag-stuff matches tags after sentence punctuation
+  ✓ hashtag-stuff excludes URL fragments from the count
+  ✓ hashtag-stuff excludes issue and PR references from the count
+  ✓ hashtag-stuff excludes hex colours and preprocessor directives
+  ✓ hashtag-stuff ignores hashes inside code spans and fences
+  ✓ hashtag-stuff still counts short hex-shaped words, which are real tags
+  ✓ hashtag-stuff still fires on a tag block that also cites an issue
+  ✓ hashtag-stuff still fires on tags spread inline through a post
+  ✓ low-ttr fires on a 200+ token text with narrow vocabulary
+  ✓ low-ttr does not fire on natural human prose at 200+ tokens
+  ✓ low-ttr does not fire on short texts (<200 tokens)
+  ✓ ai-placeholder fires on common slot-fill bracket patterns
+  ✓ ai-placeholder does not fire on legitimate bracketed content
+  ✓ ai-citation-markup fires on chatbot-internal tokens
+  ✓ ai-utm-source fires on AI-tool tracking parameters
+  ✓ ai-utm-source does not fire on benign utm_source values
+  ✓ severity labels are distinct across all four tiers
+  ✓ v2: zero-width chars trigger normalization-flag
+  ✓ v2: Cyrillic homoglyph swap restores Tier 1 hit
+  ✓ v2: formulaic opener fires
+  ✓ v2: speculative scenario opener fires
+  ✓ v2: speculative opener leaves instructional "imagine you have" alone
+  ✓ v2: launch-copy introduction fires
+  ✓ v2: launch-copy introduction leaves ordinary narrative alone
+  ✓ v2: dramatized crowd contrast fires on the dismissive clause
+  ✓ v2: crowd contrast leaves literal simultaneity alone
+  ✓ v2: fake-casual props fire
+  ✓ v2: fake-casual props leave math and plain qualifiers alone
+  ✓ v2: parenthetical hedge fires
+  ✓ v2: social endorsement closer fires on LinkedIn-style share post
+  ✓ v2: social endorsement closer covers every regex branch
+  ✓ v2: social endorsement closer matches curly-apostrophe forms
+  ✓ v2: social endorsement closer leaves literal-verb human prose alone
+  ✓ v2: trinary output present + FN-biased for ambiguous text
+  ✓ v2: highly AI-marked text reaches AI_ONLY with corroborators
+  ✓ v2: highlight_sentence_for_ai returns regions with start/end offsets
+  ✓ v2: context mode "technical" suppresses Title Case header flag
+  ✓ #62: Title Case flagged on a Markdown heading, not just a bare line
+  ✓ #62: the heading fix does not flag sentence-case or non-headings
+  ✓ #62: legitimate three-word Title Case headings are not flagged
+  ✓ #62: a heading inside a fenced block is illustration, not a section header
+  ✓ #62: headings opening with a function word are not the tell
+  ✓ #62: an interior function word still flags, in both forms
+  ✓ #240: an acronym or single-letter function word in the title still flags
+  ✓ #240: an all-caps banner line is not a title-case header
+  ✓ #240: unrelated single-letter capitals do not widen the rule
+  ✓ #314: first-person I can appear inside a Title Case heading
+  ✓ #291: blank lines do not manufacture a longer heading
+  ✓ #291: a single physical line still flags with horizontal whitespace
+  ✓ #62: fences that a parity count gets wrong
+  ✓ #77: only spaces and tabs may follow a closing fence
+  ✓ #62: MD_HEADING_PREFIX accepts what the pattern accepts
+  ✓ #62: an indented line is not a Markdown heading
+  ✓ #62: the reported text is value-asserted, not merely present
+  ✓ v2: markdown **bold** is preserved by normalize pre-pass
+  ✓ v2: punct-distribution fires on uniform per-paragraph density
+  ✓ v2: cross-para-burstiness fires on uniform sentence rhythm
+  ✓ v2: invalid contextMode falls back to general with stats.contextModeFallback set
+  ✓ v2: trinary fields present on tooShort / tooLong / empty as UNSCORED
+  ✓ v2: probability fields sum to exactly 1.000 (no float drift)
+  ✓ v2: mid-score isolated stylometric hits do not reach AI_ONLY
+  ✓ v2: humanizer bypass escalates to AI_ONLY (normalization-flag corroborator)
+  ✓ v2: canonical saturated-AI essay reaches AI_ONLY (calibration regression)
+  ✓ v2: legitimate *italic phrase* is NOT stripped by roleplay rule
+  ✓ v2: *roleplay action verb* IS stripped
+  ✓ v2: single ZWSP does not flip to AI_ONLY (hair-trigger fix)
+  ✓ v2: dense-AI-vocab trifecta reaches AI_ONLY (calibration regression)
+  ✓ v2: blockquoted AI text does not penalize the human wrapper
+  ✓ v2: probability sum is exactly 1 with no negative components
+  ✓ v2: unmappedHighlights counter surfaced in stats
+  ✓ v2: real Rust technical post does NOT classify AI_ONLY (denseAIVocab FP fix)
+  ✓ v2: canonical "As an AI language model" disclaimer fires cutoff-disclaimer + AI_ONLY
+  ✓ v2: single-line shell prompt > is NOT stripped as blockquote
+  ✓ v2: stats.denseAIVocab and stats.tier1Distinct surface for observability
+  ✓ v2: backward compat — score, label, issues, stats still present
+  ✓ #109: Object.prototype names in prose do not fire tier lookups
+  ✓ #109 complement: real tier1 vocabulary still fires after the hasOwn guard
+  ✓ performed-insight: essayist tics fire
+  ✓ performed-insight: ordinary uses do not fire
+  ✓ performed-insight: determiner "sit with that <noun>" and literal "only X I trust" stay clean
+  ✓ performed-insight: literal punchline and naming senses stay clean
+  ✓ performed-insight: sentence-initial Turns out keeps a clean text and index
+  ✓ negation-chain: no-chains, didn't-chains, and don't-verb-it fire
+  ✓ negation-chain: idiomatic pairs stay clean
+  ✓ negation-chain: ordinary narration with restated subjects stays clean
+  ✓ negation-chain: mid-sentence technical inventories stay clean
+  ✓ negation-chain: two-item sentence-initial factual inventories stay clean
+  ✓ dev-blog-boilerplate: simplicity slogans fire
+  ✓ dev-blog-boilerplate: spaced and hyphenated out-of-the-box slogans fire
+  ✓ dev-blog-boilerplate: ordinary prose stays clean
+  ✓ #189: plain-mode multiline blockquote (LF) keeps issue and highlight offsets on source
+  ✓ #189: plain-mode multiline blockquote (CRLF) keeps issue and highlight offsets on source
+  ✓ #189: rendered-markdown multiline blockquotes keep offsets on source (LF and CRLF)
+  ✓ #189: zero-width characters do not shift later offsets
+  ✓ #189: zero-width chars separated by content record exact source runs
+  ✓ #189: roleplay-action markers do not shift later offsets
+  ✓ #189: interleaved preprocessing stages compose source offsets
+  ✓ #189: overlapping normalization removals map once and keep staged semantics
+  ✓ #189: malformed emphasis is not reclassified as roleplay
+  ✓ #189: a zero-width character inside a finding preserves its source start and region
+  ✓ #189: trailing removed markers stay outside the preceding highlight
+  ✓ #189: direct normalization handles every occurrence and mapped analysis stays linear
+  ✓ #189: ordinary unchanged text reports native indexes and exact slices
+  ✓ #189: highlight regions land on real source bytes and slice back to the flagged sentence
+  ✓ #235: sentence spans match the former regex scan on every boundary shape
+  ✓ #260: punctuation-prefix analysis scales without rescanning each suffix
+  ✓ #235: analysis time grows linearly on whitespace-heavy input
+  ✓ #235: table delimiter rows still mask with surrounding whitespace and CR
+  ✓ #237: technical context mode suppresses technical-legitimate vocabulary terms
+  ✓ reply openers and analytical framing are not reported as acknowledgment loops (#239)
+  ✓ #241: unsegmented-script documents are declined, not scored "Too short"
+
+All detector fixtures passed.
+CATEGORIES.md anti-drift contract
+  (53 detector types, 53 documented in tables)
+  ✓ every detector type is documented in a CATEGORIES.md table
+  ✓ every type referenced in the tables is a real detector type
+  ✓ ../README.md states the engine type total, and it matches TYPE_LABELS (engine implements (\d+) `typ…)
+  ✓ CATEGORIES.md states the engine type total, and it matches TYPE_LABELS (engine exposes (\d+) issue `…)
+  ✓ CATEGORIES.md states the engine type total, and it matches TYPE_LABELS (the engine's \*\*(\d+) `type…)
+
+CATEGORIES.md contract holds.
+
+preservation validator
+
+  ✓ fenced code edited → error
+  ✓ fenced code removed → error
+  ✓ a tilde line inside a backtick fence does not end it → error
+  ✓ a backtick line inside a tilde fence does not end it → error
+  ✓ a three-backtick line inside a four-backtick fence does not end it → error
+  ✓ an indented closing fence leaves following prose editable
+  ✓ an indented fenced-code edit still fires
+  ✓ blockquote reworded → error
+  ✓ table cell content changed → error
+  ✓ table without outer pipes changed → error
+  ✓ single-column pipe table changed → error
+  ✓ inline code dropped → error
+  ✓ URL dropped → error
+  ✓ file path altered → error
+  ✓ section deleted → heading count error
+  ✓ heading nesting changed → error
+  ✓ frontmatter touched → error
+  ✓ CRLF frontmatter touched -> error
+  ✓ CRLF frontmatter removed -> error
+  ✓ CRLF table cell changed -> error
+  ✓ CRLF and LF forms of the same document compare clean
+  ✓ lone CR changed to LF inside fenced code -> error
+  ✓ maskCode closes a CRLF fence before following prose
+  ✓ stripping an AI utm_source parameter → no error
+  ✓ stripping AI tracking parameters preserves the remaining query string
+  ✓ stripping a terminal AI tracker preserves adjacent sentence punctuation
+  ✓ dash and ellipsis suffixes cannot move query data into prose
+  ✓ removing a terminal question mark from a URL is still an error
+  ✓ changing a non-tracking query parameter → error
+  ✓ sentence-casing a Title Case heading → warning, not error
+  ✓ removing an emoji from a heading → warning, not error
+  ✓ re-aligning table padding → no error
+  ✓ re-aligning a table without outer pipes → no error
+  ✓ compact GFM delimiters protect cells and allow delimiter padding changes
+  ✓ colon-only cells do not form a table delimiter
+  ✓ hyphens in table content remain significant
+  ✓ a mismatched header and delimiter shape is not a table
+  ✓ top-level indented code is not a table
+  ✓ three-space-indented tables remain protected
+  ✓ escaped pipes do not add table cells
+  ✓ prose containing a bare pipe is not treated as a table
+  ✓ pipe-delimited lines without a delimiter row are not a table
+  ✓ ordinary prose rewrite → no error
+  ✓ four-space list continuation is not treated as code
+  ✓ URL inside a code block is not double-counted as prose
+  ✓ dropped figure → warning
+  ✓ halved text → shrink warning
+  ✓ rewrite that adds AI patterns → residual error
+  ✓ rewrite that removes AI patterns → clean
+  ✓ identical input and output is always clean
+  ✓ non-string input throws
+
+all preservation tests passed
+
+
+corpus helpers
+
+  ✓ cache replacement retries Windows-style rename and removal collisions
+  ✓ cache replacement exhaustion preserves a complete competing file
+  ✓ constructs text and dataset rows from the supplied source snapshot
+  ✓ strips Gutenberg header and footer
+  ✓ leaves text without Gutenberg markers alone
+  ✓ container mode pulls the named element
+  ✓ container mode accepts a bare selector string
+  ✓ paragraph mode filters by an attribute marker
+  ✓ paragraph mode without a match takes every paragraph
+  ✓ extraction throws rather than returning empty text
+  ✓ entities are decoded and tags removed
+  ✓ em dashes survive extraction
+  ✓ script and style never reach the text
+  ✓ authored header, nav, and footer inside the container survive
+  ✓ page chrome outside the container is excluded by the selector
+  ✓ slice.after starts at the marker
+  ✓ slice.after throws on a missing marker rather than silently taking everything
+  ✓ slice.maxWords bounds the sample
+  ✓ no slice returns the text unchanged
+  ✓ csv: quoted commas and escaped quotes
+  ✓ csv: a newline inside a quoted field is not a row break
+  ✓ csv: CRLF and a missing final newline both parse
+  ✓ csv: a truncated tail record is dropped, not half-parsed
+  ✓ csv: empty fields are preserved rather than collapsed
+  ✓ raid: only defensible registers are mapped
+  ✓ list preserves preferred register order and sorts observed extras
+  ✓ sha256 is stable and content-sensitive
+  ✓ default fetch timeout matches dataset ranged reads
+  ✓ fetch validates cache ids and safely replaces cached content
+  ✓ fetch times out with document id and host in the error
+  ✓ response body timeout keeps document id and host in the error
+
+all corpus tests passed
+
+  ✓ quotes:straight flags curly marks; a clean doc passes
+  ✓ quotes:curly flags straight quotes and apostrophes
+  ✓ quotes:curly carves out feet/inch primes (5'11")
+  ✓ latinAbbrev:never flags any e.g./i.e.
+  ✓ latinAbbrev:parentheses flags outside parens, not inside (must-not-fire)
+  ✓ a title-case heading is advisory under headings:sentence, never hard
+  ✓ a proper-noun heading is NOT a hard violation
+  ✓ headings:title flags a fully-lowercase heading as advisory
+  ✓ unknown key and unknown value are warned, not silently ignored
+  ✓ a valid config produces no warnings
+  ✓ frontmatter that closes is skipped; unterminated frontmatter does NOT swallow the doc
+  ✓ empty/omitted mechanics check nothing and warn nothing
+  ✓ markdown link titles and reference definitions are syntax, not curly-quote violations
+  ✓ a parenthetical that wraps across lines keeps its latinAbbrev carve-out
+  ✓ a stray "(" does not suppress later latinAbbrev findings past the paragraph
+  ✓ a link whose URL contains parentheses does not corrupt the paren balance
+  ✓ an unclosed "](" is left alone rather than swallowing the rest of the line
+  ✓ prose that merely looks like a reference definition keeps its quotes checked
+  ✓ a link-led definition-list line is not swallowed as a reference definition
+  ✓ a reference-definition title may contain escaped quotes
+  ✓ a parenthetical survives an intervening code block or code-only line
+  ✓ HTML attribute values are syntax, not curly-quote violations
+  ✓ prose containing a comparison is not mistaken for an HTML tag
+  ✓ a UTF-8 BOM does not hide the frontmatter
+  ✓ nested and mismatched fences do not leak code as prose (no false hard violation)
+  ✓ resolveConfig: filename, path, unknown, traversal (no guide aliases)
+  ✓ a bare name is not shadowed by a same-named file in the working directory
+  ✓ example configs are generic, parse with register + mechanics
+  ✓ CLI exits 0 clean, 1 on a hard violation, 2 on a tool error
+  ✓ CLI: a second file, an unknown flag, and a missing --config value each exit 2
+  ✓ CLI: a config whose mechanics is null or an array exits 2, not a false-green 0
+  ✓ CLI: a file named like the config value is still reachable (not filtered by value)
+  ✓ malformed inline links leave following prose visible to style checks
+  ✓ 4-space indented code after a blank line is masked (must-not-fire)
+  ✓ a 4-space line directly under a paragraph is lazy continuation and still checked
+  ✓ 4-space content inside a list item is prose and still checked
+  ✓ a paragraph after a list resets list context, so indented code masks again
+  ✓ a document opening with --- then a blank line is not frontmatter (must-fire)
+  ✓ real frontmatter still masks, including a quoted value
+  ✓ dot-bearing bare names resolve inside examples/ only, and miss
+
+check-style: 40 passed.
+  ✓ explicit targets normalize quotes, contractions and possessives
+  ✓ auto infers double and single marks independently from original prose
+  ✓ auto ties use first style and missing evidence preserves that mark family
+  ✓ auto ignores protected syntax in the reference document
+  ✓ nested quotes and interrupted dialogue get their direction
+  ✓ existing curly marks survive a curly pass, including mixed text
+  ✓ decades educate while feet and inch primes follow the checker carve-out
+  ✓ leading elisions remain a documented contextual limitation
+  ✓ code adjacency preserves opening quotes and possessive apostrophes
+  ✓ protects frontmatter with BOM and CRLF in both modes
+  ✓ protects frontmatter ending with dots in both modes
+  ✓ protects nested/mismatched fences in both modes
+  ✓ protects fence with a non-closing info suffix in both modes
+  ✓ protects fence containing blockquote syntax in both modes
+  ✓ protects blockquote fence in both modes
+  ✓ protects list fence in both modes
+  ✓ protects space/tab indented code in both modes
+  ✓ protects indented code inside a list in both modes
+  ✓ protects exact-length inline code in both modes
+  ✓ protects wrapped inline code in both modes
+  ✓ protects link destination and title in both modes
+  ✓ protects escaped destination and title delimiters in both modes
+  ✓ protects wrapped link title in both modes
+  ✓ protects angle destination and parenthesized title in both modes
+  ✓ protects nested destination and multiline title in both modes
+  ✓ protects reference definition and wrapped title in both modes
+  ✓ protects reference identifiers in both modes
+  ✓ protects full and collapsed reference identifiers in both modes
+  ✓ protects HTML attributes and comments in both modes
+  ✓ protects wrapped HTML attributes in both modes
+  ✓ protects autolinks in both modes
+  ✓ protects escaped marks in both modes
+  ✓ unclosed fences remain protected through EOF
+  ✓ malformed links cannot hide prose across a single newline or spaces
+  ✓ a failed outer candidate does not hide a valid later link
+  ✓ many unmatched link openers finish within a bounded child process
+  ✓ thematic breaks and unclosed frontmatter leave prose live
+  ✓ lazy and list paragraph continuations remain prose
+  ✓ link labels and HTML body text remain prose
+  ✓ hyphens, headings, tables, Unicode and newline bytes stay unchanged
+  ✓ both modes are idempotent and their output passes the shared checker
+  ✓ CLI stdout is exact and read-only; --write updates only the requested file
+  ✓ CLI rejects invalid/missing options, extra files and I/O errors with exit 2
+  ✓ CLI defaults to auto and uses the original reference for preview and write
+  ✓ inline syntax follows source order and never rewrites protected attributes
+  ✓ literal HTML blocks stay untouched while ordinary HTML body prose changes
+  ✓ inline code cannot hide a heading or another list item
+  ✓ a list fence ends when its container ends, including sibling items
+  ✓ escaped reference openers stay prose while actual references retain identifiers
+  ✓ bare URLs retain balanced parentheses but leave prose quotes and delimiters live
+  ✓ frontmatter delimiters allow trailing spaces without exposing metadata
+  ✓ quoted URL punctuation leaves an enclosing prose parenthesis visible
+  ✓ inline destinations require a matching unescaped link-text opener in the same block
+  ✓ explicit quotes bound bare URLs even when URL parentheses are unmatched
+
+normalize-quotes: 54 passed.
+  ✓ readChangelogVersion skips Unreleased and reads the first numeric heading
+  ✓ verifyReleaseVersions accepts matching package.json and changelog versions
+  ✓ verifyVersionChanged accepts a new version and rejects unchanged recovery pushes
+  ✓ CLI checks the previous package version only when requested
+  ✓ verifyReleaseVersions accepts an Unreleased-only documentation edit above the current release
+  ✓ verifyReleaseVersions rejects each stale skill or plugin version
+  ✓ verifyReleaseVersions rejects missing versioned skill and plugin files
+  ✓ verifyReleaseVersions rejects malformed skill and plugin version sources
+  ✓ verifyReleaseVersions accepts a quoted skill version in CRLF frontmatter
+  ✓ verifyReleaseVersions accepts CRLF changelog headings
+  ✓ verifyReleaseVersions rejects version drift
+  ✓ verifyReleaseVersions rejects changelog with no numeric heading
+  ✓ verifyReleaseVersions rejects a malformed current heading instead of falling back
+  ✓ verifyReleaseVersions rejects malformed package.json
+  ✓ verifyReleaseVersions rejects package.json without a version
+  ✓ verifyReleaseVersions rejects non-semver package version
+  ✓ verifyReleaseVersions rejects a prerelease package version
+  ✓ verifyReleaseVersions rejects numeric identifiers with leading zeroes
+  ✓ CLI exits 0 on match and writes github output
+  ✓ CLI rejects an empty github output path
+  ✓ invalid input reaches neither mocked release creation nor npm publication
+  ✓ valid input reaches the simulated success path
+  ✓ workflow runs the shared guard before both release mutations
+verify-release-versions.test.js: 23 passed
+  ✓ wilson handles empty, boundary, and middle samples with z=2
+  ✓ rocAuc credits separation, inversion, ties, and empty classes correctly
+  ✓ measurement records filtering and detector exclusions without counting them as scores
+  ✓ document preservation is separate from the detector maximum
+  ✓ the paragraph source-word floor stays separate from detector-visible words
+  ✓ source verification rejects changed text and accounts for unavailable sources
+  ✓ stable identities use original spans and retain class metadata
+  ✓ the default row parser scores the verified snapshot after the source changes
+  ✓ legacy instrumentation preserves main paragraph filtering and document flattening
+  ✓ category reports include zero observations for every detector category
+
+10 fp-measure tests passed
+  ✓ exports the agreed limits and wrapper behavior
+  ✓ document mode preserves token order and bypasses every paragraph filter
+  ✓ generated whitespace matrix keeps duplicate and Unicode tokens in order
+  ✓ colon heading boundary matrix handles case, count, spacing, and line endings
+  ✓ heading attachment spans use original CRLF offsets and never duplicate a body
+  ✓ explicit ATX headings attach regardless of lowercase continuation
+  ✓ two and three consecutive headings leave only the nearest attached
+  ✓ eligible standalone and detached heading blocks use normal word eligibility
+  ✓ colon inference is limited to block starts and labels its diagnostics
+  ✓ only ordinary hard-wrapped prose is joined
+  ✓ mid-paragraph ordinals do not start a list run
+  ✓ mixed prose and five short bullets remain one eligible source body
+  ✓ detector deltas are pinned against the frozen legacy preparation
+  ✓ heading markers remain source tokens at selection boundaries
+  ✓ blank-separated list and quote continuations retain their layout
+  ✓ quotes and thematic breaks terminate list classification without losing body structure
+  ✓ setext headings win over thematic breaks while standalone rules remain structural
+  ✓ fences use same-marker valid closers and stay atomic across blank lines
+  ✓ generated mixed documents assign every structural source span and sentinel exactly once
+  ✓ indented code stays structural and uses only the shared word limits
+  ✓ all candidate decisions carry the complete stable shape
+
+21 fp-preprocess tests passed
+  ✓ runs the same verified source through both preprocessors in both unit modes
+  ✓ reports decision changes by original spans
+  ✓ pairs an attached heading with its unique legacy body without changing either identity
+  ✓ leaves ambiguous attachment candidates unpaired and counts each record once
+  ✓ pairs a unique normalized unit when only its source span boundary moves
+  ✓ leaves repeated normalized units unpaired when boundary provenance is ambiguous
+  ✓ compares an empty row that produces no current decisions
+  ✓ detects a type change even when score and source span do not change
+  ✓ includes accepted and skipped accounting with reason deltas
+  ✓ emits all category counts, including explicit zeros
+  ✓ prioritizes detector and selected-population changes over metadata-only changes
+  ✓ reports threshold rates overall and by source and register
+  ✓ summary and decision artifacts contain hashes and diagnostics without corpus text
+  ✓ public JSON excludes full decision streams
+  ✓ fails on a source hash mismatch before comparing runs
+  ✓ validates output CLI options
+
+16 fp-compare tests passed
+  ✓ blanks a triple-backtick fence
+  ✓ blanks a triple-tilde fence
+  ✓ blanks a mixed-marker example inside a backtick fence
+  ✓ blanks a shorter backtick example inside a longer fence
+  ✓ blanks a fence with indented opening and closing markers
+  ✓ blanks a CRLF fence without consuming following prose
+  ✓ identical text before a fence is not blanked in place of the fence
+  ✓ blanks a multirow pipe-delimited table
+  ✓ blanks a table without outer pipes
+  ✓ blanks a three-space-indented table
+  ✓ escaped pipes stay within their table cell
+  ✓ blanks a blockquote
+  ✓ blanks inline backticks
+  ✓ blanks paired straight double quotes
+  ✓ blanks paired curly double quotes
+  ✓ blanks paired straight single quotes
+  ✓ ordinary prose remains unchanged
+  ✓ bare pipes without a delimiter row remain ordinary prose
+  ✓ a pipe inside inline code is not a table row
+  ✓ mismatched header and delimiter cell counts remain ordinary prose
+  ✓ four-space-indented table-shaped code remains ordinary code
+  ✓ blanks compact delimiter - | -, outer pipes false
+  ✓ blanks compact delimiter - | -, outer pipes true
+  ✓ blanks compact delimiter -- | --, outer pipes false
+  ✓ blanks compact delimiter -- | --, outer pipes true
+  ✓ blanks compact delimiter :-: | --:, outer pipes false
+  ✓ blanks compact delimiter :-: | --:, outer pipes true
+  ✓ colon-only delimiter cells remain ordinary prose
+
+28 self-scan exemption tests passed
+  ✓ a chunked document reports nonempty top categories
+  ✓ top categories match an independent count across the chunks
+  ✓ a chunked document with no detections reports an empty category array
+  ✓ the over-budget diagnostic names categories for a chunked document
+  ✓ the CLI scans every tracked document against its own budget
+  ✓ the text table header lines up with its rows
+  ✓ an unsupported-script document is declined, not scored as clean
+  ✓ raw-only unsupported examples do not decline the exemption-aware scan
+  ✓ a chunked unsegmented-script document is declined, not scored as clean
+  ✓ the over-budget diagnostic still prints none when nothing was detected
+
+10 self-scan diagnostics tests passed
+{
+  "ok": true,
+  "cwd": "skills\\avoid-ai-writing",
+  "style": "Technical documentation (example): 0 hard, 0 advisory",
+  "marks": "Long-form prose (example): 0 hard, 0 advisory",
+  "preservation": "PASS — preservation checks clear"
+}
+{
+  "ok": true,
+  "cwd": "plugins\\avoid-ai-writing\\skills\\avoid-ai-writing",
+  "style": "Technical documentation (example): 0 hard, 0 advisory",
+  "marks": "Long-form prose (example): 0 hard, 0 advisory",
+  "preservation": "PASS — preservation checks clear"
+}
+avoid-ai-writing cli: ok
+avoid-ai-writing gate cli: ok
+README demo fidelity checks passed (case-specific constraints only).
+warning: baseline and candidate both resolve to 7a2c7d11d4a74d90c6be41fbed8402d972543798; this plan compares the skill against itself
+warning: baseline and candidate both resolve to 7a2c7d11d4a74d90c6be41fbed8402d972543798; this plan compares the skill against itself
+Rewrite evaluation controls passed; no model comparisons performed.
+warning: baseline and candidate both resolve to 7a2c7d11d4a74d90c6be41fbed8402d972543798; this plan compares the skill against itself
+rewrite eval OpenCode transport checks passed; no provider calls performed.
+fp-measure cli: ok
+
+Test summary: 20 passed, 0 failed
+  ok  scripts/flatten-skill.test.js
+  ok  detector/patterns.test.js
+  ok  detector/categories.test.js
+  ok  detector/validate.test.js
+  ok  scripts/corpus.test.js
+  ok  scripts/check-style.test.js
+  ok  scripts/normalize-quotes.test.js
+  ok  scripts/verify-release-versions.test.js
+  ok  scripts/fp-measure.test.js
+  ok  scripts/fp-preprocess.test.js
+  ok  scripts/fp-compare.test.js
+  ok  scripts/self-scan.test.js
+  ok  scripts/self-scan-diagnostics.test.js
+  ok  scripts/test-canonical-skill-package.js
+  ok  bin/avoid-ai-writing.test.js
+  ok  bin/avoid-ai-writing-gate.test.js
+  ok  scripts/rewrite-demo.test.js
+  ok  scripts/rewrite-eval.test.js
+  ok  scripts/rewrite-eval-opencode.test.js
+  ok  scripts/fp-measure-cli.test.js
