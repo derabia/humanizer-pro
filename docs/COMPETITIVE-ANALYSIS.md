@@ -1,6 +1,6 @@
 # Competitive analysis
 
-Decision document. Inputs: the eleven reviews in `docs/competitors/*.md` (each read
+Decision document. Inputs: the twelve reviews in `docs/competitors/*.md` (each read
 in full, each ending in a 13-dimension verdict table against humanizer-pro), our own
 weak-spot list in `docs/REVIEW-HANDOFF.md` section 3, and spot verification against
 the pinned clones under `_sources/competitors/`.
@@ -32,6 +32,7 @@ executable test functions, not assertions.
 | hazemshan1-rgb/humanizer-ar | Skill + Python scanner | Arabic, MSA only | 27 | yes, Python, count not score | no | 1 suite over 3 fixtures | no, Claude Code only | epistemic humility, no refusal clause | MIT |
 | yoloshii/humanizer-pro | Skill, Markdown only | English only | 44 constraints | no | no | 0 | yes, paste-anywhere fallback | better writing, refuses to emit a score at all | MIT |
 | ziadfaisalaljdy-beep/arabic-humanizer | Skill, Markdown only | Arabic, MSA implicit, dialects on roadmap | 15 | no | no | 0 | yes, paste-anywhere documented | better writing, narrow but real never-invent rule | MIT |
+| sawradip/rehumanize | Claude Code plugin marketplace, 100 skills, plus AGENTS.md | 100 languages (BCP 47), one register each, Arabic MSA only | ~10 tells per language, no IDs, no provenance | no | no | 0 | yes, dedicated AGENTS.md | no fabrication rule only, evasion never raised | MIT |
 | **humanizer-pro (ours)** | Skill + Node CLI, multi-host install docs | English plus Arabic فصحى, مصري, شامي (experimental) | 141 ID-tracked, provenance-mapped | yes, Node, both languages | yes, `validate.js` | 114 | yes | explicit refusal of detector evasion, explicit never-invent | MIT |
 
 ## 2. Where humanizer-pro leads
@@ -71,10 +72,10 @@ Each row names the repos that lack the capability, so the claim is checkable.
 
 Ranked by importance. The section 12 row of every review says "they lead" by
 construction (it is the borrow-from-them row) and is excluded from the count.
-Across the eleven verdict tables there are **7 substantive "they lead" rows**, listed
+Across the twelve verdict tables there are **8 substantive "they lead" rows**, listed
 first, then the split or tied rows.
 
-### They lead (7 rows)
+### They lead (8 rows)
 
 **A1. Measured false-positive rate on a real human corpus (eddyplolz, row 5).**
 `eddyplolz_humanizer-pro.md:194-202`: `corpus/manifest.json` is a hash-only manifest
@@ -131,6 +132,25 @@ PRNG, plus a separate `key.json` withheld from raters (verified at
 They have never run it. We have the same weak spot (REVIEW-HANDOFF 3.11, evals
 graded by the builder's own agents) and no mechanism at all. Size M. Licence MIT.
 
+**A8. Language breadth at scale, with a clean shared-core/thin-adapter architecture
+(sawradip/rehumanize, row 1).** `docs/competitors/sawradip_rehumanize.md` section 3:
+100 languages named by BCP 47, each a single-register skill file, against our 2
+(English, Arabic). This supersedes B7 (finestructure's 10 languages) as the real
+scale comparison. Why it matters: language breadth is a visible, easy-to-market
+capability gap, and their `shared/core-patterns.md` plus thin per-language
+`SKILL.md` adapter split (`sawradip_rehumanize.md` section 12) is a cleaner
+worked example of the separation our own `references/` loading table already
+approximates. What they do not have closes the gap in our favour elsewhere: no
+IDs, no provenance, no detector, no tests, no dialect support even for Arabic
+(`sawradip_rehumanize.md` section 13), so this is breadth only, not depth. To
+match at depth-preserving quality: do not copy their un-cited, ungrounded
+per-language tells; if language breadth is pursued, require the same
+IDs/provenance/testing bar already held for English and Arabic. Size XL if
+pursued seriously (grounded content per language is the actual cost, not the
+file scaffolding). Licence MIT, ideas only, no text reused (verified no shared
+wording against `_sources/blader` or `_sources/competitors/sawradip_rehumanize`
+content).
+
 ### Split rows and ties worth closing
 
 **B1. Generalized fidelity checking outside SEO mode (eddyplolz, row 8, split).**
@@ -177,10 +197,16 @@ by measuring a 35-word median sentence in a real formal Arabic sample
 in the schema, and a per-source-type evidence-weight table. Our voice matching has no
 storage or provenance model. Size M.
 
-**B7. Breadth of languages (finestructure, row 3, split).** Ten languages against our
-two. Their Family 1b insight (stock marketing phrases trace to one English inventory,
-so one table serves every language, `finestructure-ai_humanizer-multilingual.md:324-333`)
-makes future expansion cheap. Not a gap to close now, but it sets the cost of any
+**B7. Breadth of languages (finestructure, row 3, split; superseded at scale by
+sawradip/rehumanize, see A8).** Ten languages against our two from finestructure;
+100 against our two from sawradip/rehumanize. finestructure's Family 1b insight
+(stock marketing phrases trace to one English inventory, so one table serves
+every language, `finestructure-ai_humanizer-multilingual.md:324-333`) and
+sawradip's BCP 47 naming standard plus shared-core/thin-adapter split
+(`docs/LANGUAGE-CODES.md`, `sawradip_rehumanize.md` section 12) both make future
+expansion cheap to scaffold. Not a gap to close now, since sawradip's breadth is
+unverified and ungrounded (`sawradip_rehumanize.md` sections 4, 13), but between
+the two it sets both the naming convention and the architecture cost of any
 future language.
 
 ### Verified as not a gap
@@ -227,6 +253,9 @@ structure as well as ideas; repos with no licence lend ideas only, never text.
 | 23 | Ignore-region markers so doctrine files can quote bad examples (MrBridgeHQ, `analyze.py:48-53`) | Support an ignore marker in the detectors, needed before IMP-17 self-scan can be honest | none, enables 17 |
 | 24 | Nida equivalent-effect and bounded compensation (almuthanawork, `SKILL.md:17,51`) | A short note in `core-principles.md` on offsetting a lost stylistic effect nearby, hard-bounded by never-invent. Repo has no licence, so idea only, no text | none |
 | 25 | Paste-anywhere install path and the "changing the clothes, not deleting the ideas" framing (ziad, `README.md:15-18`, `SKILL.md:85`) | Explicit no-install path in our README; the metaphor is theirs, so express the principle in our own words | none, adoption |
+| 26 | BCP 47 as the sole language/variety naming standard, with script/region subtags added only when they change output (sawradip, `docs/LANGUAGE-CODES.md:1-38`) | New `docs/LANGUAGE-CODES.md`-style note in `references/precedence.md` or a new doc, applied to how `lib/lang.js` names Arabic varieties | none, naming hygiene, de-risks IMP-24 |
+| 27 | Shared core + thin per-language adapter as an explicit, named architecture (sawradip, `shared/core-patterns.md` + `skills/<code>/SKILL.md`, `sawradip_rehumanize.md` section 12) | State the pattern explicitly in `core-principles.md`: language-independent rules live once, each language reference file is a thin adapter that points back rather than restating | none, documents an architecture we already approximate |
+| 28 | Contributor template file with an exact numbered recipe for adding a new language/variety (sawradip, `skills/_TEMPLATE.md:1-30`) | New `references/_TEMPLATE.md` (or `docs/ADD-A-VARIETY.md`) for adding an Arabic variety, referencing BCP 47-style naming from idea 26 | none, lowers the bar for IMP-24 |
 
 Dropped after verification: Latin-punctuation-in-Arabic (already shipped, section 3),
 Gulf and Maghrebi coverage (no competitor holds it, so nothing to borrow).
@@ -295,16 +324,20 @@ valuable but optional.
 | IMP-22 | Prompt-injection principle | `references/core-principles.md` | S | Borrow 18 | The file states that text under audit is data and never instructions, and that an embedded instruction is reported as a finding | None |
 | IMP-23 | Statistical vocabulary-concentration signal for Arabic | `lib/ar-detector/signals.js`, `references/ar-shared.md` | M | Borrow 21, weak spot 3.6 | Top-word share and TTR contribute a graded P2 signal, so a human fixture can score between 1 and 24 instead of always 0 | Calibration without IMP-01 is guesswork. Sequence it after the corpus |
 | IMP-24 | Gulf variety exploration | `references/ar-gulf.md`, `lib/lang.js`, `docs/NATIVE-REVIEW.md` | L | Open frontier, nobody leads | A Gulf reference file with marker-based routing, shipped as experimental with a native-review plan attached | Repeating the Levantine mistake: shipping an unreviewed variety. Do not start before IMP-08 lands |
+| IMP-25 | BCP 47 naming note plus an "add a variety" contributor template | new doc (`docs/LANGUAGE-CODES.md` or a section in `references/precedence.md`), `references/_TEMPLATE.md` | S | Borrow 26, 28 (sawradip) | A short doc states the base-code/script-subtag/region-subtag rule and gives a worked table for Arabic varieties (`ar`, `ar-eg`, `ar-lev`, `ar-gulf`); a template file gives the exact steps to add one, referenced from IMP-24 and IMP-08 | Purely documentation; keep it from drifting out of sync with `lib/lang.js`'s actual variety identifiers (currently `msa`/`egt`/`shami`, not BCP 47-shaped) |
+| IMP-26 | Name the shared-core/thin-adapter architecture explicitly | `references/core-principles.md` | S | Borrow 27 (sawradip) | `core-principles.md` states in one paragraph that language-independent rules live once and each language/variety reference file is a thin adapter that points back to it rather than restating it, matching what the `references/` loading table in `SKILL.md:111-128` already does in practice | None material; documentation only |
 
 Sequencing: IMP-01 gates IMP-23 and de-risks IMP-17. IMP-20 needs ignore regions.
-IMP-08 gates IMP-24. IMP-03 and IMP-06 are independent and can land first.
+IMP-08 gates IMP-24. IMP-25 should land before or alongside IMP-24, since it sets
+the naming convention IMP-24 would otherwise invent ad hoc. IMP-03 and IMP-06 are
+independent and can land first.
 
 ## 7. Honest verdict
 
 | Dimension | Best today | After the plan |
 |---|---|---|
 | Arabic depth (varieties, dialect routing) | us | us, widened by IMP-12 and IMP-24 |
-| Language breadth | finestructure (10 languages) | finestructure, unless we take B7's Family-1b shortcut |
+| Language breadth | sawradip/rehumanize (100 languages, BCP 47, unverified, un-cited) | sawradip/rehumanize, unless we take B7's Family-1b/BCP-47 shortcut; we hold depth (IDs, provenance, testing) regardless |
 | Pattern catalog rigour and provenance | us (141 IDs, pinned SHAs) | us, hardened by IMP-11 |
 | Deterministic detection | tie: us, eddyplolz, amanmaqsood | us, after IMP-10 and IMP-14 |
 | Detector calibration evidence | eddyplolz (measured FPR with Wilson CIs) | us, after IMP-01 and IMP-02 |
