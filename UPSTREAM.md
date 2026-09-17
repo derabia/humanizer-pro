@@ -13,12 +13,12 @@ No upstream implementation has been merged at Phase 1.
 
 ## Build environment
 
-- Builder: GPT-6 in Codex; exact model snapshot and reasoning effort are not exposed to this session.
-- OS: Microsoft Windows NT 10.0.26200.0.
-- Node: v25.2.1. Node 18 compatibility will need separate verification.
+- Builder: Claude Fable 5.1 (model id claude-fable-5-1) in Claude Code desktop app, acting as orchestrator; implementation delegated to Claude Sonnet sub-agents, with Opus for architecture/hard decisions. Reasoning effort per sub-agent is not configurable in this environment.
+- Prior attempt (Phase 1 only) was made by another model (recorded as GPT-6 in Codex); its pins were re-verified on 2026-09-17 (see docs/PRIOR-ATTEMPT.md).
+- OS: Windows 11 Pro 10.0.26200.
+- Node: v25.2.1 (Node 18 compatibility is a target; a real Node 18 run is not available on this machine unless noted in docs/evidence/).
 - Git: 2.52.0.windows.1.
-- Build start: 2026-09-17; source pin observation 17:14 Africa/Cairo.
-- Project: D:/Dev/htdocs/humanizer-pro.
-- Workspace sandbox process setup failed; explicit escalated operations are used for this owner-requested project.
+- Build start (this session): 2026-09-17.
+- Project: D:/Dev/htdocs/humanizer-pro, branch build/humanizer-pro.
 
 Raw reproducible inspection: docs/evidence/phase1-sources.txt.
