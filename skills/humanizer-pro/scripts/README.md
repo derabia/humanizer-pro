@@ -231,6 +231,67 @@ length and `coverageBasis` says `total-chars`. `affectedCoveragePercent` is
 therefore comparable across documents on the same engine, and comparable across
 engines only up to that difference in basis.
 
+### Ignore regions
+
+Engine-agnostic **pre-processing** in `detect.js`'s `analyze()`, applied
+*before* either engine runs. Text between a marker pair is replaced with
+spaces of identical length (UTF-16 code units) prior to routing, scoring, or
+`sourceMode` masking, so:
+
+- no issue can ever start inside the region (there is nothing left in it but
+  spaces to match), and
+- every issue **outside** a region keeps its exact original offset — for any
+  issue, `text.slice(issue.start, issue.end)` (Arabic engine) or
+  `text.slice(issue.index, issue.index + issue.text.length)` (English engine)
+  against the **original, unmasked** text is byte-for-byte what it would have
+  been had the markers never been there.
+
+Two marker families are accepted, matched independently — a
+`<!-- /humanizer:ignore -->` closer only closes a `<!-- humanizer:ignore -->`
+opener, never a `-start`/`-end` one, and vice versa:
+
+```
+<!-- humanizer:ignore -->
+This paragraph is never scored, no matter what it says.
+<!-- /humanizer:ignore -->
+
+<!-- humanizer-ignore-start -->
+Same effect, alternate spelling.
+<!-- humanizer-ignore-end -->
+```
+
+An opener with no matching closer masks from the opener to the **end of the
+text** — better to under-report than let an unmatched marker leak an
+AI-sounding excerpt through — and is recorded rather than silently dropped.
+
+Two new `stats` fields, always present:
+
+| field | meaning |
+|---|---|
+| `stats.ignoredRegions` | number of ignore regions masked (0 when none). |
+| `stats.ignoredCharCount` | total code units masked across all regions, markers included. |
+
+A top-level `warnings` array is added only when something needs flagging:
+an unclosed opener adds `'unclosed ignore region'`. `warnings` is absent
+(not an empty array) when there is nothing to warn about.
+
+**Why this exists.** Doctrine files (`references/*.md`) deliberately quote
+bad, AI-sounding text as worked "here is what NOT to write" examples. Without
+a way to mark that quoted text as exempt, any detector run over our own docs
+is noise: the "bad" example is correctly flagged as AI-sounding, but it was
+never meant to pass as our own prose. `tools/self-scan.js` (IMP-20) wraps
+every such quoted example in `<!-- humanizer:ignore -->` markers before
+scoring our own `references/*.md`, `SKILL.md`, and top-level `docs/*.md`
+files, and tracks the resulting **adjusted** score against a per-file budget
+in `tools/self-scan-budgets.json` so a regression in our *own* prose (not in
+the deliberately-bad quoted examples) is caught. Run it with:
+
+```
+npm run self-scan            # table, exits 1 if any file is over budget
+node tools/self-scan.js --json
+node tools/self-scan.js --update-budgets   # rewrite the budgets file
+```
+
 ### Programmatic use
 
     const { analyze } = require('./detect.js');

@@ -1,0 +1,33 @@
+file                                                raw score  adjusted score  budget  status
+--------------------------------------------------  ---------  --------------  ------  ------
+README.md                                           1          1               5       ok    
+CREDITS.md                                          1          1               5       ok    
+CHANGELOG.md                                        0          0               0       ok    
+skills/humanizer-pro/SKILL.md                       2          2               5       ok    
+skills/humanizer-pro/references/_TEMPLATE.md        2          2               5       ok    
+skills/humanizer-pro/references/ar-egyptian.md      100        3               5       ok    
+skills/humanizer-pro/references/ar-levantine.md     100        3               5       ok    
+skills/humanizer-pro/references/ar-msa.md           100        1               5       ok    
+skills/humanizer-pro/references/ar-shared.md        2          2               5       ok    
+skills/humanizer-pro/references/core-principles.md  3          3               5       ok    
+skills/humanizer-pro/references/en-patterns.md      0          75              75      ok    
+skills/humanizer-pro/references/en-vocabulary.md    81         81              85      ok    
+skills/humanizer-pro/references/modes.md            1          1               5       ok    
+skills/humanizer-pro/references/precedence.md       2          2               5       ok    
+skills/humanizer-pro/references/seo-mode.md         1          1               5       ok    
+skills/humanizer-pro/references/voice-matching.md   6          6               10      ok    
+docs/ARCHITECTURE.md                                1          1               5       ok    
+docs/BUILD-PROMPT.md                                2          2               5       ok    
+docs/COMPETITIVE-ANALYSIS.md                        2          2               5       ok    
+docs/CONFLICTS.md                                   2          2               5       ok    
+docs/COVERAGE-MAP.md                                2          2               5       ok    
+docs/DEDUP-LOG.md                                   20         20              20      ok    
+docs/DEDUP-MAP.draft.md                             18         18              20      ok    
+docs/DISCREPANCIES.md                               6          6               10      ok    
+docs/LANGUAGE-CODES.md                              1          1               5       ok    
+docs/NATIVE-REVIEW.md                               100        100             100     ok    
+docs/PROGRESS.md                                    0          0               0       ok    
+docs/PROVENANCE.md                                  18         18              20      ok    
+docs/REVIEW-HANDOFF.md                              1          1               5       ok    
+docs/TODO.md                                        0          0               0       ok    
+exit: 0

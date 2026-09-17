@@ -52,6 +52,16 @@
  * GROUPING AND COVERAGE (IMP-10)
  * ------------------------------
  * Post-processing, engine-agnostic: see `groupIssues` / `postProcess` below.
+ *
+ * IGNORE REGIONS (IMP-20)
+ * ------------------------
+ * Pre-processing, engine-agnostic: see `maskIgnoreRegions` below. Text between
+ * `<!-- humanizer:ignore -->`/`<!-- /humanizer:ignore -->` (or
+ * `<!-- humanizer-ignore-start -->`/`<!-- humanizer-ignore-end -->`) markers
+ * is replaced with spaces of identical length before either engine runs, so
+ * no issue can start inside the region and every other issue keeps its exact
+ * original offset. `stats.ignoredRegions` / `stats.ignoredCharCount` report
+ * what was masked; an unclosed opener adds `warnings: ['unclosed ignore region']`.
  */
 
 'use strict';
@@ -384,8 +394,74 @@ function postProcess(text, result) {
   };
 }
 
+// == Ignore regions ========================================================
+//
+// Engine-agnostic pre-processing (IMP-20): text between an opener/closer pair
+// is replaced by spaces of identical length (UTF-16 code units) BEFORE either
+// engine runs. Because the replacement is length-preserving, every offset the
+// engine reports for text outside a region is byte-for-byte identical to what
+// it would have reported had the markers never been there, and no issue can
+// ever start inside a masked region (there is nothing but spaces to match).
+//
+// Two marker families are accepted, matched independently -- a
+// `<!-- /humanizer:ignore -->` closer only closes a `<!-- humanizer:ignore -->`
+// opener, never a `-start`/`-end` one, and vice versa:
+//   <!-- humanizer:ignore -->  ...  <!-- /humanizer:ignore -->
+//   <!-- humanizer-ignore-start -->  ...  <!-- humanizer-ignore-end -->
+//
+// An opener with no matching closer masks from the opener to the end of the
+// text (better to under-report than to let an unmatched marker leak an AI
+// excerpt through), and is recorded in the returned `warnings` array.
+const IGNORE_MARKERS = [
+  { open: /<!--\s*humanizer:ignore\s*-->/, close: /<!--\s*\/humanizer:ignore\s*-->/ },
+  { open: /<!--\s*humanizer-ignore-start\s*-->/, close: /<!--\s*humanizer-ignore-end\s*-->/ },
+];
+
+function maskIgnoreRegions(text) {
+  let out = text;
+  let ignoredRegions = 0;
+  let ignoredCharCount = 0;
+  const warnings = [];
+  let searchFrom = 0;
+
+  while (searchFrom < out.length) {
+    let best = null;
+    for (const marker of IGNORE_MARKERS) {
+      const m = marker.open.exec(out.slice(searchFrom));
+      if (m && (!best || searchFrom + m.index < best.idx)) {
+        best = { idx: searchFrom + m.index, len: m[0].length, close: marker.close };
+      }
+    }
+    if (!best) break;
+
+    const openEnd = best.idx + best.len;
+    const closeMatch = best.close.exec(out.slice(openEnd));
+    const regionEnd = closeMatch ? openEnd + closeMatch.index + closeMatch[0].length : out.length;
+
+    out = `${out.slice(0, best.idx)}${' '.repeat(regionEnd - best.idx)}${out.slice(regionEnd)}`;
+    ignoredRegions += 1;
+    ignoredCharCount += regionEnd - best.idx;
+
+    if (!closeMatch) {
+      warnings.push('unclosed ignore region');
+      break;
+    }
+    searchFrom = regionEnd;
+  }
+
+  return { text: out, ignoredRegions, ignoredCharCount, warnings };
+}
+
 function analyze(text, opts) {
-  return postProcess(typeof text === 'string' ? text : '', analyzeRaw(text, opts));
+  const raw = typeof text === 'string' ? text : '';
+  const masked = maskIgnoreRegions(raw);
+  const result = postProcess(raw, analyzeRaw(masked.text, opts));
+  result.stats.ignoredRegions = masked.ignoredRegions;
+  result.stats.ignoredCharCount = masked.ignoredCharCount;
+  if (masked.warnings.length > 0) {
+    result.warnings = (result.warnings || []).concat(masked.warnings);
+  }
+  return result;
 }
 
 function analyzeRaw(text, opts) {
@@ -676,4 +752,5 @@ module.exports = {
   engineVersion,
   AR_CALIBRATION,
   REVIEW_SIGNAL_NOTE,
+  maskIgnoreRegions,
 };
