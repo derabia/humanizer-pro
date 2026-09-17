@@ -86,6 +86,8 @@ const LEVANTINE_MARKERS = [
   // لهيك (therefore, line 74).
   'بدي', 'بدك', 'بدو', 'بدها', 'بدهم', 'بدّي', 'بدّك', 'بدّو',
   'هاي', 'مو', 'رح', 'لهيك',
+  // هيك (like this, shami line 236/583) and منيح (good, lines 437/514).
+  'هيك', 'منيح', 'منيحة',
 ];
 
 function buildMarkerIndex(markers, variety) {

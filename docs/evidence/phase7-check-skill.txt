@@ -1,0 +1,28 @@
+# phase-7 check-skill evidence
+# generated: 2026-09-17T15:37:35Z
+# command: node tools/check-skill.js
+# node: v25.2.1
+
+check-skill: D:\Dev\htdocs\humanizer-pro\skills\humanizer-pro\SKILL.md
+
+  ok      no BOM
+  ok      line endings: LF only
+  ok      no em dash or en dash characters
+  ok      line count: 265 (limit 500)
+  ok      frontmatter parsed; keys: name, description, license, metadata
+  ok      name: humanizer-pro
+  ok      description length: 973 characters (limit 1024)
+  ok      reference paths mentioned: 11
+  ok      script paths mentioned: 3
+  WARN    script not found (may still be in progress): scripts/detect.js
+
+result: 0 failure(s), 1 warning(s)
+exit code: 0
+
+# encoding spot-checks on SKILL.md
+$ head -c 3 skills/humanizer-pro/SKILL.md | od -An -tx1
+ 2d 2d 2d
+$ grep -c $'\r' skills/humanizer-pro/SKILL.md (0 = no CR)
+0
+$ wc -l skills/humanizer-pro/SKILL.md
+265 skills/humanizer-pro/SKILL.md
