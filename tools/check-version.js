@@ -138,40 +138,6 @@ try {
   fail('CHANGELOG.md: cannot read (' + err.message + ')');
 }
 
-// --- Optional extras: plugin manifests (soft check, warning only) ----------
-//
-// Not part of the required three-way check (package.json / SKILL.md /
-// CHANGELOG.md), but these two files also carry a "version" field and are
-// new as of IMP-05/IMP-06, so a drift here is worth surfacing early even
-// though it is not a hard failure.
-
-const EXTRA_MANIFESTS = [
-  path.join(root, '.claude-plugin', 'plugin.json'),
-  path.join(root, '.codex-plugin', 'plugin.json'),
-];
-
-for (const manifestPath of EXTRA_MANIFESTS) {
-  const rel = path.relative(root, manifestPath).split(path.sep).join('/');
-  if (!fs.existsSync(manifestPath)) continue;
-  try {
-    const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
-    if (!manifest.version) {
-      note(rel + ': no "version" field, skipped');
-      continue;
-    }
-    if (pkgVersion && stripSuffix(manifest.version) !== stripSuffix(pkgVersion)) {
-      warn(
-        rel + ' version "' + manifest.version + '" does not match package.json ' +
-        'base version "' + stripSuffix(pkgVersion) + '"'
-      );
-    } else {
-      note(rel + ' version: ' + manifest.version);
-    }
-  } catch (err) {
-    warn(rel + ': cannot read or parse (' + err.message + ')');
-  }
-}
-
 // --- Compare -----------------------------------------------------------------
 
 if (pkgVersion && skillVersion && changelogVersion) {

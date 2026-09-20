@@ -44,6 +44,7 @@
     "check:version": "node tools/check-version.js",
     "check:node18": "node tools/check-node18.js",
     "build:zip": "node tools/build-zip.js",
-    "self-scan": "node tools/self-scan.js"
+    "self-scan": "node tools/self-scan.js",
+    "install": "node tools/install.js"
   }
 }

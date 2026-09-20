@@ -1,8 +1,0 @@
-interface:
-  display_name: "humanizer-pro"
-  short_description: "Make AI-generated writing read as human"
-  brand_color: "#2E7D32"
-  default_prompt: "Use $humanizer-pro to detect, rewrite, or edit this text so it reads as human, in English or Arabic, without inventing facts, quotes, statistics, sources or experiences."
-
-policy:
-  allow_implicit_invocation: true

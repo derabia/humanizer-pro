@@ -335,7 +335,7 @@ independent and can land first.
 ## 7. Honest verdict
 
 The third column was written before round 1 as a prediction. It has been
-replaced with what round 1 actually produced, at `9de5d8f` on branch
+replaced with what round 1 actually produced, at `801cf95` on branch
 `improve/round-1`. Where the prediction did not come true, the cell says so.
 
 | Dimension | Best today | After round 1 (actual) |

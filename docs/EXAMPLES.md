@@ -519,7 +519,7 @@ file:       evals/inputs/en-detect-01.md
 language:   en  (confidence 1.00, engine en)
 score:      17   label: Some AI patterns
 note:       score is a review signal, not an authorship claim
-calibration: uncalibrated-review-signal  engine-version 475a51e  authorship-claim false
+calibration: uncalibrated-review-signal  engine-version 0416101  authorship-claim false
 stats:      words 228, sourceMode rendered-markdown, register default
 coverage:   5 group(s), 4.7% of scored text affected (total-chars)
 

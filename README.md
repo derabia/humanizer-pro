@@ -88,9 +88,29 @@ git clone https://github.com/derabia/humanizer-pro.git
 ```
 
 Then pick the section for your host. In every case (other than the
-Claude Code plugin path and the Claude-apps zip) you are copying the
-single folder `skills/humanizer-pro/` into a location that host scans
-for skills.
+Claude-apps zip) you are copying the single folder
+`skills/humanizer-pro/` into a location that host scans for skills.
+
+### Installer script
+
+`tools/install.js` is a single, zero-dependency Node script that does
+this copy for you, for any host. It works whether or not the target
+directory belongs to a recognized host:
+
+```bash
+npm run install -- --dir <path>
+```
+
+This copies `skills/humanizer-pro` into `<path>/humanizer-pro` and
+verifies the copy by comparing file counts and total bytes. Add
+`--dry-run` to preview it first, and `--force` to overwrite an
+existing target. `node tools/install.js --host codex` and
+`--host claude-code` (with an optional `--global` flag) are shortcuts
+over `--dir` for the paths in the sections below. Run
+`node tools/install.js --help` or `--list` for details.
+
+The manual copy commands below still work too; they are already
+host-neutral shell commands, not vendor manifests.
 
 ### Codex
 
@@ -128,21 +148,6 @@ macOS/Linux:
 ```bash
 cp -R ./humanizer-pro/skills/humanizer-pro .claude/skills/humanizer-pro
 cp -R ./humanizer-pro/skills/humanizer-pro ~/.claude/skills/humanizer-pro
-```
-
-**As a Claude Code plugin instead of a folder copy.** `.claude-plugin/`
-ships `marketplace.json` (catalog name `humanizer-pro`) and
-`plugin.json` (plugin name `humanizer-pro`), so the marketplace-add
-form works once this repository is reachable at the URL above. This
-install syntax is not exercised by any script in this repository (no
-CI run has published or installed the plugin yet); it is the
-documented convention used by comparable Claude Code plugin repos
-under `_sources/competitors/` (`finestructure-ai_humanizer-multilingual`
-and `sawradip_rehumanize`), applied to this repo's own manifest names:
-
-```
-/plugin marketplace add derabia/humanizer-pro
-/plugin install humanizer-pro@humanizer-pro
 ```
 
 ### Cursor
@@ -386,9 +391,10 @@ corpus/                    Arabic false-positive corpus: manifest.json (300
 evals/                     benchmark.json + run-benchmark.js (16 deterministic
                              cases), human/ (blinded pairwise kit), runs/
 tests/                     node --test suite, fixtures, fixtures/human-sourced/
-tools/                     check-skill.js, check-upstream.js, merge-docs.js,
-                             run-tests.js, fetch-corpus.js, fp-measure.js,
-                             self-scan.js, prepare-pairwise.js, check-version.js
+tools/                     install.js, check-skill.js, check-upstream.js,
+                             merge-docs.js, run-tests.js, fetch-corpus.js,
+                             fp-measure.js, self-scan.js, prepare-pairwise.js,
+                             check-version.js
 _sources/                  pinned upstream clones (gitignored, not shipped)
 ```
 

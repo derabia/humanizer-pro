@@ -9,7 +9,7 @@ raw console output of each run is kept under `docs/evidence/`.
 | field | value |
 |---|---|
 | date | 2026-09-17 |
-| engine version | `949da07+dirty(4 file(s) under skills/humanizer-pro/scripts)` |
+| engine version | `ff65965+dirty(4 file(s) under skills/humanizer-pro/scripts)` |
 | pre-model cutoff | 2022-11-30T00:00:00Z |
 | corpus fetched | 2026-09-17 |
 | documents measured | 300 of 300 in the manifest |
@@ -215,8 +215,8 @@ routing, not only the lexicon.
 
 | # | change | FP rate (all) | Wilson 95% | mixed | score >= 25 | mean (all) | evidence |
 |---|---|---|---|---|---|---|---|
-| 0 | baseline: the engine as round 1 left it (commit `0e63a64`) | 1.67% (5/300) | 0.71% to 3.84% | 44 | 49 | 10.97 | `docs/evidence/round1-wave2F-fp-run0-baseline.txt` |
-| 2b | same, re-measured at `949da07` after a concurrent pass landed IMP-20 in `detect.js`, still no wave-2F change | 1.67% (5/300) | 0.71% to 3.84% | 44 | 49 | 10.97 | `docs/evidence/round1-wave2F-fp-run2b-head-baseline.txt` |
+| 0 | baseline: the engine as round 1 left it (commit `a2fe215`) | 1.67% (5/300) | 0.71% to 3.84% | 44 | 49 | 10.97 | `docs/evidence/round1-wave2F-fp-run0-baseline.txt` |
+| 2b | same, re-measured at `ff65965` after a concurrent pass landed IMP-20 in `detect.js`, still no wave-2F change | 1.67% (5/300) | 0.71% to 3.84% | 44 | 49 | 10.97 | `docs/evidence/round1-wave2F-fp-run2b-head-baseline.txt` |
 | 3 | IMP-27 dialect-evidence guard (`lib/lang.js` only) | **0.33% (1/300)** | 0.06% to 1.86% | 45 | 46 | 10.14 | `docs/evidence/round1-wave2F-fp-run3-imp27.txt` |
 | 4 | per-pattern contribution cap of 24 (`lib/ar-detector/index.js`) | **0.00% (0/300)** | 0.00% to 1.26% | 31 | 31 | 9.09 | `docs/evidence/round1-wave2F-fp-run4-cap.txt` |
 | 5 | IMP-23 `AR-SH-008` vocabulary concentration (`signals.js`, `index.js`) | 0.00% (0/300) | 0.00% to 1.26% | 31 | 31 | 9.14 | `docs/evidence/round1-wave2F-fp-run5-imp23.txt` |
@@ -413,14 +413,14 @@ One new caveat belonged here and has been closed by measurement. Runs 3 to 5
 were made while `scripts/detect.js` was owned by a concurrent pass (IMP-20
 ignore-region masking), and `fp-measure.js` routes through `detect.js`, so part
 of the Run 0 to Run 5 delta could have belonged to that pass rather than this
-one. Run 0 was measured at commit `0e63a64` and Runs 3 to 5 at `949da07`, which
-contains IMP-20. Run 2b re-measures `949da07` with **no wave-2F engine change
+one. Run 0 was measured at commit `a2fe215` and Runs 3 to 5 at `ff65965`, which
+contains IMP-20. Run 2b re-measures `ff65965` with **no wave-2F engine change
 applied at all**:
 
 | run | commit | wave-2F engine changes | FP rate | Wilson 95% | mixed | score >= 25 | mean |
 |---|---|---|---|---|---|---|---|
-| 0 | `0e63a64` | none | 1.67% (5/300) | 0.71% to 3.84% | 44 | 49 | 10.97 |
-| 2b | `949da07` (adds IMP-20) | none | 1.67% (5/300) | 0.71% to 3.84% | 44 | 49 | 10.97 |
+| 0 | `a2fe215` | none | 1.67% (5/300) | 0.71% to 3.84% | 44 | 49 | 10.97 |
+| 2b | `ff65965` (adds IMP-20) | none | 1.67% (5/300) | 0.71% to 3.84% | 44 | 49 | 10.97 |
 
 **Identical in every column.** The IMP-20 ignore-region work moved nothing on
 this corpus, which is expected: these are plain Wikipedia paragraphs with no

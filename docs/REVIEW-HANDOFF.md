@@ -2,7 +2,7 @@
 
 For an independent reviewer who did not see the build session. Everything below
 is reproducible from files and commands in this repository. Build head at the
-time of writing: `1f025cd` on branch `build/humanizer-pro`. Raw output for every
+time of writing: `bd33bfd` on branch `build/humanizer-pro`. Raw output for every
 command quoted here is in `docs/evidence/phase11-acceptance.txt`, generated in
 the same session as this document. Builder environment: Node v25.2.1, git
 2.52.0.windows.1, Windows 11 Pro 10.0.26200 (`UPSTREAM.md`, "Build
@@ -10,11 +10,17 @@ environment"). Nothing here is a review: eval grading was done by the builder's
 own agents and is labelled a builder self-assessment throughout.
 
 Improvement round 1 has since landed. Sections 1.1 to 1.8 below describe the
-`1f025cd` state and were not re-run; read them with section 1.9, which lists
-the round-1 commands. Round-1 head: `9de5d8f` on branch `improve/round-1`,
-eight commits from `548dc3b`. Test count is 226, not the 114 quoted in
+`bd33bfd` state and were not re-run; read them with section 1.9, which lists
+the round-1 commands. Round-1 head: `801cf95` on branch `improve/round-1`,
+eight commits from `a9b6e7c`. Test count is 226, not the 114 quoted in
 section 1.4. Sections 2, 3, 6 and 7 are updated for round 1 and say which
 version they describe.
+
+
+> Commit hashes in this document are post-rewrite. The history was rewritten
+> on 2026-09-20 to remove an AI co-author trailer; file content is identical.
+> The old to new hash map is in `docs/HISTORY-REWRITE.md`, and raw captures
+> under `docs/evidence/` still show pre-rewrite hashes.
 
 ## 1. Reproduce from scratch
 
@@ -27,7 +33,7 @@ actually executed while writing this handoff.
 git clone <repo-url> humanizer-pro
 cd humanizer-pro
 git checkout build/humanizer-pro
-git log --oneline          # 21 commits, 8521bf8 oldest, 1f025cd newest
+git log --oneline          # 21 commits, 8521bf8 oldest, bd33bfd newest
 ```
 
 PowerShell is identical. Not re-run here; `git log --oneline` reports 21 commits.
@@ -117,7 +123,7 @@ Arabic false-positive fixtures score 0. These match
 is a flag difference, not drift, since that file used `--markdown` and
 `false-positives/ar-technical-en-terms.md` scores 14 with `--markdown`
 (re-verified) against 0 without it. Nothing moved after the `lexicons.js`
-change in `da36da5`.
+change in `e2447f9`.
 
 English scores are not comparable against the Arabic thresholds: the English
 engine is upstream's, with its own label ladder plus a separate trinary
@@ -191,15 +197,15 @@ Run, with the rebuild copied to a scratch directory and
 stayed untouched. Entry names are identical across the recorded listing, the
 committed zip and a fresh rebuild. Exactly one entry length differs:
 `humanizer-pro/scripts/lib/ar-detector/lexicons.js` is 26064 bytes committed
-and 26195 rebuilt, because `da36da5` added hedge variants to that file after
-the zip was last built in `f1cf8b8`. The committed zip is stale by that one
-change; see section 6. The zip was rebuilt in `84f666a` and is stale again:
+and 26195 rebuilt, because `e2447f9` added hedge variants to that file after
+the zip was last built in `ad5c47f`. The committed zip is stale by that one
+change; see section 6. The zip was rebuilt in `6f05454` and is stale again:
 round 1 changed `lexicons.js`, `index.js`, `signals.js`, `lang.js` and
 `detect.js` after that rebuild.
 
 ### 1.9 Round 1: the added commands
 
-Branch `improve/round-1`, head `9de5d8f`. Raw output for all six checks in the
+Branch `improve/round-1`, head `801cf95`. Raw output for all six checks in the
 last block is in `docs/evidence/round1-final-checks.txt`; the per-wave evidence
 files named in `CHANGELOG.md` cover the runs made while each wave landed. Same
 builder environment as above, Node v25.2.1 on Windows 11.
@@ -238,7 +244,7 @@ npm pack --dry-run
 `evals/human/ballot.md` and `evals/human/key.json` in place, so point `--out`
 at a scratch directory if the committed pair matters to you.
 
-The six commands that gate the round: all six were run at `9de5d8f` plus the
+The six commands that gate the round: all six were run at `801cf95` plus the
 documentation changes of this pass, and all six pass.
 
 ```bash
@@ -256,7 +262,7 @@ the interim-build case the tool documents, not a failure.
 
 ## 2. Decision register
 
-Every non-obvious decision with a pointer to where it is justified; line numbers are from the files as committed at `1f025cd`.
+Every non-obvious decision with a pointer to where it is justified; line numbers are from the files as committed at `bd33bfd`.
 
 | # | Decision | Where it is justified |
 |---|---|---|
@@ -286,14 +292,14 @@ Every non-obvious decision with a pointer to where it is justified; line numbers
 | 24 | `tools/run-tests.js` exists because `node --test <dir>` behaves differently across Node 18, 20 and current releases; the tool enumerates `tests/*.test.js` explicitly and passes the resolved file list to `spawnSync`. | `docs/ARCHITECTURE.md` "Layout deviations", item 3 |
 | 25 | `tools/check-upstream.js` does more than diff SHAs: when a remote HEAD has moved it also greps the provenance fragments and lists what needs re-verifying. | `docs/ARCHITECTURE.md` "Layout deviations", item 4 |
 | 26 | The zip is built by enumerating files in Node and adding each one with an explicit forward-slash entry name through `ZipFileExtensions::CreateEntryFromFile`, because both `Compress-Archive` and `ZipFile::CreateFromDirectory` under Windows PowerShell 5.1 write backslash entry names that break extraction on Linux and macOS. | `tools/build-zip.js:60-74` (comment) and `buildWithPowerShell()` |
-| 27 | Commit `0cc89d1` ("phase-6a: normalize line endings to LF") accidentally swept in `en-patterns.md`, `en-vocabulary.md` and the `ar-*.md` drafts through a broad `git add -A`. This was recorded rather than hidden, and history was not rewritten. | `docs/PROGRESS.md`, "Completed steps", the Phase 4 row |
+| 27 | Commit `c16d16d` ("phase-6a: normalize line endings to LF") accidentally swept in `en-patterns.md`, `en-vocabulary.md` and the `ar-*.md` drafts through a broad `git add -A`. This was recorded rather than hidden, and history was not rewritten. | `docs/PROGRESS.md`, "Completed steps", the Phase 4 row |
 | 28 | `BL-025` and `AW-077` were merged as `EN-012` even though the draft dedup map listed both as having no partner; the two upstream texts share the same before-example and carve-out, and AW's own text names blader P30 as its source. | `docs/DISCREPANCIES.md`, EN fragment, item 1; `docs/dedup-log/en.md` |
 | 29 | `AW-042` stays under `EN-004` (staged run-up) rather than moving to `EN-006`, to avoid duplicating a trigger phrase that `EN-006` already carries; the shared detector `type` is an implementation artifact, not an editorial judgment. | `docs/DISCREPANCIES.md`, EN fragment, item 2 |
 | 30 | "key" (adjective) is placed at Tier 3 (density-flagged only), because avoid-ai-writing recommends "key" as the replacement for other flagged words while blader flags it; only saturation-level overuse is flagged. | `docs/DISCREPANCIES.md`, EN fragment, item 3 |
 | 31 | Hebrew (`humanizer-he`, a fourth skill in the semitic package) is out of scope by instruction and is not implemented. | `docs/BUILD-PROMPT.md` section 0 table; `docs/DISCREPANCIES.md` section (c), item 2 |
 
 Rows 32 to 43 are improvement round 1; line numbers in them are from the files
-as committed at `9de5d8f`.
+as committed at `801cf95`.
 
 | # | Decision | Where it is justified |
 |---|---|---|
@@ -710,7 +716,7 @@ Full detail in `docs/DISCREPANCIES.md` (428 lines); one line per item here.
 
 ## 6. What was not done, and why
 
-Updated for improvement round 1. One item from the `1f025cd` list is retired and
+Updated for improvement round 1. One item from the `bd33bfd` list is retired and
 struck through, five are amended in place with what round 1 changed, and six new
 items are added at the end. The rest stand as written.
 
@@ -741,8 +747,8 @@ items are added at the end. The rest stand as written.
 - **Wrong-dialect detection does not exist.** Egyptian text forced to `shami`
   (or the reverse) scores `HUMAN` because the two share most leakage-side
   vocabulary (`skills/humanizer-pro/scripts/README.md:329-333`).
-- **`dist/humanizer-pro.zip` is stale again.** The phase-11 commit `84f666a`
-  rebuilt it, which closed the `da36da5` gap described in section 1.8. Round 1
+- **`dist/humanizer-pro.zip` is stale again.** The phase-11 commit `6f05454`
+  rebuilt it, which closed the `e2447f9` gap described in section 1.8. Round 1
   then changed `lexicons.js`, `index.js`, `signals.js`, `lang.js` and
   `detect.js`, and the zip was not rebuilt after that. Run
   `node tools/build-zip.js` before uploading it anywhere.
@@ -755,13 +761,13 @@ items are added at the end. The rest stand as written.
   to any registry, so the `npx skills add` path in `README.md` still does not
   work.
 - **`STATE.md` was not updated.** It still describes the Phase 6b/README state
-  and names `e90dc73` as last verified; it was outside this task's allowed file
+  and names `abaf930` as last verified; it was outside this task's allowed file
   set. Treat `docs/PROGRESS.md` as authoritative.
 - **Two iteration-1 eval defects are recorded, not fixed:** the Levantine
   leakage-versus-score inconsistency (weak spot 3.4) and `validate.js`
   auto-detecting the wrong dialect on a mixed-signal document, both written up
   with proposed fixes in `evals/runs/iteration-1/SUMMARY-egt-shami.md`. The MSA
-  hedge-variant defect from the other batch was fixed in `da36da5`. Neither was
+  hedge-variant defect from the other batch was fixed in `e2447f9`. Neither was
   touched in round 1.
 
 Added by round 1:
@@ -813,7 +819,7 @@ The 16 boxes from `docs/BUILD-PROMPT.md` section 4; raw output for every command
 | 11 | Skill still functions as Markdown-only when scripts cannot execute | MET | `SKILL.md` section 9 "When the scripts cannot run", plus inline fallbacks at lines 91 and 197; `check-skill` confirms all 11 reference paths are reachable from the router |
 | 12 | Skill loads from both `.agents\skills\` and `.claude\skills\` without modification | NOT VERIFIED IN A HOST | The skill directory is self-contained and path-agnostic, and `README.md:44-47, 86-89` documents both locations, but no load was performed in Codex or Claude Code. Structural compatibility only; see weak spot 3.10 |
 | 13 | Every "passes/verified" claim has a matching raw output file in `docs/evidence/` | MET | 13 files in `docs/evidence/`, including `phase11-acceptance.txt` written for this handoff, which carries the full raw output of every command quoted above |
-| 14 | Git history has at least one commit per phase; final commit tagged `v0.1.0-build` | PARTIAL | 21 commits with phase-labelled messages covering phases 0 to 10. Phase 5 is folded into `626d4b7` and phase 8 (tests) has no dedicated commit; the tests landed inside `e845dc4`, `74253a7`, `e90dc73` and `9b56566`. The tag is NOT MET: it is the Phase 11 commit step and was deliberately not created here |
+| 14 | Git history has at least one commit per phase; final commit tagged `v0.1.0-build` | PARTIAL | 21 commits with phase-labelled messages covering phases 0 to 10. Phase 5 is folded into `d3b95fa` and phase 8 (tests) has no dedicated commit; the tests landed inside `814dc62`, `2fa9a7b`, `abaf930` and `d54d426`. The tag is NOT MET: it is the Phase 11 commit step and was deliberately not created here |
 | 15 | `docs/NATIVE-REVIEW.md` lists all uncertain Arabic items; `ar-levantine.md` marked experimental | MET | `docs/NATIVE-REVIEW.md` (495 lines) grouped by area and variety; marker counts re-counted this session and matching (1 MSA, 5 Egyptian, 25 Levantine, 2 shared; the 26th grep hit in `ar-levantine.md` is the backticked prose mention on line 14, which `NATIVE-REVIEW.md:16-19` also excludes); `ar-levantine.md` line 2 begins `status: experimental` |
 | 16 | `docs/REVIEW-HANDOFF.md` is complete enough to reproduce everything without the build session | MET as far as the builder can judge | This file: reproduce commands with their run status, 31 decisions with pointers, 11 ranked weak spots, a 141-row provenance index with a passing cross-check, a discrepancy summary, and an explicit not-done list. Whether it is sufficient is the reviewer's call |
 
@@ -838,33 +844,33 @@ plan: it was added mid-round from corpus finding 1.
 
 | IMP | Status | Evidence or commit |
 |---|---|---|
-| IMP-01 Arabic FP corpus, Wilson CI | done | `corpus/RESULTS.md`; `docs/evidence/round1-fp-measure.txt`; `0e63a64`. 300 documents against the criterion's 200 |
-| IMP-02 sourced FP fixtures | done for MSA and Egyptian, not for Levantine | `tests/fixtures/human-sourced/{msa-01,egt-01}.md` and `_provenance.md`; `0e63a64`. The criterion asks for one per variety where available; Levantine was searched for and not found, and the shortfall is written up rather than filled |
-| IMP-03 CI matrix, Node 18/20/22 | done | `.github/workflows/ci.yml`; `4589438`. First green run on the initial push to GitHub: https://github.com/derabia/humanizer-pro/actions/runs/35500327096 (4/4 jobs). Weak spot 3.9 retired. Evidence: `docs/evidence/round1-ci-first-green-run.txt` |
-| IMP-04 deterministic eval invariants | done | `evals/benchmark.json`, `evals/run-benchmark.js`, `tests/benchmark.test.js`; `docs/evidence/round1-benchmark.txt`; `7821f63`. 16/16 pass, and an injected invented number and a verbatim echo each fail the suite |
-| IMP-05 packaging, npm bin plus manifests | prepared-not-run | `docs/evidence/round1-npm-pack.txt`; `4589438`. The pack smoke test runs both CLIs from the tarball. The second half of the criterion, that each manifest loads in its host, is unverified: see weak spot 3.10 |
-| IMP-06 release discipline | done except the tag | `CHANGELOG.md` `[0.2.0-build]`, `tools/check-version.js`, version 0.2.0 in four files; `4589438` and this pass. The criterion requires a tagged release; the tag is the next step |
-| IMP-07 blinded pairwise kit | done | `tools/prepare-pairwise.js`, `evals/human/{pairs.json,ballot.md,key.json}`, `tests/pairwise.test.js`; `docs/evidence/round1-pairwise.txt`; `7821f63`. Seed 42 reproduces byte-identical output over 12 pairs. No ballot has been filled in |
-| IMP-08 native-speaker review | prepared-not-run | `docs/native-review/ballot-egyptian.md` (18 items), `ballot-levantine.md` (35 items); `7821f63`. No named reviewer, no completed item, `ar-levantine.md` keeps `status: experimental` |
-| IMP-09 fidelity validation | done | `tests/validate.test.js` fidelity block; `docs/evidence/round1-waveD-tests.txt`; `3388a16`, documented in `ccf1441`. WARN by default, FAIL under `--strict-fidelity`: decision 41 |
-| IMP-10 overlap grouping, coverage percent | done | `tests/detect-grouping.test.js`; `docs/evidence/round1-waveD-tests.txt`; `3388a16` |
-| IMP-11 coverage map, parity test | done | `docs/COVERAGE-MAP.md`, `tools/check-skill.js --refs`, `tests/coverage-map.test.js`; `docs/evidence/round1-waveE-checks.txt`; `5532f4f`. The `EN-*` half is a correlation, not an ID lookup: `docs/discrepancies/round1-docs.md` section 4 |
-| IMP-12 classical rhetoric layer | done | `AR-MSA-029` to `AR-MSA-033` with provenance rows; `docs/evidence/round1-fp-measure-imp12.txt`; `0e63a64`. The light-verb regex does not fire on قام بسرعة, and the corpus rate did not move |
-| IMP-13 register-conditional thresholds | done | `tests/register-profile.test.js`; `skills/humanizer-pro/scripts/README.md:425-450`; `3388a16`. One gate, two profiles, CV 0.35 to 0.22: decision 40 |
-| IMP-14 uncalibrated-signal labelling | done | `authorshipClaim: false` and `calibration` on every `--json` report; `skills/humanizer-pro/scripts/detect.js:391-392`; `3388a16` |
-| IMP-15 family cross-index, P2-only stop rule | done | `docs/COVERAGE-MAP.md`, family tags on all 58 AR entries; `5532f4f`. Assignment is editorial: decision 42 |
-| IMP-16 voice profile provenance and privacy | done | `references/voice-matching.md`; `docs/evidence/round1-waveE-checks.txt`; `5532f4f` |
-| IMP-17 definite-article clitic matching | done | `stemPhrases` on two `AR-SH-001` entries; `docs/evidence/round1-fp-measure.txt`; `0e63a64`. No new false positive on the corpus, which is what the criterion asked |
-| IMP-18 claims-added line, not-flagged list | done | `references/modes.md`, `references/core-principles.md`; `5532f4f` |
-| IMP-19 substitutability and distinctiveness gate | done | `references/core-principles.md`; `5532f4f`. Bound to never-invent, per the risk column |
-| IMP-20 self-scan with regression budgets | done | `tools/self-scan.js`, `tools/self-scan-budgets.json`, ignore regions in `detect.js`; `docs/evidence/round1-wave2G-self-scan.txt`; `949da07`. 30 files, all inside budget, exits non-zero over budget |
-| IMP-21 era tagging and decay notes | done, with nothing to tag | `references/en-vocabulary.md` Era column, 49 of 49 `unknown`; `docs/discrepancies/round1-docs.md` section 1; `5532f4f`. Decision 43 |
-| IMP-22 prompt-injection principle | done | `references/core-principles.md`; `5532f4f` |
-| IMP-23 vocabulary-concentration signal | done, acceptance criterion missed and recorded | `AR-SH-008` in `signals.js`; `corpus/RESULTS.md` "Run 5"; `docs/evidence/round1-wave2F-vocab-distribution.txt`; `9de5d8f`. Fires on 15 of 300 human documents at weight 1 and on no fixture: weak spot 3.6 |
+| IMP-01 Arabic FP corpus, Wilson CI | done | `corpus/RESULTS.md`; `docs/evidence/round1-fp-measure.txt`; `a2fe215`. 300 documents against the criterion's 200 |
+| IMP-02 sourced FP fixtures | done for MSA and Egyptian, not for Levantine | `tests/fixtures/human-sourced/{msa-01,egt-01}.md` and `_provenance.md`; `a2fe215`. The criterion asks for one per variety where available; Levantine was searched for and not found, and the shortfall is written up rather than filled |
+| IMP-03 CI matrix, Node 18/20/22 | done | `.github/workflows/ci.yml`; `b352c0f`. First green run on the initial push to GitHub: https://github.com/derabia/humanizer-pro/actions/runs/35500327096 (4/4 jobs). Weak spot 3.9 retired. Evidence: `docs/evidence/round1-ci-first-green-run.txt` |
+| IMP-04 deterministic eval invariants | done | `evals/benchmark.json`, `evals/run-benchmark.js`, `tests/benchmark.test.js`; `docs/evidence/round1-benchmark.txt`; `c47975a`. 16/16 pass, and an injected invented number and a verbatim echo each fail the suite |
+| IMP-05 packaging, npm bin plus manifests | prepared-not-run | `docs/evidence/round1-npm-pack.txt`; `b352c0f`. The pack smoke test runs both CLIs from the tarball. The second half of the criterion, that each manifest loads in its host, is unverified: see weak spot 3.10 |
+| IMP-06 release discipline | done except the tag | `CHANGELOG.md` `[0.2.0-build]`, `tools/check-version.js`, version 0.2.0 in four files; `b352c0f` and this pass. The criterion requires a tagged release; the tag is the next step |
+| IMP-07 blinded pairwise kit | done | `tools/prepare-pairwise.js`, `evals/human/{pairs.json,ballot.md,key.json}`, `tests/pairwise.test.js`; `docs/evidence/round1-pairwise.txt`; `c47975a`. Seed 42 reproduces byte-identical output over 12 pairs. No ballot has been filled in |
+| IMP-08 native-speaker review | prepared-not-run | `docs/native-review/ballot-egyptian.md` (18 items), `ballot-levantine.md` (35 items); `c47975a`. No named reviewer, no completed item, `ar-levantine.md` keeps `status: experimental` |
+| IMP-09 fidelity validation | done | `tests/validate.test.js` fidelity block; `docs/evidence/round1-waveD-tests.txt`; `08de32a`, documented in `10cc7ae`. WARN by default, FAIL under `--strict-fidelity`: decision 41 |
+| IMP-10 overlap grouping, coverage percent | done | `tests/detect-grouping.test.js`; `docs/evidence/round1-waveD-tests.txt`; `08de32a` |
+| IMP-11 coverage map, parity test | done | `docs/COVERAGE-MAP.md`, `tools/check-skill.js --refs`, `tests/coverage-map.test.js`; `docs/evidence/round1-waveE-checks.txt`; `e335970`. The `EN-*` half is a correlation, not an ID lookup: `docs/discrepancies/round1-docs.md` section 4 |
+| IMP-12 classical rhetoric layer | done | `AR-MSA-029` to `AR-MSA-033` with provenance rows; `docs/evidence/round1-fp-measure-imp12.txt`; `a2fe215`. The light-verb regex does not fire on قام بسرعة, and the corpus rate did not move |
+| IMP-13 register-conditional thresholds | done | `tests/register-profile.test.js`; `skills/humanizer-pro/scripts/README.md:425-450`; `08de32a`. One gate, two profiles, CV 0.35 to 0.22: decision 40 |
+| IMP-14 uncalibrated-signal labelling | done | `authorshipClaim: false` and `calibration` on every `--json` report; `skills/humanizer-pro/scripts/detect.js:391-392`; `08de32a` |
+| IMP-15 family cross-index, P2-only stop rule | done | `docs/COVERAGE-MAP.md`, family tags on all 58 AR entries; `e335970`. Assignment is editorial: decision 42 |
+| IMP-16 voice profile provenance and privacy | done | `references/voice-matching.md`; `docs/evidence/round1-waveE-checks.txt`; `e335970` |
+| IMP-17 definite-article clitic matching | done | `stemPhrases` on two `AR-SH-001` entries; `docs/evidence/round1-fp-measure.txt`; `a2fe215`. No new false positive on the corpus, which is what the criterion asked |
+| IMP-18 claims-added line, not-flagged list | done | `references/modes.md`, `references/core-principles.md`; `e335970` |
+| IMP-19 substitutability and distinctiveness gate | done | `references/core-principles.md`; `e335970`. Bound to never-invent, per the risk column |
+| IMP-20 self-scan with regression budgets | done | `tools/self-scan.js`, `tools/self-scan-budgets.json`, ignore regions in `detect.js`; `docs/evidence/round1-wave2G-self-scan.txt`; `ff65965`. 30 files, all inside budget, exits non-zero over budget |
+| IMP-21 era tagging and decay notes | done, with nothing to tag | `references/en-vocabulary.md` Era column, 49 of 49 `unknown`; `docs/discrepancies/round1-docs.md` section 1; `e335970`. Decision 43 |
+| IMP-22 prompt-injection principle | done | `references/core-principles.md`; `e335970` |
+| IMP-23 vocabulary-concentration signal | done, acceptance criterion missed and recorded | `AR-SH-008` in `signals.js`; `corpus/RESULTS.md` "Run 5"; `docs/evidence/round1-wave2F-vocab-distribution.txt`; `801cf95`. Fires on 15 of 300 human documents at weight 1 and on no fixture: weak spot 3.6 |
 | IMP-24 Gulf variety | deferred | Not started. Precondition is IMP-08, which has not run. Section 6 |
-| IMP-25 BCP 47 note, contributor template | done | `docs/LANGUAGE-CODES.md`, `references/_TEMPLATE.md`; `docs/evidence/round1-waveE-checks.txt`; `5532f4f` |
-| IMP-26 shared-core/thin-adapter architecture | done | `references/core-principles.md`; `5532f4f` |
-| IMP-27 ambiguous-marker routing guard | done, added mid-round | `lib/lang.js:111-152`; `docs/evidence/round1-wave2F-marker-homographs.txt`; `9de5d8f`. Removed four of the five false positives. Trade-off in weak spot 3.15 |
+| IMP-25 BCP 47 note, contributor template | done | `docs/LANGUAGE-CODES.md`, `references/_TEMPLATE.md`; `docs/evidence/round1-waveE-checks.txt`; `e335970` |
+| IMP-26 shared-core/thin-adapter architecture | done | `references/core-principles.md`; `e335970` |
+| IMP-27 ambiguous-marker routing guard | done, added mid-round | `lib/lang.js:111-152`; `docs/evidence/round1-wave2F-marker-homographs.txt`; `801cf95`. Removed four of the five false positives. Trade-off in weak spot 3.15 |
 
 Summary: 20 done, 2 done with a stated shortfall (IMP-02 Levantine, IMP-23
 fixture), 4 prepared-not-run (IMP-03, IMP-05, IMP-06's tag, IMP-08), 1 deferred
