@@ -736,11 +736,14 @@ items are added at the end. The rest stand as written.
   IMP-08 risk column named, and that is where this stands.
 - **Hebrew excluded by design:** `humanizer-he` ships in the same upstream
   package and is deliberately not ported.
-- ~~**`.claude-plugin/plugin.json` was not created.**~~ RETIRED by IMP-05.
-  `.claude-plugin/plugin.json`, `.codex-plugin/plugin.json` and
-  `agents/openai.yaml` all exist, and the keys are kept minimal for the same
-  reason the file was skipped before. No manifest has been loaded by a host, so
-  weak spot 3.10 is unaffected.
+- ~~**`.claude-plugin/plugin.json` was not created.**~~ RETIRED by IMP-05,
+  then the retirement itself was superseded: the project owner objected to
+  per-vendor manifest files at the repo root. `.claude-plugin/`,
+  `.codex-plugin/` and `agents/openai.yaml` were removed and replaced with a
+  single neutral installer, `tools/install.js` (`npm run install:skill -- --dir
+  <path>`), covered by `tests/install.test.js`. No host loader has run
+  against `skills/humanizer-pro/` either way, so weak spot 3.10 is
+  unaffected.
 - **Levantine regional sub-variant rules are not implemented in the engine:**
   `ar-levantine.md` documents Syrian / Lebanese / Palestinian differences, but
   the detector has one `shami` lexicon and cannot tell them apart.
@@ -828,8 +831,10 @@ The only outright NOT MET item is the `v0.1.0-build` tag, which is the next step
 rather than a gap.
 
 Round 1 moved three of these boxes and moved none of them to MET. Box 8 (Node
-18) now has a CI workflow that has never run. Box 12 (loads in a host) now has
-three manifests that no host has loaded. Box 14 (tagged final commit) is
+18) now has a CI workflow that has never run. Box 12 (loads in a host) is
+still unverified: the three per-vendor manifests it once pointed at are gone,
+replaced by `tools/install.js`, and no host loader has run against
+`skills/humanizer-pro/` either way. Box 14 (tagged final commit) is
 unchanged: `v0.2.0-build` is prepared and not created. Box 6 is worth re-reading
 against the corpus: the human fixtures still score 0, which is now weak spot
 3.6's finding rather than a passing assertion.
@@ -848,7 +853,7 @@ plan: it was added mid-round from corpus finding 1.
 | IMP-02 sourced FP fixtures | done for MSA and Egyptian, not for Levantine | `tests/fixtures/human-sourced/{msa-01,egt-01}.md` and `_provenance.md`; `a2fe215`. The criterion asks for one per variety where available; Levantine was searched for and not found, and the shortfall is written up rather than filled |
 | IMP-03 CI matrix, Node 18/20/22 | done | `.github/workflows/ci.yml`; `b352c0f`. First green run on the initial push to GitHub: https://github.com/derabia/humanizer-pro/actions/runs/35500327096 (4/4 jobs). Weak spot 3.9 retired. Evidence: `docs/evidence/round1-ci-first-green-run.txt` |
 | IMP-04 deterministic eval invariants | done | `evals/benchmark.json`, `evals/run-benchmark.js`, `tests/benchmark.test.js`; `docs/evidence/round1-benchmark.txt`; `c47975a`. 16/16 pass, and an injected invented number and a verbatim echo each fail the suite |
-| IMP-05 packaging, npm bin plus manifests | prepared-not-run | `docs/evidence/round1-npm-pack.txt`; `b352c0f`. The pack smoke test runs both CLIs from the tarball. The second half of the criterion, that each manifest loads in its host, is unverified: see weak spot 3.10 |
+| IMP-05 packaging, npm bin plus manifests | redesigned, superseding the manifest criterion | `docs/evidence/round1-npm-pack.txt`; `b352c0f`. The pack smoke test runs both CLIs from the tarball, and still does. The manifest half of the criterion (`.claude-plugin/`, `.codex-plugin/`, `agents/openai.yaml`) is retired: the project owner objected to per-vendor manifest files at the repo root, so they were removed and replaced with `tools/install.js`, a single neutral installer verified by `tests/install.test.js` and `docs/evidence/neutral-installer-checks.txt`. Whether a real host loader accepts `skills/humanizer-pro/` unmodified is still unverified either way: see weak spot 3.10 |
 | IMP-06 release discipline | done except the tag | `CHANGELOG.md` `[0.2.0-build]`, `tools/check-version.js`, version 0.2.0 in four files; `b352c0f` and this pass. The criterion requires a tagged release; the tag is the next step |
 | IMP-07 blinded pairwise kit | done | `tools/prepare-pairwise.js`, `evals/human/{pairs.json,ballot.md,key.json}`, `tests/pairwise.test.js`; `docs/evidence/round1-pairwise.txt`; `c47975a`. Seed 42 reproduces byte-identical output over 12 pairs. No ballot has been filled in |
 | IMP-08 native-speaker review | prepared-not-run | `docs/native-review/ballot-egyptian.md` (18 items), `ballot-levantine.md` (35 items); `c47975a`. No named reviewer, no completed item, `ar-levantine.md` keeps `status: experimental` |
@@ -873,7 +878,8 @@ plan: it was added mid-round from corpus finding 1.
 | IMP-27 ambiguous-marker routing guard | done, added mid-round | `lib/lang.js:111-152`; `docs/evidence/round1-wave2F-marker-homographs.txt`; `801cf95`. Removed four of the five false positives. Trade-off in weak spot 3.15 |
 
 Summary: 20 done, 2 done with a stated shortfall (IMP-02 Levantine, IMP-23
-fixture), 4 prepared-not-run (IMP-03, IMP-05, IMP-06's tag, IMP-08), 1 deferred
-(IMP-24). The four prepared-not-run items are the same two facts stated four
+fixture), 1 redesigned (IMP-05, manifests removed for a neutral installer),
+3 prepared-not-run (IMP-03, IMP-06's tag, IMP-08), 1 deferred
+(IMP-24). The three prepared-not-run items are the same two facts stated three
 ways: nothing has been pushed to a remote, and no native speaker has read any
 Arabic in this repository.

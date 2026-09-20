@@ -94,3 +94,14 @@ syntax) and were left as-is rather than hand-edited to a moving target
 mid-pass. A follow-up documentation touch could add the explicit
 `--mode rewrite` example to both files once the scripts wave is confirmed
 stable.
+
+## 6. Per-vendor manifests were removed after the round-1 runs that reference them
+
+`.claude-plugin/`, `.codex-plugin/` and `agents/openai.yaml` existed at the
+time of `docs/evidence/round1-npm-pack.txt` and the passages in
+`docs/BUILD-PROMPT.md:264` (frozen, not edited for this) that mention a
+Claude Code plugin manifest. The project owner objected to per-vendor
+manifest files at the repo root, so a later pass removed all three and
+replaced them with `tools/install.js`, a single neutral installer. That
+evidence file and `docs/BUILD-PROMPT.md` are left as originally captured;
+this entry is the record that their manifest references are now stale.

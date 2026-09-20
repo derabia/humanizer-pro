@@ -98,7 +98,7 @@ this copy for you, for any host. It works whether or not the target
 directory belongs to a recognized host:
 
 ```bash
-npm run install -- --dir <path>
+npm run install:skill -- --dir <path>
 ```
 
 This copies `skills/humanizer-pro` into `<path>/humanizer-pro` and
