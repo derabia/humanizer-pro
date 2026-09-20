@@ -171,6 +171,6 @@ reviewed and evidenced at the end of phase 11.
 - `docs/COMPETITIVE-ANALYSIS.md` — competitive review and the round-1
   improvement plan (IMP-01 through IMP-26) that follows this build.
 
-[Unreleased]: https://example.invalid/humanizer-pro/compare/v0.2.0-build...HEAD
-[0.2.0-build]: https://example.invalid/humanizer-pro/releases/tag/v0.2.0-build
-[0.1.0-build]: https://example.invalid/humanizer-pro/releases/tag/v0.1.0-build
+[Unreleased]: https://github.com/derabia/humanizer-pro/compare/v0.2.0-build...HEAD
+[0.2.0-build]: https://github.com/derabia/humanizer-pro/releases/tag/v0.2.0-build
+[0.1.0-build]: https://github.com/derabia/humanizer-pro/releases/tag/v0.1.0-build

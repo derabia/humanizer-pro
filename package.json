@@ -4,6 +4,14 @@
   "description": "Humanize AI-generated writing and strip AI-isms, in English and Arabic (MSA, Egyptian, Levantine).",
   "private": true,
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/derabia/humanizer-pro.git"
+  },
+  "homepage": "https://github.com/derabia/humanizer-pro#readme",
+  "bugs": {
+    "url": "https://github.com/derabia/humanizer-pro/issues"
+  },
   "keywords": [
     "humanizer",
     "ai-detection",

@@ -2,3 +2,9 @@ _sources/
 _archive/
 evals/runs/**/raw/
 corpus/raw/
+
+# Claude Code local session and settings (never published)
+.claude/
+
+# Node
+node_modules/

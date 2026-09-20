@@ -77,25 +77,87 @@ own scaffolding, not part of what you install into a host.
 
 ## Install
 
-Pick the section for your host. In every case you are copying the
+Clone the repository first:
+
+```bash
+git clone https://github.com/derabia/humanizer-pro.git
+```
+
+```powershell
+git clone https://github.com/derabia/humanizer-pro.git
+```
+
+Then pick the section for your host. In every case (other than the
+Claude Code plugin path and the Claude-apps zip) you are copying the
 single folder `skills/humanizer-pro/` into a location that host scans
-for skills. Nothing needs building first, except the Claude-apps zip.
+for skills.
 
 ### Codex
 
 Project-scoped: `.agents\skills\humanizer-pro\`. Global:
 `%USERPROFILE%\.agents\skills\humanizer-pro\`.
 
+Windows (PowerShell):
+
+```powershell
+Copy-Item -Recurse -Force .\humanizer-pro\skills\humanizer-pro '.\.agents\skills\humanizer-pro'
+Copy-Item -Recurse -Force .\humanizer-pro\skills\humanizer-pro "$env:USERPROFILE\.agents\skills\humanizer-pro"
+```
+
+macOS/Linux:
+
+```bash
+cp -R ./humanizer-pro/skills/humanizer-pro .agents/skills/humanizer-pro
+cp -R ./humanizer-pro/skills/humanizer-pro ~/.agents/skills/humanizer-pro
+```
+
 ### Claude Code
 
 Project-scoped: `.claude\skills\humanizer-pro\`. Global:
 `%USERPROFILE%\.claude\skills\humanizer-pro\`.
 
+Windows (PowerShell):
+
+```powershell
+Copy-Item -Recurse -Force .\humanizer-pro\skills\humanizer-pro '.\.claude\skills\humanizer-pro'
+Copy-Item -Recurse -Force .\humanizer-pro\skills\humanizer-pro "$env:USERPROFILE\.claude\skills\humanizer-pro"
+```
+
+macOS/Linux:
+
+```bash
+cp -R ./humanizer-pro/skills/humanizer-pro .claude/skills/humanizer-pro
+cp -R ./humanizer-pro/skills/humanizer-pro ~/.claude/skills/humanizer-pro
+```
+
+**As a Claude Code plugin instead of a folder copy.** `.claude-plugin/`
+ships `marketplace.json` (catalog name `humanizer-pro`) and
+`plugin.json` (plugin name `humanizer-pro`), so the marketplace-add
+form works once this repository is reachable at the URL above. This
+install syntax is not exercised by any script in this repository (no
+CI run has published or installed the plugin yet); it is the
+documented convention used by comparable Claude Code plugin repos
+under `_sources/competitors/` (`finestructure-ai_humanizer-multilingual`
+and `sawradip_rehumanize`), applied to this repo's own manifest names:
+
+```
+/plugin marketplace add derabia/humanizer-pro
+/plugin install humanizer-pro@humanizer-pro
+```
+
 ### Cursor
 
 Cursor's skills/rules directory has changed across versions: see
 Cursor's own docs for the current location before copying anything
-in. The same copy step applies once you know that path.
+in. Once you know that path, the same copy pattern applies:
+
+```powershell
+Copy-Item -Recurse -Force .\humanizer-pro\skills\humanizer-pro '<cursor-skills-dir>\humanizer-pro'
+```
+
+```bash
+cp -R ./humanizer-pro/skills/humanizer-pro <cursor-skills-dir>/humanizer-pro
+```
 
 ### Claude apps (claude.ai, desktop, mobile)
 
@@ -103,7 +165,18 @@ Claude apps take a custom skill as a zip upload, not a folder copy.
 Build it with `npm run build:zip`, which produces
 `dist\humanizer-pro.zip` with `humanizer-pro/` as the archive root (so
 `humanizer-pro/SKILL.md` is the top-level entry). Upload that file as
-a custom skill from the app's skill-management screen.
+a custom skill from the app's skill-management screen. The build step
+is the same command on every OS:
+
+```powershell
+cd humanizer-pro
+npm run build:zip
+```
+
+```bash
+cd humanizer-pro
+npm run build:zip
+```
 
 ### `npx skills add`
 
@@ -111,23 +184,28 @@ Once this repository is published to a registry `npx skills add`
 recognizes: `npx skills add <repo>`. Not usable yet: publishing has
 not happened.
 
-### Copy commands
+## Examples
 
-Windows (PowerShell), Claude Code project-scoped, then global:
+`docs/EXAMPLES.md` has a full installation-and-usage walkthrough with
+real before/after pairs and scores for every supported language and
+variety (English, MSA, Egyptian, Levantine), the SEO-safe mode, voice
+matching, and a CLI cookbook with real command output. One teaser pair
+from that file, both real:
 
-```powershell
-Copy-Item -Recurse -Force .\skills\humanizer-pro '.\.claude\skills\humanizer-pro'
-Copy-Item -Recurse -Force .\skills\humanizer-pro "$env:USERPROFILE\.claude\skills\humanizer-pro"
-```
+English (`en-rewrite-01`), score 8 to 5:
 
-macOS/Linux equivalent:
+> Before: "Basecraft's new onboarding module might possibly help teams
+> who are potentially struggling with inconsistent ramp-up times,
+> though results could vary..."
+> After: "Basecraft's onboarding module is built for that gap. Ramp-up
+> time varies by team size and role complexity, and by how good the
+> existing documentation is..."
 
-```bash
-cp -R ./skills/humanizer-pro ~/.claude/skills/humanizer-pro
-```
+Egyptian (`egt-rewrite-01`), score 52 to 2:
 
-Swap `.claude\skills` for `.agents\skills` for Codex, project- or
-user-scoped as shown above.
+> Before: "من المهم أن نتحدث اليوم عن سماعة...والتي تم إطلاقها الشهر
+> الماضي..."
+> After: "يعني خليني أحكيلكم عن سماعة...طلعت الشهر اللي فات..."
 
 ## Usage examples
 
