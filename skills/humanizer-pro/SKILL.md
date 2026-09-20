@@ -229,9 +229,9 @@ what was deliberately left alone and why. Full statements in
 
 ## 9. When the scripts cannot run
 
-The skill is fully usable as Markdown alone. Claude apps zip uploads, hosts
-without Node, and sandboxes without shell access all land here, and so does a
-script that errors out. In that case:
+The skill is fully usable as Markdown alone. A zip upload to a host with no
+script execution, hosts without Node, and sandboxes without shell access all
+land here, and so does a script that errors out. In that case:
 
 - Do the audit and the rewrite from the references. Every rule in this skill
   is stated in Markdown; the scripts only automate scoring and checking.

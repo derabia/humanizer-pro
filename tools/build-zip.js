@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Zips skills/humanizer-pro/ into dist/humanizer-pro.zip, with
 // humanizer-pro/ as the archive root (so humanizer-pro/SKILL.md is the
-// top-level entry inside the zip), for upload as a Claude-apps custom skill.
+// top-level entry inside the zip), for upload to a host that takes a
+// custom skill as a zip upload.
 //
 // Uses PowerShell's Compress-Archive on Windows and the `zip` binary
 // elsewhere, via child_process, so it has zero npm dependencies. Fails with

@@ -312,7 +312,7 @@ as committed at `801cf95`.
 | 38 | IMP-05 changed nothing about zip entry names: `tools/build-zip.js` already wrote explicit forward-slash entry names, which decision 26 recorded at build time. The packaging wave re-read it and left it alone. Recorded so a reviewer does not read the absence of a diff as an oversight. | decision 26 above; `tools/build-zip.js:60-74` |
 | 39 | Ignore regions are HTML comment pairs, two spellings, both accepted: `<!-- humanizer:ignore -->` with `<!-- /humanizer:ignore -->`, and `<!-- humanizer-ignore-start -->` with `<!-- humanizer-ignore-end -->`. Masking happens before either engine runs, preserves every original offset, and reports `stats.ignoredRegions` and `stats.ignoredCharCount`. An unclosed opener is a warning, not an error. This landed before `tools/self-scan.js` on purpose: the reference files quote bad examples, so without ignore regions their raw scores are noise (`ar-msa.md` scores 100 raw and 1 adjusted). | `skills/humanizer-pro/scripts/detect.js:56-64, 397-445`; `docs/evidence/round1-wave2G-self-scan.txt` |
 | 40 | The `formal` register profile changes exactly one number: the `AR-SH-004` burstiness lower bound moves from CV 0.35 to 0.22. Nothing else differs, and the engine has no max-sentence-length trigger to relax. Two profiles is the stated ceiling, and the per-pattern cap is the mitigation against threshold sprawl that IMP-13's risk column asked for. A profile can only make the engine quieter: it cannot add a finding. | `skills/humanizer-pro/scripts/README.md:425-450`; `skills/humanizer-pro/scripts/lib/ar-detector/index.js:85` (`REGISTER_PROFILES`); `tests/register-profile.test.js` |
-| 41 | The IMP-09 fidelity check WARNs by default and only FAILs under `--strict-fidelity`. This is the "ship it as a warning tier first" mitigation from IMP-09's own risk column: name extraction without a morphological analyzer over-fires in Arabic, so a dropped proper name, a removed citation marker and a dropped honorific are all warnings unless the caller opts in. The check runs on every invocation, including with `--seo`. | IMP-09 risk column in `docs/COMPETITIVE-ANALYSIS.md` section 6; `tests/validate.test.js` ("fidelity: dropping a proper name WARNs, and FAILs under --strict-fidelity") |
+| 41 | The IMP-09 fidelity check WARNs by default and only FAILs under `--strict-fidelity`. This is the "ship it as a warning tier first" mitigation from IMP-09's own risk column: name extraction without a morphological analyzer over-fires in Arabic, so a dropped proper name, a removed citation marker and a dropped honorific are all warnings unless the caller opts in. The check runs on every invocation, including with `--seo`. | IMP-09 risk column in the competitive-analysis document (kept outside the published repository) section 6; `tests/validate.test.js` ("fidelity: dropping a proper name WARNs, and FAILs under --strict-fidelity") |
 | 42 | Which of the five families each of the 58 AR-SH/AR-EGT/AR-SHM entries belongs to is this project's editorial reading of each entry's own text, not a mapping stated in any upstream source. The family names come from finestructure-ai's taxonomy concept and are credited. The result skews to `register-flattening` (40 of 58) because the two dialect files are, in substance, MSA-leakage catalogs. The skew is reported rather than rebalanced. | `docs/discrepancies/round1-docs.md` section 3; `docs/COVERAGE-MAP.md` |
 | 43 | All 49 Tier 1A vocabulary entries carry the Era value `unknown`. Not one had a sourced date to attach: grepping both upstream trees found one dated em-dash formatting rule, one dated Tier 1B corpus note, and blader's global pre-2022-11-30 carve-out, none of which dates an individual word. Tagging anything else would have been inventing dates, which `core-principles.md` forbids of this project's own documentation as much as of a humanized text. | `docs/discrepancies/round1-docs.md` section 1; `skills/humanizer-pro/references/en-vocabulary.md` Era column |
 
@@ -422,8 +422,9 @@ than locally.
 against a real skill loader.** `tools/check-skill.js` is this project's own
 checker: it confirms the file parses as YAML with `name` and `description`
 within limits, not that a host accepts the `metadata` shape.
-Probe: load `dist/humanizer-pro.zip` into Claude apps, or drop
-`skills/humanizer-pro/` into `.claude/skills/` and `.agents/skills/`.
+Probe: load `dist/humanizer-pro.zip` into a host that takes a custom skill
+as a zip upload, or drop `skills/humanizer-pro/` into the skills
+directories of two different agent hosts.
 
 **3.11 Eval grading was done by the builder's own agents.** The grades in
 `evals/runs/iteration-1/*/grade.md` and the two SUMMARY files come from the
@@ -736,10 +737,10 @@ items are added at the end. The rest stand as written.
   IMP-08 risk column named, and that is where this stands.
 - **Hebrew excluded by design:** `humanizer-he` ships in the same upstream
   package and is deliberately not ported.
-- ~~**`.claude-plugin/plugin.json` was not created.**~~ RETIRED by IMP-05,
+- ~~**The per-vendor plugin manifest was not created.**~~ RETIRED by IMP-05,
   then the retirement itself was superseded: the project owner objected to
-  per-vendor manifest files at the repo root. `.claude-plugin/`,
-  `.codex-plugin/` and `agents/openai.yaml` were removed and replaced with a
+  per-vendor manifest files at the repo root. The three per-vendor manifest
+  paths were removed and replaced with a
   single neutral installer, `tools/install.js` (`npm run install:skill -- --dir
   <path>`), covered by `tests/install.test.js`. No host loader has run
   against `skills/humanizer-pro/` either way, so weak spot 3.10 is
@@ -820,7 +821,7 @@ The 16 boxes from `docs/BUILD-PROMPT.md` section 4; raw output for every command
 | 9 | All evals pass or are listed as needing native-speaker review | MET for iteration-1 as recorded | `evals/runs/iteration-1/SUMMARY-en-msa.md` (8 evals, no failures, 4 NEEDS-NATIVE-REVIEW flags) and `SUMMARY-egt-shami.md` (8 evals, all PASS, 1 detector FLAG, all Arabic output NEEDS-NATIVE-REVIEW). `SELF-ASSESSMENT.md` and `iteration-2/` were written concurrently and not read here |
 | 10 | All licenses and credits present; adapted files carry original headers | MET | `skills/humanizer-pro/LICENSES/` holds all three MIT texts; `LICENSE`, `CREDITS.md`; `scripts/lib/en-detector/index.js:27` and `scripts/lib/en-validate.js:34` carry the upstream header plus a `Modified by humanizer-pro` note |
 | 11 | Skill still functions as Markdown-only when scripts cannot execute | MET | `SKILL.md` section 9 "When the scripts cannot run", plus inline fallbacks at lines 91 and 197; `check-skill` confirms all 11 reference paths are reachable from the router |
-| 12 | Skill loads from both `.agents\skills\` and `.claude\skills\` without modification | NOT VERIFIED IN A HOST | The skill directory is self-contained and path-agnostic, and `README.md:44-47, 86-89` documents both locations, but no load was performed in Codex or Claude Code. Structural compatibility only; see weak spot 3.10 |
+| 12 | Skill loads from any host's skills directory without modification | NOT VERIFIED IN A HOST | The skill directory is self-contained and path-agnostic, and `README.md`'s Install section documents copying it into whatever directory a host scans, but no load was performed in a real host. Structural compatibility only; see weak spot 3.10 |
 | 13 | Every "passes/verified" claim has a matching raw output file in `docs/evidence/` | MET | 13 files in `docs/evidence/`, including `phase11-acceptance.txt` written for this handoff, which carries the full raw output of every command quoted above |
 | 14 | Git history has at least one commit per phase; final commit tagged `v0.1.0-build` | PARTIAL | 21 commits with phase-labelled messages covering phases 0 to 10. Phase 5 is folded into `d3b95fa` and phase 8 (tests) has no dedicated commit; the tests landed inside `814dc62`, `2fa9a7b`, `abaf930` and `d54d426`. The tag is NOT MET: it is the Phase 11 commit step and was deliberately not created here |
 | 15 | `docs/NATIVE-REVIEW.md` lists all uncertain Arabic items; `ar-levantine.md` marked experimental | MET | `docs/NATIVE-REVIEW.md` (495 lines) grouped by area and variety; marker counts re-counted this session and matching (1 MSA, 5 Egyptian, 25 Levantine, 2 shared; the 26th grep hit in `ar-levantine.md` is the backticked prose mention on line 14, which `NATIVE-REVIEW.md:16-19` also excludes); `ar-levantine.md` line 2 begins `status: experimental` |
@@ -842,7 +843,7 @@ against the corpus: the human fixtures still score 0, which is now weak spot
 ### Round-1 acceptance
 
 One row per improvement item. `done` means the plan's own acceptance criterion
-in `docs/COMPETITIVE-ANALYSIS.md` section 6 is met and evidenced.
+in the competitive-analysis document (kept outside the published repository) section 6 is met and evidenced.
 `prepared-not-run` means the artifact exists and the criterion needs an action
 nobody has taken. `deferred` means not started. IMP-27 is not in the section-6
 plan: it was added mid-round from corpus finding 1.
@@ -853,7 +854,7 @@ plan: it was added mid-round from corpus finding 1.
 | IMP-02 sourced FP fixtures | done for MSA and Egyptian, not for Levantine | `tests/fixtures/human-sourced/{msa-01,egt-01}.md` and `_provenance.md`; `a2fe215`. The criterion asks for one per variety where available; Levantine was searched for and not found, and the shortfall is written up rather than filled |
 | IMP-03 CI matrix, Node 18/20/22 | done | `.github/workflows/ci.yml`; `b352c0f`. First green run on the initial push to GitHub: https://github.com/derabia/humanizer-pro/actions/runs/35500327096 (4/4 jobs). Weak spot 3.9 retired. Evidence: `docs/evidence/round1-ci-first-green-run.txt` |
 | IMP-04 deterministic eval invariants | done | `evals/benchmark.json`, `evals/run-benchmark.js`, `tests/benchmark.test.js`; `docs/evidence/round1-benchmark.txt`; `c47975a`. 16/16 pass, and an injected invented number and a verbatim echo each fail the suite |
-| IMP-05 packaging, npm bin plus manifests | redesigned, superseding the manifest criterion | `docs/evidence/round1-npm-pack.txt`; `b352c0f`. The pack smoke test runs both CLIs from the tarball, and still does. The manifest half of the criterion (`.claude-plugin/`, `.codex-plugin/`, `agents/openai.yaml`) is retired: the project owner objected to per-vendor manifest files at the repo root, so they were removed and replaced with `tools/install.js`, a single neutral installer verified by `tests/install.test.js` and `docs/evidence/neutral-installer-checks.txt`. Whether a real host loader accepts `skills/humanizer-pro/` unmodified is still unverified either way: see weak spot 3.10 |
+| IMP-05 packaging, npm bin plus manifests | redesigned, superseding the manifest criterion | `docs/evidence/round1-npm-pack.txt`; `b352c0f`. The pack smoke test runs both CLIs from the tarball, and still does. The manifest half of the criterion (three per-vendor manifest paths, one per host) is retired: the project owner objected to per-vendor manifest files at the repo root, so they were removed and replaced with `tools/install.js`, a single neutral installer verified by `tests/install.test.js` and `docs/evidence/neutral-installer-checks.txt`. Whether a real host loader accepts `skills/humanizer-pro/` unmodified is still unverified either way: see weak spot 3.10 |
 | IMP-06 release discipline | done except the tag | `CHANGELOG.md` `[0.2.0-build]`, `tools/check-version.js`, version 0.2.0 in four files; `b352c0f` and this pass. The criterion requires a tagged release; the tag is the next step |
 | IMP-07 blinded pairwise kit | done | `tools/prepare-pairwise.js`, `evals/human/{pairs.json,ballot.md,key.json}`, `tests/pairwise.test.js`; `docs/evidence/round1-pairwise.txt`; `c47975a`. Seed 42 reproduces byte-identical output over 12 pairs. No ballot has been filled in |
 | IMP-08 native-speaker review | prepared-not-run | `docs/native-review/ballot-egyptian.md` (18 items), `ballot-levantine.md` (35 items); `c47975a`. No named reviewer, no completed item, `ar-levantine.md` keeps `status: experimental` |

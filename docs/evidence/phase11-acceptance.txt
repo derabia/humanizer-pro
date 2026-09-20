@@ -654,7 +654,9 @@ variety=msa score=14 label=HUMAN
 
 ### cause of the stale dist zip
 $ git show --stat da36da5 -- '*lexicons.js'
-    Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+    [commit trailer redacted for the neutrality scrub: the original line
+    named the model that authored this commit, per an actual git trailer
+    in this repository's history; see docs/discrepancies/round1-docs.md §7]
 
  skills/humanizer-pro/scripts/lib/ar-detector/lexicons.js | 2 ++
  1 file changed, 2 insertions(+)

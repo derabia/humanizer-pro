@@ -234,7 +234,7 @@ let ENGINE_VERSION_CACHE;
  *
  * A git answer is only trusted when `git rev-parse --show-toplevel` names a
  * humanizer-pro checkout. An installed skill can live inside an unrelated
- * repository (a dotfiles repo under ~/.claude, say), and a SHA from that repo
+ * repository (a dotfiles repo under ~/.some-other-tool, say), and a SHA from that repo
  * would be actively misleading rather than merely absent.
  *
  * Note: `tools/build-zip.js` archives only `skills/humanizer-pro/`, so the
@@ -251,7 +251,7 @@ function engineVersion() {
       timeout: 5000,
     }).trim();
     // An installed skill can sit inside SOMEONE ELSE'S repository (a dotfiles
-    // repo under ~/.claude, for instance). git would answer happily with a
+    // repo under ~/.some-other-tool, for instance). git would answer happily with a
     // SHA that has nothing to do with this engine, which is worse than no
     // answer at all — so the repository is only trusted when it is a
     // humanizer-pro checkout, i.e. it contains this very script at its

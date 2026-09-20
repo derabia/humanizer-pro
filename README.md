@@ -1,7 +1,7 @@
 # humanizer-pro
 
-A skill for Claude (and other agent hosts that read `SKILL.md`-style
-skills) that humanizes AI-generated writing and strips AI-isms, in
+A skill for agent hosts that read `SKILL.md`-style
+skills, that humanizes AI-generated writing and strips AI-isms, in
 English and Arabic. It works as a router: it picks a mode (detect,
 rewrite, edit, plus an SEO modifier), identifies the language and
 Arabic variety, loads only the reference files that situation needs,
@@ -87,15 +87,15 @@ git clone https://github.com/derabia/humanizer-pro.git
 git clone https://github.com/derabia/humanizer-pro.git
 ```
 
-Then pick the section for your host. In every case (other than the
-Claude-apps zip) you are copying the single folder
-`skills/humanizer-pro/` into a location that host scans for skills.
+Then copy the single folder `skills/humanizer-pro/` into the skills
+directory your agent host scans. Your host's own documentation names
+that directory; this project does not track or guess it. Two ways to
+do the copy:
 
 ### Installer script
 
 `tools/install.js` is a single, zero-dependency Node script that does
-this copy for you, for any host. It works whether or not the target
-directory belongs to a recognized host:
+this copy for you, for any host:
 
 ```bash
 npm run install:skill -- --dir <path>
@@ -104,74 +104,33 @@ npm run install:skill -- --dir <path>
 This copies `skills/humanizer-pro` into `<path>/humanizer-pro` and
 verifies the copy by comparing file counts and total bytes. Add
 `--dry-run` to preview it first, and `--force` to overwrite an
-existing target. `node tools/install.js --host codex` and
-`--host claude-code` (with an optional `--global` flag) are shortcuts
-over `--dir` for the paths in the sections below. Run
-`node tools/install.js --help` or `--list` for details.
+existing target. Run `node tools/install.js --help` for details.
 
-The manual copy commands below still work too; they are already
-host-neutral shell commands, not vendor manifests.
+### Manual copy
 
-### Codex
-
-Project-scoped: `.agents\skills\humanizer-pro\`. Global:
-`%USERPROFILE%\.agents\skills\humanizer-pro\`.
+The same copy, done by hand. `<skills-dir>` is whatever directory
+your host scans for skills.
 
 Windows (PowerShell):
 
 ```powershell
-Copy-Item -Recurse -Force .\humanizer-pro\skills\humanizer-pro '.\.agents\skills\humanizer-pro'
-Copy-Item -Recurse -Force .\humanizer-pro\skills\humanizer-pro "$env:USERPROFILE\.agents\skills\humanizer-pro"
+Copy-Item -Recurse -Force .\humanizer-pro\skills\humanizer-pro '<skills-dir>\humanizer-pro'
 ```
 
 macOS/Linux:
 
 ```bash
-cp -R ./humanizer-pro/skills/humanizer-pro .agents/skills/humanizer-pro
-cp -R ./humanizer-pro/skills/humanizer-pro ~/.agents/skills/humanizer-pro
+cp -R ./humanizer-pro/skills/humanizer-pro <skills-dir>/humanizer-pro
 ```
 
-### Claude Code
+### Zip upload
 
-Project-scoped: `.claude\skills\humanizer-pro\`. Global:
-`%USERPROFILE%\.claude\skills\humanizer-pro\`.
-
-Windows (PowerShell):
-
-```powershell
-Copy-Item -Recurse -Force .\humanizer-pro\skills\humanizer-pro '.\.claude\skills\humanizer-pro'
-Copy-Item -Recurse -Force .\humanizer-pro\skills\humanizer-pro "$env:USERPROFILE\.claude\skills\humanizer-pro"
-```
-
-macOS/Linux:
-
-```bash
-cp -R ./humanizer-pro/skills/humanizer-pro .claude/skills/humanizer-pro
-cp -R ./humanizer-pro/skills/humanizer-pro ~/.claude/skills/humanizer-pro
-```
-
-### Cursor
-
-Cursor's skills/rules directory has changed across versions: see
-Cursor's own docs for the current location before copying anything
-in. Once you know that path, the same copy pattern applies:
-
-```powershell
-Copy-Item -Recurse -Force .\humanizer-pro\skills\humanizer-pro '<cursor-skills-dir>\humanizer-pro'
-```
-
-```bash
-cp -R ./humanizer-pro/skills/humanizer-pro <cursor-skills-dir>/humanizer-pro
-```
-
-### Claude apps (claude.ai, desktop, mobile)
-
-Claude apps take a custom skill as a zip upload, not a folder copy.
-Build it with `npm run build:zip`, which produces
+Some hosts take a custom skill as a zip upload rather than a folder
+copy. Build it with `npm run build:zip`, which produces
 `dist\humanizer-pro.zip` with `humanizer-pro/` as the archive root (so
-`humanizer-pro/SKILL.md` is the top-level entry). Upload that file as
-a custom skill from the app's skill-management screen. The build step
-is the same command on every OS:
+`humanizer-pro/SKILL.md` is the top-level entry). Upload that file
+from the host's own skill-management screen. The build step is the
+same command on every OS:
 
 ```powershell
 cd humanizer-pro

@@ -677,8 +677,8 @@ const AIDetector = (() => {
   // UTM/tracking parameters auto-appended by AI tools to URLs they
   // generate. Survives copy-paste even when nothing else does.
   const AI_UTM_SOURCE = [
-    /[?&]utm_source=(?:chatgpt|openai|copilot|claude|grok|gemini|perplexity)(?:\.com|\.ai)?\b/gi,
-    /[?&]referrer=(?:chatgpt|copilot|grok|claude|gemini|perplexity)\.(?:com|ai)\b/gi,
+    /[?&]utm_source=(?:chatgpt|openai|copilot|grok|gemini|perplexity)(?:\.com|\.ai)?\b/gi,
+    /[?&]referrer=(?:chatgpt|copilot|grok|gemini|perplexity)\.(?:com|ai)\b/gi,
   ];
 
   // ─── Template phrases ──────────────────────────────────────────────

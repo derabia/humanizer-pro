@@ -24,15 +24,16 @@ been tagged as a stable release.
   https://github.com/derabia/humanizer-pro/actions/runs/35500327096.
   Weak spot 3.9 in `docs/REVIEW-HANDOFF.md` is retired.
 - IMP-05 packaging was redesigned: the per-vendor manifests
-  (`.claude-plugin/`, `.codex-plugin/`, `agents/openai.yaml`) are removed in
+  (three per-vendor manifest paths, one per host) are removed in
   favour of a single neutral installer, `tools/install.js`, wired into
   `package.json` as `npm run install -- --dir <path>`. The soft version
   check for those manifests in `tools/check-version.js` is removed with
   them. Evidence: `docs/evidence/neutral-installer-checks.txt`;
   `tests/install.test.js`.
 
-Round 1 closed everything in `docs/COMPETITIVE-ANALYSIS.md` section 6 except
-the items below. Each one is blocked on an action outside a code change.
+Round 1 closed everything in the competitive-analysis section 6 improvement
+plan (kept outside the published repository) except the items below. Each
+one is blocked on an action outside a code change.
 
 - IMP-08 execution: the Egyptian ballot (18 items) and the Levantine ballot
   (35 items) exist under `docs/native-review/`, and no reviewer has filled
@@ -68,8 +69,8 @@ from 114 to 226, all passing.
   `evals/run-benchmark.js` with `required`, `forbidden`, `protected`,
   `minEditRatio` and `forbidUnexpectedNumbers` per case; 16 of 16 cases pass.
   `c47975a`; `docs/evidence/round1-benchmark.txt`.
-- IMP-05 packaging: npm `bin` entries, `.claude-plugin/plugin.json`,
-  `.codex-plugin/plugin.json` and `agents/openai.yaml`. Not published, and no
+- IMP-05 packaging: npm `bin` entries and three per-vendor plugin manifests,
+  one per host. Not published, and no
   manifest has been loaded by a host. These three manifests were later
   removed in favour of a single neutral installer, `tools/install.js`: see
   the `[Unreleased]` entry above. `b352c0f`;
@@ -192,8 +193,9 @@ reviewed and evidenced at the end of phase 11.
 - `docs/evidence/phase11-acceptance.txt` — acceptance evidence.
 - `docs/evidence/phase11-final-npm-test.txt` — final test run before the zip
   rebuild.
-- `docs/COMPETITIVE-ANALYSIS.md` — competitive review and the round-1
-  improvement plan (IMP-01 through IMP-26) that follows this build.
+- The competitive review and the round-1 improvement plan (IMP-01 through
+  IMP-26) that follows this build are kept outside the published
+  repository.
 
 [Unreleased]: https://github.com/derabia/humanizer-pro/compare/v0.2.0-build...HEAD
 [0.2.0-build]: https://github.com/derabia/humanizer-pro/releases/tag/v0.2.0-build

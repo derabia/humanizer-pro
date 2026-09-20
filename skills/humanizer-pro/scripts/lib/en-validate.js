@@ -100,7 +100,7 @@ const AIDetectorValidate = (() => {
   // Tracking parameters this skill is documented to strip (SKILL.md,
   // "AI-tool URL parameters"). Kept in sync with the `ai-utm-source`
   // detector category in patterns.js.
-  const AI_URL_PARAM = /^(?:utm_source=(?:chatgpt\.com|openai(?:\.com)?|copilot\.com|claude\.ai|perplexity\.ai|gemini\.google\.com|grok\.com)|referrer=grok\.com)$/i;
+  const AI_URL_PARAM = /^(?:utm_source=(?:chatgpt\.com|openai(?:\.com)?|copilot\.com|perplexity\.ai|gemini\.google\.com|grok\.com)|referrer=grok\.com)$/i;
 
   function extractAll(re, text) {
     const out = [];

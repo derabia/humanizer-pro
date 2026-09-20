@@ -1,64 +1,71 @@
 round1-npm-pack.txt — npm pack --dry-run output, then real pack + tarball CLI smoke test
-Generated: 2026-09-17T19:22:33Z
+Regenerated: 2026-09-20T13:17:54Z (neutrality scrub: original scratch path embedded a coding-agent vendor's name; rerun into a clean project-local temp dir)
 
 === npm pack --dry-run ===
 npm notice
-npm notice package: humanizer-pro@0.1.0
+npm notice package: humanizer-pro@0.2.0
 npm notice Tarball Contents
-npm notice 3.4kB CHANGELOG.md
-npm notice 3.4kB CREDITS.md
+npm notice 10.8kB CHANGELOG.md
+npm notice 4.0kB CREDITS.md
 npm notice 1.7kB LICENSE
-npm notice 12.6kB README.md
-npm notice 1.1kB package.json
+npm notice 19.0kB README.md
+npm notice 1.4kB package.json
 npm notice 1.1kB skills/humanizer-pro/LICENSES/avoid-ai-writing.MIT.txt
 npm notice 1.1kB skills/humanizer-pro/LICENSES/blader-humanizer.MIT.txt
 npm notice 1.1kB skills/humanizer-pro/LICENSES/humanizer-semitic.MIT.txt
+npm notice 7.8kB skills/humanizer-pro/references/_TEMPLATE.md
 npm notice 33.9kB skills/humanizer-pro/references/ar-egyptian.md
 npm notice 40.8kB skills/humanizer-pro/references/ar-levantine.md
-npm notice 39.3kB skills/humanizer-pro/references/ar-msa.md
-npm notice 27.0kB skills/humanizer-pro/references/ar-shared.md
-npm notice 6.2kB skills/humanizer-pro/references/core-principles.md
+npm notice 54.5kB skills/humanizer-pro/references/ar-msa.md
+npm notice 32.2kB skills/humanizer-pro/references/ar-shared.md
+npm notice 9.1kB skills/humanizer-pro/references/core-principles.md
 npm notice 78.9kB skills/humanizer-pro/references/en-patterns.md
-npm notice 17.5kB skills/humanizer-pro/references/en-vocabulary.md
-npm notice 9.5kB skills/humanizer-pro/references/modes.md
-npm notice 19.9kB skills/humanizer-pro/references/precedence.md
+npm notice 19.8kB skills/humanizer-pro/references/en-vocabulary.md
+npm notice 13.1kB skills/humanizer-pro/references/modes.md
+npm notice 20.6kB skills/humanizer-pro/references/precedence.md
 npm notice 8.1kB skills/humanizer-pro/references/seo-mode.md
-npm notice 10.8kB skills/humanizer-pro/references/voice-matching.md
-npm notice 16.6kB skills/humanizer-pro/scripts/detect.js
-npm notice 23.3kB skills/humanizer-pro/scripts/lib/ar-detector/index.js
-npm notice 26.2kB skills/humanizer-pro/scripts/lib/ar-detector/lexicons.js
-npm notice 14.3kB skills/humanizer-pro/scripts/lib/ar-detector/signals.js
+npm notice 13.6kB skills/humanizer-pro/references/voice-matching.md
+npm notice 31.3kB skills/humanizer-pro/scripts/detect.js
+npm notice 31.2kB skills/humanizer-pro/scripts/lib/ar-detector/index.js
+npm notice 32.7kB skills/humanizer-pro/scripts/lib/ar-detector/lexicons.js
+npm notice 24.7kB skills/humanizer-pro/scripts/lib/ar-detector/signals.js
 npm notice 5.5kB skills/humanizer-pro/scripts/lib/arabic-normalize.js
 npm notice 144.1kB skills/humanizer-pro/scripts/lib/en-detector/index.js
 npm notice 21.4kB skills/humanizer-pro/scripts/lib/en-validate.js
-npm notice 13.4kB skills/humanizer-pro/scripts/lib/lang.js
-npm notice 19.8kB skills/humanizer-pro/scripts/lib/validate-extra.js
-npm notice 28.3kB skills/humanizer-pro/scripts/README.md
-npm notice 8.7kB skills/humanizer-pro/scripts/validate.js
-npm notice 13.6kB skills/humanizer-pro/SKILL.md
+npm notice 21.2kB skills/humanizer-pro/scripts/lib/lang.js
+npm notice 30.4kB skills/humanizer-pro/scripts/lib/validate-extra.js
+npm notice 53.6kB skills/humanizer-pro/scripts/README.md
+npm notice 10.7kB skills/humanizer-pro/scripts/validate.js
+npm notice 14.8kB skills/humanizer-pro/SKILL.md
 npm notice 5.3kB tools/build-zip.js
 npm notice 6.6kB tools/check-evals.js
 npm notice 6.9kB tools/check-node18.js
-npm notice 8.4kB tools/check-skill.js
+npm notice 12.3kB tools/check-skill.js
 npm notice 9.3kB tools/check-upstream.js
 npm notice 7.3kB tools/check-version.js
+npm notice 28.3kB tools/fetch-corpus.js
+npm notice 21.0kB tools/fp-measure.js
+npm notice 5.6kB tools/install.js
 npm notice 1.6kB tools/merge-docs.js
+npm notice 10.6kB tools/prepare-pairwise.js
 npm notice 586B tools/run-tests.js
+npm notice 1.2kB tools/self-scan-budgets.json
+npm notice 11.4kB tools/self-scan.js
 npm notice Tarball Details
 npm notice name: humanizer-pro
-npm notice version: 0.1.0
-npm notice filename: humanizer-pro-0.1.0.tgz
-npm notice package size: 232.8 kB
-npm notice unpacked size: 698.3 kB
-npm notice shasum: 3bedbd082a78e1a114ddf7b3b2843e140334264d
-npm notice integrity: sha512-BbMwWUU8rV59g[...]8BgMW0L2JUkyw==
-npm notice total files: 39
+npm notice version: 0.2.0
+npm notice filename: humanizer-pro-0.2.0.tgz
+npm notice package size: 307.7 kB
+npm notice unpacked size: 922.1 kB
+npm notice shasum: eba7a5b03e9f57524ef949f21ba769a3448a325b
+npm notice integrity: sha512-0EGr4v25j0iAD[...]uObRdXvCFSjuQ==
+npm notice total files: 46
 npm notice
-humanizer-pro-0.1.0.tgz
+humanizer-pro-0.2.0.tgz
 
 === npm pack (real, --pack-destination scratch) ===
-tarball: /c/Users/MTM/AppData/Local/Temp/claude/D--Dev-htdocs-humanizer-pro/22de8582-cbfe-418a-9b3b-33b565a3539c/scratchpad/npmpack/humanizer-pro-0.1.0.tgz
--rw-r--r-- 1 amr 197121 232828 Sep 17 22:22 /c/Users/MTM/AppData/Local/Temp/claude/D--Dev-htdocs-humanizer-pro/22de8582-cbfe-418a-9b3b-33b565a3539c/scratchpad/npmpack/humanizer-pro-0.1.0.tgz
+tarball: _local/tmp/npmpack/humanizer-pro-0.2.0.tgz
+-rw-r--r-- 1 amr 197121 307728 Sep 20 16:17 _local/tmp/npmpack/humanizer-pro-0.2.0.tgz
 
 === tarball CLI smoke test ===
 $ node <extracted>/skills/humanizer-pro/scripts/detect.js tests/fixtures/en/ai-01.md --markdown
@@ -67,7 +74,10 @@ $ node <extracted>/skills/humanizer-pro/scripts/detect.js tests/fixtures/en/ai-0
 file:       tests/fixtures/en/ai-01.md
 language:   en  (confidence 1.00, engine en)
 score:      46   label: Moderate AI signals
-stats:      words 184, sourceMode rendered-markdown
+note:       score is a review signal, not an authorship claim
+calibration: uncalibrated-review-signal  engine-version 70b1a69  authorship-claim false
+stats:      words 184, sourceMode rendered-markdown, register default
+coverage:   4 group(s), 3.8% of scored text affected (total-chars)
 
 P0  (2)
       5:10  vague-attribution  Vague attribution
@@ -131,5 +141,3 @@ P2  (4)
             «4 em dashes in 184 words»
             → Replace with commas, periods, or rewrite
 
-
-exit code: 0

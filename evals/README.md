@@ -4,7 +4,7 @@ This directory holds the qualitative eval set for `skills/humanizer-pro/`
 (Phase 9 of `docs/BUILD-PROMPT.md`). It is a prompt-and-input set to be run
 manually, as a real user of the skill would — there is no automated grader
 for the humanized output itself, since judging "does this read as human" is
-exactly what the skill (and Claude) does, not what a script does.
+exactly what the skill (and the agent running it) does, not what a script does.
 
 ## Files
 

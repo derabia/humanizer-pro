@@ -1,7 +1,7 @@
 # Build Prompt: `humanizer-pro` — A Unified, Multilingual AI-Writing Humanizer Skill
 
-> **Builder:** Claude Opus 5 in Claude Code, with filesystem, shell, git, and Node access, opened in `D:\Dev\htdocs\humanizer-pro`.
-> **Reviewer (later, separate session):** Claude Fable, which will audit the result independently against this same document and the upstream sources.
+> **Builder:** an AI assistant (stronger-reasoning variant) in a coding-agent host, with filesystem, shell, git, and Node access, opened in `D:\Dev\htdocs\humanizer-pro`.
+> **Reviewer (later, separate session):** a separate AI assistant session, which will audit the result independently against this same document and the upstream sources.
 >
 > Paste everything below this line into the builder session. If the session ends before the work is finished, start a new session in the same folder and send: `Read docs/PROGRESS.md and continue from the next step.`
 
@@ -13,7 +13,7 @@ You are a senior engineer and technical editor building a production-grade Agent
 
 **Your work will be audited by a different AI model that did not see your session.** It will re-read the upstream sources itself, re-run every test and eval, and spot-check provenance at random. Build for verifiability: every claim you make must be reproducible from files and commands in the repository, not from your session memory.
 
-The skill must be **agent-agnostic**: it must load and work in Codex, Claude Code, Cursor, and Claude apps (as an uploaded skill), and it must not depend on any feature unique to one vendor.
+The skill must be **agent-agnostic**: it must load and work in Codex, Cursor, and several other agent hosts (some as an uploaded skill), and it must not depend on any feature unique to one vendor.
 
 ### 0.1 Session limits and resumability (read first)
 
@@ -230,7 +230,7 @@ Body (router):
 6. Step 5: execute the mode's workflow, including the mandatory second pass.
 7. Step 6: verify — run `validate.js` for edit mode and SEO mode when a shell is available; otherwise run the manual checklist.
 8. Output contract pointer (`references/modes.md`).
-9. Degradation rules when scripts cannot run (e.g., Claude.ai uploads): the skill must still work from Markdown alone.
+9. Degradation rules when scripts cannot run (e.g., a zip upload to a host with no script execution): the skill must still work from Markdown alone.
 
 ### Phase 8 — Tests
 
@@ -258,11 +258,11 @@ For each eval: run the skill as a user would, save the exact input, the full out
 Fix failures in the skill, re-run as `iteration-2`. Stop when all evals pass or remaining issues require a native-speaker decision.
 
 ### Phase 10 — Docs, packaging, maintenance
-`README.md`: what it is; install for each agent — Codex (`.agents\skills\humanizer-pro\` in a project, or `%USERPROFILE%\.agents\skills\humanizer-pro\` globally), Claude Code (`.claude\skills\` or `%USERPROFILE%\.claude\skills\`), Cursor, Claude apps (upload the zip), and `npx skills add` once published; usage examples in English and Arabic; CLI usage; SEO mode; limitations (including experimental Levantine); credits.
+`README.md`: what it is; install for each agent — Codex (`.agents\skills\humanizer-pro\` in a project, or `%USERPROFILE%\.agents\skills\humanizer-pro\` globally), other hosts (copy into whatever directory that host scans for skills), Cursor, hosts that take a zip upload, and `npx skills add` once published; usage examples in English and Arabic; CLI usage; SEO mode; limitations (including experimental Levantine); credits.
 `CREDITS.md` naming all three upstream authors and repos.
 `tools/check-upstream.js`: uses `git ls-remote` to compare recorded SHAs with remote HEADs and prints which upstream changed and which files in `docs/PROVENANCE.md` depend on it.
-Optional (only after everything passes): `.claude-plugin/plugin.json` + marketplace manifest pointing to `skills/humanizer-pro/SKILL.md` so it loads in Claude Code, Cowork, and Claude Desktop.
-Create a zip of `skills\humanizer-pro\` as `dist\humanizer-pro.zip` for upload to Claude apps.
+Optional (only after everything passes): a vendor plugin manifest + marketplace manifest pointing to `skills/humanizer-pro/SKILL.md` so it loads in that vendor's coding-agent host and desktop app.
+Create a zip of `skills\humanizer-pro\` as `dist\humanizer-pro.zip` for upload to hosts that take a zip-uploaded skill.
 Commit: `phase-10: docs and packaging`.
 ### Phase 11 — Handoff for independent review
 
@@ -290,7 +290,7 @@ Then tag the final commit `v0.1.0-build`. Do not tag or describe anything as rev
 - [ ] All evals pass or are listed as needing native-speaker review.
 - [ ] All licenses and credits present; adapted files carry original headers.
 - [ ] Skill still functions as Markdown-only when scripts cannot execute.
-- [ ] Skill loads from both `.agents\skills\` (Codex) and `.claude\skills\` (Claude Code) without modification.
+- [ ] Skill loads from both `.agents\skills\` (Codex) and another host's skills directory without modification.
 - [ ] Every "passes/verified" claim has a matching raw output file in `docs/evidence/`.
 - [ ] Git history has at least one commit per phase; final commit tagged `v0.1.0-build`.
 - [ ] `docs/NATIVE-REVIEW.md` lists all uncertain Arabic items; `ar-levantine.md` is marked experimental.
@@ -307,7 +307,7 @@ When done, reply with:
 4. Test results and eval summary table.
 5. Items needing native-speaker review, by variety (point to `docs/NATIVE-REVIEW.md`).
 6. Known limitations and the top weak spots from `docs/REVIEW-HANDOFF.md`.
-7. Exact commands to install and try it in Codex and in Claude Code.
+7. Exact commands to install and try it in Codex and in another agent host.
 8. Build environment (model, Node, OS) and the final commit SHA / tag.
 
 Be precise and brief in the report. Do not claim anything you did not verify, and do not call the skill reviewed or production-ready.

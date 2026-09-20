@@ -22,8 +22,8 @@
  * Files scanned (fixed list, engine-agnostic, doc prose only):
  *   README.md, CREDITS.md, CHANGELOG.md, skills/humanizer-pro/SKILL.md,
  *   skills/humanizer-pro/references/*.md, docs/*.md (top-level only, no
- *   subdirectories — docs/competitors/, docs/evidence/, etc. are not prose
- *   doctrine and are excluded).
+ *   subdirectories — docs/evidence/, etc. are not prose doctrine and are
+ *   excluded).
  *
  * Usage
  * -----

@@ -1332,7 +1332,7 @@ test('ai-utm-source fires on AI-tool tracking parameters', () => {
   for (const text of [
     'See https://example.com/article?utm_source=chatgpt.com for the source.',
     'Link: https://example.com/?utm_source=copilot.com&utm_medium=referral',
-    'https://docs.example.com/page?utm_source=claude.ai is the canonical reference.',
+    'https://docs.example.com/page?utm_source=gemini.google.com is the canonical reference.',
     'Reference URL: https://example.com/post?utm_source=perplexity.ai found via search.',
     'Article: https://example.com/blog?referrer=grok.com via the link.',
   ]) {

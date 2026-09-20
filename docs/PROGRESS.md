@@ -30,7 +30,7 @@ Published at https://github.com/derabia/humanizer-pro (public, main, v0.2.0-buil
 | Phase 11: docs/REVIEW-HANDOFF.md (600 lines, 141-row provenance index) + docs/evidence/phase11-acceptance.txt | uncommitted |
 
 ## Round 1
-Improvement plan from `docs/COMPETITIVE-ANALYSIS.md` section 6. Branch `improve/round-1`, branched from `ae8094e`.
+Improvement plan from the competitive-analysis document (kept outside the published repository) section 6. Branch `improve/round-1`, branched from `ae8094e`.
 
 | Step | Commit |
 |---|---|
@@ -43,7 +43,7 @@ Improvement plan from `docs/COMPETITIVE-ANALYSIS.md` section 6. Branch `improve/
 | IMP-01 Arabic FP corpus (300 docs, Wilson CI) and fp-measure tool, IMP-02 sourced human fixtures (MSA, Egyptian), IMP-12 classical rhetoric layer AR-MSA-029..033, IMP-17 stem matching | a2fe215 |
 | IMP-20 ignore regions in detect.js and self-scan tool with regression budgets | ff65965 |
 | IMP-27 ambiguous-marker routing guard, per-pattern contribution cap (24), IMP-23 AR-SH-008 vocabulary concentration; FP rate 0/300 (Wilson upper 1.26%) | 801cf95 |
-| Round-1 documentation: version 0.2.0, CHANGELOG [0.2.0-build], REVIEW-HANDOFF sections 1/2/3/6/7, COMPETITIVE-ANALYSIS section 7, README, this file | uncommitted |
+| Round-1 documentation: version 0.2.0, CHANGELOG [0.2.0-build], REVIEW-HANDOFF sections 1/2/3/6/7, competitive-analysis section 7, README, this file | uncommitted |
 
 Measured: tests 114 to 226, all passing. Arabic false-positive rate 1.67% (5/300, Wilson 0.71% to 3.84%) to 0.00% (0/300, Wilson upper 1.26%); documents scoring at or above 25, 49 to 31. Benchmark 16/16. Self-scan 30 files, all inside budget. Raw output for the closing checks: `docs/evidence/round1-final-checks.txt`.
 

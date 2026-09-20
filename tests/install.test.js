@@ -67,7 +67,7 @@ function sha256(filePath) {
 
 const realSourceFiles = listFiles(SKILL_SRC);
 
-test('--dir missing (neither --dir nor --host) exits 2', () => {
+test('--dir missing exits 2', () => {
   const result = run([]);
   assert.equal(result.status, 2);
 });

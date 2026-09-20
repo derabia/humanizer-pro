@@ -1,142 +1,140 @@
-round1-final-checks.txt: closing checks, regenerated for the neutrality scrub
-Generated: 2026-09-20T13:18:38Z
-branch:  main
-head:    70b1a69
-tree:    neutrality-scrub pass, working tree has in-progress edits (see git status)
-node:    v25.2.1
-os:      Windows 11 Pro 10.0.26200
+neutrality-scrub-checks.txt — verification for the vendor-neutrality scrub
+Generated: 2026-09-20T13:20:23Z
+node: v25.2.1   git: git version 2.52.0.windows.1
+branch: main   head: 70b1a69
 
-Six commands, in this order. Exit status is printed after each.
-  1) npm test
-  2) node tools/check-skill.js --refs
-  3) node tools/check-version.js
-  4) node tools/check-evals.js
-  5) npm run self-scan
-  6) node evals/run-benchmark.js
-
-check-version exits 0 with one warning by design: package.json and
-SKILL.md carry 0.2.0 while the CHANGELOG heading is 0.2.0-build. The
-tool documents that interim-build case as a warning, not a failure.
+Before: git grep -ni <target-string> -- . matched 159 lines, where
+<target-string> is the vendor name this scrub removes (recorded as a
+count only; neither the matched lines nor the literal search term are
+reproduced here, since doing so would reintroduce the very string this
+scrub removes, and this file is itself checked by the same grep).
 
 ================================================================
-=== 1) npm test ===
+=== $ git grep -ni <target-string> -- . (after) ===
+================================================================
+=== $ git grep -ni <target-string> -- . ===
+exit: 1
+(0 hits found; command exits 1 when no matches, which is the expected "clean" result)
+
+================================================================
+=== $ npm test ===
 ================================================================
 
 > humanizer-pro@0.2.0 test
 > node tools/run-tests.js
 
-✔ corpus/raw is present (otherwise every test in this file skips) (1.8682ms)
-✔ IMP-27: encyclopedic-6617310.txt (round-1 score 83) routes msa and is not AI (269.0053ms)
-✔ IMP-27: encyclopedic-195796.txt (round-1 score 72) routes msa and is not AI (11.9611ms)
-✔ IMP-27: encyclopedic-6568.txt (round-1 score 71) routes msa and is not AI (25.4715ms)
-✔ IMP-27: encyclopedic-8622703.txt (round-1 score 68) routes msa and is not AI (18.5696ms)
-✔ IMP-27: encyclopedic-1917542.txt no longer supplies strong dialect evidence (4.1086ms)
-✔ IMP-27: encyclopedic-2516065.txt no longer supplies strong dialect evidence (2.3815ms)
-✔ IMP-27: encyclopedic-8359977.txt no longer supplies strong dialect evidence (6.0203ms)
-✔ IMP-27: encyclopedic-893832.txt (round-1 score 67, AR-MSA-006 x15) is no longer AI (25.5812ms)
-✔ fixture corpus is complete (>=5 AI and >=5 human per variety) (4.8105ms)
-✔ every AI fixture scores at or above the AI threshold (76.882ms)
-✔ every human fixture scores below the AI threshold (22.4117ms)
-✔ every human fixture is labelled HUMAN (22.7791ms)
-✔ false-positive fixtures score HUMAN (7.8ms)
-✔ every issue offset indexes the ORIGINAL text exactly (55.325ms)
-✔ offsets stay exact on tashkeel- and tatweel-heavy input (5.6812ms)
-✔ rendered-markdown excludes frontmatter, HTML comments and code fences (2.4657ms)
-✔ URLs and inline code are never flagged, in either source mode (0.8202ms)
-✔ MSA-leakage ratio is reported only for dialect varieties (6.521ms)
-✔ a single P2 signal never leaves HUMAN, and neither does a single P1 or P0 (1.2166ms)
-✔ empty and whitespace-only input (0.3415ms)
-✔ text with no Arabic at all scores 0 and is flagged noArabic (0.8784ms)
-✔ very short Arabic text is capped and marked tooShort (0.6125ms)
-✔ invalid variety and sourceMode fall back and are recorded (0.3615ms)
-✔ exports are shaped for docs and tests (0.5872ms)
-✔ rhetorical questions are not a signal in Arabic (0.5876ms)
-✔ AR-MSA-031: the light-verb regex fires on قام بإجراء الدراسة (0.5695ms)
-✔ AR-MSA-031: the light-verb regex does not fire on قام بسرعة (0.2675ms)
-✔ AR-MSA-031: a light-verb run is reported as an issue on a real document (0.9748ms)
-✔ AR-MSA-032: the attested collocation calques fire, ordinary أخذ does not (0.7726ms)
-✔ IMP-17: a stem entry matches its ال-prefixed and proclitic-plus-ال forms (0.5315ms)
-✔ IMP-17: the default (non-stem) matching behaviour is unchanged (0.3393ms)
-✔ IMP-17: AR-SH-001 now fires on والجدير بالذكر and still on the bare form (1.2483ms)
-✔ IMP-02: every sourced human fixture carries a complete provenance header (2.6124ms)
-✔ IMP-02: every sourced human fixture scores below MIXED under auto-routing (286.7249ms)
-✔ IMP-02: the sourced fixtures cover more than one variety, and the header matches the routing (14.2586ms)
-✔ cap: the cap is exported and sits one point below MIXED (0.2165ms)
-✔ cap: 20 تم-passives and nothing else score 24 / HUMAN, not 84 / AI (1.802ms)
-✔ cap: every hit is still reported even though the score is capped (1.6146ms)
-✔ cap: different patterns still corroborate, two capped patterns sum past MIXED (2.3641ms)
-✔ cap: AI fixtures still reach THRESHOLDS.AI, they stack distinct patterns (27.4615ms)
-✔ AR-SH-008: the gates are the corpus-measured percentiles (0.2211ms)
-✔ AR-SH-008: vocabularyConcentration is not applicable below the content-token floor (0.1742ms)
-✔ AR-SH-008: ttr is null between the share floor and the TTR window (0.3515ms)
-✔ AR-SH-008: the stoplist removes function words, name-chain connectors and dialect particles (0.3555ms)
-✔ AR-SH-008: a concentrated text fires the signal at a graded weight of 1 or 2 (2.8332ms)
-✔ AR-SH-008: human fixtures stay well inside the gates (23.2998ms)
-✔ AR-SH-008: is listed in PATTERNS as a graded signal (0.243ms)
-✔ PATTERNS.phraseCount includes stemPhrases entries (0.9614ms)
-✔ strips a heavy tashkeel string and keeps exact offsets (2.8877ms)
-✔ tatweel (kashida) is removed and does not appear in the map (0.4205ms)
-✔ alef forms unify to bare alef: أ إ آ ٱ -> ا (0.3444ms)
-✔ alef maqsura unifies to ya: ى -> ي (0.2575ms)
-✔ ta marbuta is left untouched by default (0.6687ms)
-✔ ta marbuta unifies to ha when options.taMarbuta is true (0.4434ms)
-✔ Arabic-Indic and Extended Arabic-Indic digits pass through untouched (0.5758ms)
-✔ round-trips a slice via toOriginalRange (0.5898ms)
-✔ toOriginal maps the end-of-string sentinel to original.length (0.4106ms)
-✔ empty string normalizes to empty string with an empty map (0.7472ms)
-✔ non-string input throws (2.0984ms)
-✔ mixed Arabic/Latin text: only Arabic-block chars are touched (0.3893ms)
-✔ a candidate that echoes the input verbatim fails minEditRatio (896.0825ms)
-✔ a candidate with an invented number not in the input fails forbidUnexpectedNumbers (704.7652ms)
-✔ an Arabic candidate with an invented Arabic-Indic-digit number fails forbidUnexpectedNumbers (620.6462ms)
-✔ all 16 real iteration-1 cases in evals/benchmark.json pass today (6181.7112ms)
-✔ docs/COVERAGE-MAP.md exists (1.8108ms)
-✔ every reference heading (EN-*, AR-SH-*, AR-MSA-*, AR-EGT-*, AR-SHM-*) has a coverage-map row (8.9528ms)
-✔ every lexicon pattern ID compiled in lexicons.js appears in the coverage map (0.9541ms)
-✔ every lexicon pattern ID compiled in lexicons.js has a matching reference heading (4.9112ms)
-✔ every regex source in lexicons.js compiles (0.4978ms)
-✔ MSA_FUNCTION_WORDS and DIALECT_FUNCTION_WORDS phrase regexes compile (1.5743ms)
-✔ auto-routing fixture corpus is non-empty (7.6866ms)
-✔ every AI fixture scores at or above THRESHOLDS.AI under auto-routing (no --variety) (267.9564ms)
-✔ every human fixture scores below THRESHOLDS.MIXED under auto-routing (no --variety) (31.9713ms)
-✔ every false-positive fixture scores below THRESHOLDS.MIXED under auto-routing (no --variety) (11.2994ms)
-✔ quoted dialect speech inside MSA narration does not mis-route the document (3.7478ms)
-✔ register-mix promotion only fires when the dialect candidate outscores msa, clears THRESHOLDS.AI, and shows lexical dialect intent (7.1849ms)
-✔ register-mix check never runs when --variety/--lang is passed explicitly (2.4589ms)
-✔ genuine human MSA text is never promoted to a dialect by the register-mix check (14.1416ms)
-✔ a single injected hedge phrase never promotes clean human MSA prose to a dialect verdict (26.3872ms)
-✔ a single stray dialect word in an otherwise human MSA text does not trigger promotion (18.6144ms)
-✔ CLI: Arabic file, human-readable report (474.2262ms)
-✔ CLI: Arabic file, --json shape (344.2598ms)
-✔ CLI: English file routes to the English engine (352.4262ms)
-✔ CLI: English file, human-readable report (375.716ms)
-✔ CLI: stdin with - (634.4703ms)
-✔ CLI: --variety overrides auto-detection (803.2377ms)
-✔ CLI: --lang overrides auto-detection (473.1533ms)
-✔ CLI: --markdown changes the source mode (511.8756ms)
-✔ CLI: exit code 2 on input errors, 0 otherwise (863.5207ms)
-✔ programmatic analyze() is exported and routes like the CLI (222.6974ms)
-✔ mixed Arabic/English documents auto-route to the Arabic engine (281.2001ms)
-✔ report renders line:col positions (1.802ms)
-✔ CLI: --help lists --register (133.1602ms)
-✔ CLI: stdin + --json carries the labelling fields and grouping stats (253.7449ms)
-✔ CLI: group spans slice back to real text and match their issues (256.0469ms)
-✔ CLI: the Egyptian fixture also carries the additive fields (241.2908ms)
-✔ CLI: --register combines with --variety and --markdown (245.6202ms)
-✔ groupIssues: two overlapping spans collapse into one group (4.5578ms)
-✔ groupIssues: touching spans (end === next start) also merge (0.5047ms)
-✔ groupIssues: disjoint spans stay separate and sum (0.3591ms)
-✔ groupIssues: a fully nested span does not extend the group (0.3115ms)
-✔ groupIssues: English-engine issues are spanned from index + text length (0.3609ms)
-✔ analyze(): overlapping findings collapse — groupCount < issue count (186.7096ms)
-✔ analyze(): affectedCoveragePercent is the union over the scored length (4.4999ms)
-✔ analyze(): masked regions are excluded from the coverage denominator (4.5425ms)
-✔ analyze(): a clean text reports zero groups and zero coverage (0.758ms)
-✔ labelling: every --json result carries the three fields (Arabic) (381.2368ms)
-✔ labelling: the English engine gets the same fields (337.8759ms)
-✔ labelling: programmatic analyze() carries the fields too (1.5196ms)
-✔ labelling: the readable report prints the review-signal note (338.8958ms)
-✔ labelling: engineVersion() is a git sha or a v-prefixed package version (0.3282ms)
+✔ corpus/raw is present (otherwise every test in this file skips) (1.9204ms)
+✔ IMP-27: encyclopedic-6617310.txt (round-1 score 83) routes msa and is not AI (201.3026ms)
+✔ IMP-27: encyclopedic-195796.txt (round-1 score 72) routes msa and is not AI (11.015ms)
+✔ IMP-27: encyclopedic-6568.txt (round-1 score 71) routes msa and is not AI (24.863ms)
+✔ IMP-27: encyclopedic-8622703.txt (round-1 score 68) routes msa and is not AI (17.3406ms)
+✔ IMP-27: encyclopedic-1917542.txt no longer supplies strong dialect evidence (3.3476ms)
+✔ IMP-27: encyclopedic-2516065.txt no longer supplies strong dialect evidence (2.9107ms)
+✔ IMP-27: encyclopedic-8359977.txt no longer supplies strong dialect evidence (3.1278ms)
+✔ IMP-27: encyclopedic-893832.txt (round-1 score 67, AR-MSA-006 x15) is no longer AI (24.1216ms)
+✔ fixture corpus is complete (>=5 AI and >=5 human per variety) (4.1252ms)
+✔ every AI fixture scores at or above the AI threshold (64.8869ms)
+✔ every human fixture scores below the AI threshold (22.458ms)
+✔ every human fixture is labelled HUMAN (25.7021ms)
+✔ false-positive fixtures score HUMAN (7.1775ms)
+✔ every issue offset indexes the ORIGINAL text exactly (62.6912ms)
+✔ offsets stay exact on tashkeel- and tatweel-heavy input (4.2696ms)
+✔ rendered-markdown excludes frontmatter, HTML comments and code fences (2.2778ms)
+✔ URLs and inline code are never flagged, in either source mode (0.7913ms)
+✔ MSA-leakage ratio is reported only for dialect varieties (6.3973ms)
+✔ a single P2 signal never leaves HUMAN, and neither does a single P1 or P0 (1.0916ms)
+✔ empty and whitespace-only input (0.3203ms)
+✔ text with no Arabic at all scores 0 and is flagged noArabic (0.5322ms)
+✔ very short Arabic text is capped and marked tooShort (0.4841ms)
+✔ invalid variety and sourceMode fall back and are recorded (0.3412ms)
+✔ exports are shaped for docs and tests (0.8313ms)
+✔ rhetorical questions are not a signal in Arabic (0.472ms)
+✔ AR-MSA-031: the light-verb regex fires on قام بإجراء الدراسة (0.9329ms)
+✔ AR-MSA-031: the light-verb regex does not fire on قام بسرعة (0.3167ms)
+✔ AR-MSA-031: a light-verb run is reported as an issue on a real document (1.5981ms)
+✔ AR-MSA-032: the attested collocation calques fire, ordinary أخذ does not (0.7333ms)
+✔ IMP-17: a stem entry matches its ال-prefixed and proclitic-plus-ال forms (0.4899ms)
+✔ IMP-17: the default (non-stem) matching behaviour is unchanged (0.326ms)
+✔ IMP-17: AR-SH-001 now fires on والجدير بالذكر and still on the bare form (1.1445ms)
+✔ IMP-02: every sourced human fixture carries a complete provenance header (1.9355ms)
+✔ IMP-02: every sourced human fixture scores below MIXED under auto-routing (188.2195ms)
+✔ IMP-02: the sourced fixtures cover more than one variety, and the header matches the routing (13.4267ms)
+✔ cap: the cap is exported and sits one point below MIXED (0.2342ms)
+✔ cap: 20 تم-passives and nothing else score 24 / HUMAN, not 84 / AI (2.2502ms)
+✔ cap: every hit is still reported even though the score is capped (1.5901ms)
+✔ cap: different patterns still corroborate, two capped patterns sum past MIXED (1.9297ms)
+✔ cap: AI fixtures still reach THRESHOLDS.AI, they stack distinct patterns (28.4139ms)
+✔ AR-SH-008: the gates are the corpus-measured percentiles (0.2342ms)
+✔ AR-SH-008: vocabularyConcentration is not applicable below the content-token floor (0.1651ms)
+✔ AR-SH-008: ttr is null between the share floor and the TTR window (0.3368ms)
+✔ AR-SH-008: the stoplist removes function words, name-chain connectors and dialect particles (0.2948ms)
+✔ AR-SH-008: a concentrated text fires the signal at a graded weight of 1 or 2 (3.6301ms)
+✔ AR-SH-008: human fixtures stay well inside the gates (22.3037ms)
+✔ AR-SH-008: is listed in PATTERNS as a graded signal (0.272ms)
+✔ PATTERNS.phraseCount includes stemPhrases entries (0.5138ms)
+✔ strips a heavy tashkeel string and keeps exact offsets (2.3456ms)
+✔ tatweel (kashida) is removed and does not appear in the map (0.3768ms)
+✔ alef forms unify to bare alef: أ إ آ ٱ -> ا (0.2735ms)
+✔ alef maqsura unifies to ya: ى -> ي (0.2526ms)
+✔ ta marbuta is left untouched by default (0.4376ms)
+✔ ta marbuta unifies to ha when options.taMarbuta is true (0.3803ms)
+✔ Arabic-Indic and Extended Arabic-Indic digits pass through untouched (0.4251ms)
+✔ round-trips a slice via toOriginalRange (1.0804ms)
+✔ toOriginal maps the end-of-string sentinel to original.length (1.474ms)
+✔ empty string normalizes to empty string with an empty map (1.1149ms)
+✔ non-string input throws (1.7197ms)
+✔ mixed Arabic/Latin text: only Arabic-block chars are touched (0.3281ms)
+✔ a candidate that echoes the input verbatim fails minEditRatio (777.3431ms)
+✔ a candidate with an invented number not in the input fails forbidUnexpectedNumbers (633.5303ms)
+✔ an Arabic candidate with an invented Arabic-Indic-digit number fails forbidUnexpectedNumbers (579.0672ms)
+✔ all 16 real iteration-1 cases in evals/benchmark.json pass today (5869.3849ms)
+✔ docs/COVERAGE-MAP.md exists (3.0476ms)
+✔ every reference heading (EN-*, AR-SH-*, AR-MSA-*, AR-EGT-*, AR-SHM-*) has a coverage-map row (10.6809ms)
+✔ every lexicon pattern ID compiled in lexicons.js appears in the coverage map (0.8691ms)
+✔ every lexicon pattern ID compiled in lexicons.js has a matching reference heading (4.316ms)
+✔ every regex source in lexicons.js compiles (0.4612ms)
+✔ MSA_FUNCTION_WORDS and DIALECT_FUNCTION_WORDS phrase regexes compile (1.3842ms)
+✔ auto-routing fixture corpus is non-empty (1.932ms)
+✔ every AI fixture scores at or above THRESHOLDS.AI under auto-routing (no --variety) (261.8981ms)
+✔ every human fixture scores below THRESHOLDS.MIXED under auto-routing (no --variety) (33.205ms)
+✔ every false-positive fixture scores below THRESHOLDS.MIXED under auto-routing (no --variety) (10.9142ms)
+✔ quoted dialect speech inside MSA narration does not mis-route the document (2.2358ms)
+✔ register-mix promotion only fires when the dialect candidate outscores msa, clears THRESHOLDS.AI, and shows lexical dialect intent (8.371ms)
+✔ register-mix check never runs when --variety/--lang is passed explicitly (2.0907ms)
+✔ genuine human MSA text is never promoted to a dialect by the register-mix check (15.5025ms)
+✔ a single injected hedge phrase never promotes clean human MSA prose to a dialect verdict (29.0561ms)
+✔ a single stray dialect word in an otherwise human MSA text does not trigger promotion (18.1646ms)
+✔ CLI: Arabic file, human-readable report (441.3283ms)
+✔ CLI: Arabic file, --json shape (306.2543ms)
+✔ CLI: English file routes to the English engine (314.4011ms)
+✔ CLI: English file, human-readable report (304.9434ms)
+✔ CLI: stdin with - (580.7987ms)
+✔ CLI: --variety overrides auto-detection (779.3278ms)
+✔ CLI: --lang overrides auto-detection (466.887ms)
+✔ CLI: --markdown changes the source mode (473.7642ms)
+✔ CLI: exit code 2 on input errors, 0 otherwise (937.2238ms)
+✔ programmatic analyze() is exported and routes like the CLI (209.6791ms)
+✔ mixed Arabic/English documents auto-route to the Arabic engine (253.3831ms)
+✔ report renders line:col positions (1.7228ms)
+✔ CLI: --help lists --register (116.5657ms)
+✔ CLI: stdin + --json carries the labelling fields and grouping stats (233.2526ms)
+✔ CLI: group spans slice back to real text and match their issues (231.9878ms)
+✔ CLI: the Egyptian fixture also carries the additive fields (235.5173ms)
+✔ CLI: --register combines with --variety and --markdown (233.7482ms)
+✔ groupIssues: two overlapping spans collapse into one group (3.7146ms)
+✔ groupIssues: touching spans (end === next start) also merge (0.4499ms)
+✔ groupIssues: disjoint spans stay separate and sum (0.4599ms)
+✔ groupIssues: a fully nested span does not extend the group (3.0751ms)
+✔ groupIssues: English-engine issues are spanned from index + text length (0.7248ms)
+✔ analyze(): overlapping findings collapse — groupCount < issue count (205.5236ms)
+✔ analyze(): affectedCoveragePercent is the union over the scored length (4.4184ms)
+✔ analyze(): masked regions are excluded from the coverage denominator (4.5632ms)
+✔ analyze(): a clean text reports zero groups and zero coverage (0.8452ms)
+✔ labelling: every --json result carries the three fields (Arabic) (360.3516ms)
+✔ labelling: the English engine gets the same fields (310.8675ms)
+✔ labelling: programmatic analyze() carries the fields too (1.509ms)
+✔ labelling: the readable report prints the review-signal note (287.9235ms)
+✔ labelling: engineVersion() is a git sha or a v-prefixed package version (0.303ms)
 CATEGORIES.md anti-drift contract
   (53 detector types, 53 documented in tables)
   ✓ every detector type is documented in a CATEGORIES.md table
@@ -146,13 +144,13 @@ CATEGORIES.md anti-drift contract
   ✓ fixtures/en-upstream/CATEGORIES.md states the engine type total, and it matches TYPE_LABELS (the engine's \*\*(\d+) `type…)
 
 CATEGORIES.md contract holds.
-✔ D:\Dev\htdocs\humanizer-pro\tests\en-categories.upstream.test.js (172.4777ms)
-✔ parity: AI-heavy paragraph scores in Strong/Heavy range (65.4495ms)
-✔ parity: plain human bug-report prose stays in Minimal range (40.7805ms)
-✔ parity: stats fields sum to issues length fixture (4.3216ms)
-✔ parity: chatbot artifacts score as P0 critical (2.1846ms)
-✔ parity: crypto-shill social post with hashtag block + bullet-NP lists flags (13.4426ms)
-✔ parity: text under 10 words returns tooShort flag (0.5499ms)
+✔ D:\Dev\htdocs\humanizer-pro\tests\en-categories.upstream.test.js (165.4259ms)
+✔ parity: AI-heavy paragraph scores in Strong/Heavy range (82.2323ms)
+✔ parity: plain human bug-report prose stays in Minimal range (24.614ms)
+✔ parity: stats fields sum to issues length fixture (4.2795ms)
+✔ parity: chatbot artifacts score as P0 critical (2.1693ms)
+✔ parity: crypto-shill social post with hashtag block + bullet-NP lists flags (13.59ms)
+✔ parity: text under 10 words returns tooShort flag (0.5921ms)
 Detector fixtures
   ✓ empty text returns Empty label
   ✓ text under 10 words returns tooShort flag
@@ -333,27 +331,27 @@ Detector fixtures
   ✓ #241: unsegmented-script documents are declined, not scored "Too short"
 
 All detector fixtures passed.
-✔ D:\Dev\htdocs\humanizer-pro\tests\en-detector.upstream.test.js (8084.568ms)
-✔ AI-style fixture ai-01.md scores above the AI threshold (15) (47.3798ms)
-✔ AI-style fixture ai-02.md scores above the AI threshold (15) (23.5034ms)
-✔ AI-style fixture ai-03.md scores above the AI threshold (15) (8.0707ms)
-✔ AI-style fixture ai-04.md scores above the AI threshold (15) (4.5418ms)
-✔ AI-style fixture ai-05.md scores above the AI threshold (15) (6.0572ms)
-✔ human-style fixture human-01.md scores at or below the AI threshold (15) (8.6162ms)
-✔ human-style fixture human-02.md scores at or below the AI threshold (15) (3.1307ms)
-✔ human-style fixture human-03.md scores at or below the AI threshold (15) (3.1559ms)
-✔ human-style fixture human-04.md scores at or below the AI threshold (15) (2.8609ms)
-✔ human-style fixture human-05.md scores at or below the AI threshold (15) (2.8451ms)
-✔ false-positive fixture ar-changelog-list.md scores at or below the AI threshold (15) (4.9909ms)
-✔ false-positive fixture ar-quoted-speech.md scores at or below the AI threshold (15) (3.8735ms)
-✔ false-positive fixture ar-rhetorical-egt.md scores at or below the AI threshold (15) (3.1192ms)
-✔ false-positive fixture ar-rhetorical-msa.md scores at or below the AI threshold (15) (3.7901ms)
-✔ false-positive fixture ar-technical-en-terms.md scores at or below the AI threshold (15) (6.4957ms)
-✔ false-positive fixture en-01-realtime-feature-gating.md scores at or below the AI threshold (15) (2.773ms)
-✔ false-positive fixture en-02-disclosure.md scores at or below the AI threshold (15) (3.1701ms)
-✔ false-positive fixture en-03-changelog.md scores at or below the AI threshold (15) (3.5272ms)
-✔ false-positive fixture en-04-quoted-speech.md scores at or below the AI threshold (15) (3.2282ms)
-✔ AI fixture minimum score exceeds human fixture maximum score (clean separation) (62.7787ms)
+✔ D:\Dev\htdocs\humanizer-pro\tests\en-detector.upstream.test.js (7563.033ms)
+✔ AI-style fixture ai-01.md scores above the AI threshold (15) (46.5958ms)
+✔ AI-style fixture ai-02.md scores above the AI threshold (15) (27.6839ms)
+✔ AI-style fixture ai-03.md scores above the AI threshold (15) (8.4397ms)
+✔ AI-style fixture ai-04.md scores above the AI threshold (15) (4.3917ms)
+✔ AI-style fixture ai-05.md scores above the AI threshold (15) (5.3162ms)
+✔ human-style fixture human-01.md scores at or below the AI threshold (15) (4.0608ms)
+✔ human-style fixture human-02.md scores at or below the AI threshold (15) (3.0758ms)
+✔ human-style fixture human-03.md scores at or below the AI threshold (15) (2.7222ms)
+✔ human-style fixture human-04.md scores at or below the AI threshold (15) (8.4039ms)
+✔ human-style fixture human-05.md scores at or below the AI threshold (15) (4.8591ms)
+✔ false-positive fixture ar-changelog-list.md scores at or below the AI threshold (15) (5.5115ms)
+✔ false-positive fixture ar-quoted-speech.md scores at or below the AI threshold (15) (3.1988ms)
+✔ false-positive fixture ar-rhetorical-egt.md scores at or below the AI threshold (15) (2.9503ms)
+✔ false-positive fixture ar-rhetorical-msa.md scores at or below the AI threshold (15) (3.3603ms)
+✔ false-positive fixture ar-technical-en-terms.md scores at or below the AI threshold (15) (3.1629ms)
+✔ false-positive fixture en-01-realtime-feature-gating.md scores at or below the AI threshold (15) (2.7912ms)
+✔ false-positive fixture en-02-disclosure.md scores at or below the AI threshold (15) (2.558ms)
+✔ false-positive fixture en-03-changelog.md scores at or below the AI threshold (15) (3.3697ms)
+✔ false-positive fixture en-04-quoted-speech.md scores at or below the AI threshold (15) (3.1194ms)
+✔ AI fixture minimum score exceeds human fixture maximum score (clean separation) (58.7395ms)
 
 preservation validator
 
@@ -411,97 +409,97 @@ preservation validator
 
 all preservation tests passed
 
-✔ D:\Dev\htdocs\humanizer-pro\tests\en-validate.upstream.test.js (316.7394ms)
-✔ maskIgnoreRegions: masks a humanizer:ignore region to spaces of identical length (3.2836ms)
-✔ maskIgnoreRegions: masks a humanizer-ignore-start/-end region (0.5693ms)
-✔ maskIgnoreRegions: an unmatched opener masks to end of text and warns (0.7886ms)
-✔ maskIgnoreRegions: a closer of one family does not close the other family's opener (1.4617ms)
-✔ analyze: an AI-style sentence inside an ignore region is not reported (274.2419ms)
-✔ analyze: an issue after the region keeps the exact original offset (2.6934ms)
-✔ analyze: stats.ignoredRegions and stats.ignoredCharCount are 0 with no markers (1.3688ms)
-✔ analyze: an unclosed opener produces the unclosed-ignore-region warning (1.7559ms)
-✔ --dir missing exits 2 (153.0297ms)
-✔ --dir with no value exits 2 (126.8459ms)
-✔ --dry-run lists the real file count without writing anything (121.2365ms)
-✔ installing into a temp directory produces a byte-identical copy of skills/humanizer-pro (586.2161ms)
-✔ installing twice without --force exits 1; with --force it succeeds (487.9522ms)
-✔ pure English prose identifies as en with no variety (3.1425ms)
-✔ pure MSA prose identifies as ar/msa with no strong dialect evidence (1.2799ms)
-✔ Egyptian Arabic prose identifies as ar/egt with distinct markers (1.0737ms)
-✔ Levantine Arabic prose identifies as ar/shami with distinct markers (0.7018ms)
-✔ mixed Arabic + English tech terms routes to the Arabic engine (0.596ms)
-✔ short texts (<=3 words) are unknown or low confidence (0.3454ms)
-✔ override short-circuits detection entirely (1.4497ms)
-✔ LEXICONS exports both dialect marker lists non-empty and disjoint (0.4232ms)
-✔ non-string input throws (when not overridden) (0.8809ms)
-✔ IMP-27 exports the guard constants it documents (0.6057ms)
-✔ IMP-27: MSA prose whose only dialect markers are homographs routes msa (0.5993ms)
-✔ IMP-27: strong dialect markers swamped by MSA anchors fail the guard (2.6176ms)
-✔ IMP-27: the high-density escape lets dense dialect text through the guard (0.7292ms)
-✔ IMP-27: dialectEvidence reports msaHits and msaHitsPer100 (0.3875ms)
-✔ same seed + same spec produces a byte-identical ballot and key (28.2057ms)
-✔ different seeds produce a different candidate order (12.1545ms)
-✔ key.json content (which label is which candidate) never appears in ballot.md (7.9175ms)
-✔ every pair id from the spec appears exactly once in the ballot and the key (9.42ms)
-✔ REGISTER_PROFILES: exactly two profiles, with the documented numbers (2.9843ms)
-✔ stats echo the active register and its gates (22.2377ms)
-✔ an unknown register falls back to default and records the fallback (8.7382ms)
-✔ omitting register is identical to register:"default" (6.7141ms)
-✔ formal human MSA fixture: over-fires under default (>= 25), clean under formal (< 25) (4.8009ms)
-✔ the formal profile relaxes ONLY the rhythm signal (5.2238ms)
-✔ an AI fixture is still convicted (>= 55) under the formal profile (2.3087ms)
-✔ CLI: --register formal changes the verdict on the formal fixture (657.5268ms)
-✔ CLI: --register=formal (equals form) is accepted (349.2592ms)
-✔ CLI: the readable report shows the active register (326.9176ms)
-✔ CLI: a bad --register value exits 2 (144.6857ms)
-✔ CLI: --register is accepted for an English document and echoed (287.9362ms)
-✔ fixture carries the native-review marker on line 2 (0.6929ms)
-✔ self-scan: the real run over the project exits 0 (3560.6731ms)
-✔ self-scan: --json emits a well-formed report for the real run (3076.2247ms)
-✔ self-scan-budgets.json: every scanned file has an entry, and budgets are non-negative multiples of 5 (or the file's own current score) (1.5687ms)
-✔ self-scan: a temp file that exceeds a tiny budget makes the CLI exit 1 (620.7613ms)
-✔ self-scan: the real project run (fixed target list, real budgets file) exits 0 (2126.3385ms)
-✔ self-scan: buildAdjustedText wraps Before:/After: and ❌/✓ lines and fenced code blocks in ignore markers (1.0813ms)
-✔ article-before.md / article-after-ok.md: exit 0, ok:true (236.9097ms)
-✔ article-after-bad-keyword-removed.md: exit 1, "seo-keyword-placement" FAILED (232.5281ms)
-✔ article-after-bad-h2.md: exit 1, "seo-keyword-placement" FAILED (222.6574ms)
-✔ article-after-bad-link.md: exit 1, "link-anchor-internal" FAILED (228.0574ms)
-✔ article-after-bad-alt.md: exit 1, "image-alt-captions" FAILED (220.3671ms)
-✔ article-after-bad-jsonld.md: exit 1, "json-ld" FAILED (212.7858ms)
-✔ article-after-bad-shortcode.md: exit 1, "shortcodes" FAILED (198.66ms)
-✔ article-after-bad-wpcomment.md: exit 1, "wp-comments" FAILED (186.6622ms)
-✔ article-after-bad-number.md: exit 1, "numbers" FAILED (192.7813ms)
-✔ article-after-bad-frontmatter.md: exit 1, "frontmatter-meta" FAILED (191.3041ms)
-✔ article-after-bad-codeblock.md: exit 1, "code-blocks" FAILED (174.885ms)
-✔ article-after-bad-tablecell.md: exit 1, "table-cells" FAILED (173.7622ms)
-✔ article-after-bad-blockquote.md: exit 1, "blockquotes" FAILED (171.7274ms)
-✔ article-after-bad-stuffing.md: exit 1, "seo-stuffing" FAILED (164.2533ms)
-✔ ar-article: pure digit-system change warns (not fails) by default (142.7849ms)
-✔ ar-article: --strict-digits turns the digit-system warning into a failure (137.8103ms)
-✔ ar-article-after-ok.md: clean Arabic pair passes (152.0685ms)
-✔ detector-score check reports "not computed" when no engine is available for the language (9.5118ms)
-✔ thin-before.md / thin-after.md: shrunk section warns, does not fail (165.3126ms)
-✔ missing arguments: exit 2 (104.8604ms)
-✔ nonexistent file: exit 2 (102.3674ms)
-✔ unknown flag: exit 2 (100.8223ms)
-✔ bad --lang value: exit 2 (102.4512ms)
-✔ --json output has the documented shape (192.2652ms)
-✔ without --seo, no seo-* checks are emitted, base checks still run (184.1038ms)
-✔ fidelity: an unchanged document passes the check (180.7528ms)
-✔ fidelity: an altered date WARNs by default (exit stays 0) (180.2011ms)
-✔ fidelity: --strict-fidelity turns the same altered date into a FAIL (195.5586ms)
-✔ fidelity: an Arabic date rewritten across digit systems still passes (309.1648ms)
-✔ fidelity: a Hijri year survives a digit-system change (143.6769ms)
-✔ fidelity: removing a citation marker WARNs (157.2725ms)
-✔ fidelity: removing an Arabic source marker WARNs (142.8499ms)
-✔ fidelity: dropping a proper name WARNs, and FAILs under --strict-fidelity (337.4531ms)
-✔ fidelity: dropping an Arabic honorific name WARNs (128.9806ms)
-✔ fidelity: the check is present on every run, including with --seo (152.8915ms)
-✔ mode: defaults to edit, and to seo when --seo is given (300.3831ms)
-✔ mode: --mode rewrite prints "recommended for every rewrite" in the summary (186.7011ms)
-✔ mode: --mode rewrite is reported in --json (196.4695ms)
-✔ mode: --mode edit and --mode seo omit the rewrite reminder (346.3014ms)
-✔ mode: an unknown --mode value exits 2 (100.9791ms)
+✔ D:\Dev\htdocs\humanizer-pro\tests\en-validate.upstream.test.js (273.3775ms)
+✔ maskIgnoreRegions: masks a humanizer:ignore region to spaces of identical length (3.417ms)
+✔ maskIgnoreRegions: masks a humanizer-ignore-start/-end region (0.5502ms)
+✔ maskIgnoreRegions: an unmatched opener masks to end of text and warns (0.5867ms)
+✔ maskIgnoreRegions: a closer of one family does not close the other family's opener (0.5315ms)
+✔ analyze: an AI-style sentence inside an ignore region is not reported (224.8647ms)
+✔ analyze: an issue after the region keeps the exact original offset (2.4823ms)
+✔ analyze: stats.ignoredRegions and stats.ignoredCharCount are 0 with no markers (1.6042ms)
+✔ analyze: an unclosed opener produces the unclosed-ignore-region warning (1.8296ms)
+✔ --dir missing exits 2 (134.8291ms)
+✔ --dir with no value exits 2 (101.0844ms)
+✔ --dry-run lists the real file count without writing anything (113.6855ms)
+✔ installing into a temp directory produces a byte-identical copy of skills/humanizer-pro (527.7193ms)
+✔ installing twice without --force exits 1; with --force it succeeds (433.5855ms)
+✔ pure English prose identifies as en with no variety (2.9989ms)
+✔ pure MSA prose identifies as ar/msa with no strong dialect evidence (1.1159ms)
+✔ Egyptian Arabic prose identifies as ar/egt with distinct markers (1.6923ms)
+✔ Levantine Arabic prose identifies as ar/shami with distinct markers (0.7869ms)
+✔ mixed Arabic + English tech terms routes to the Arabic engine (0.5596ms)
+✔ short texts (<=3 words) are unknown or low confidence (0.4088ms)
+✔ override short-circuits detection entirely (1.5313ms)
+✔ LEXICONS exports both dialect marker lists non-empty and disjoint (1.7819ms)
+✔ non-string input throws (when not overridden) (0.9162ms)
+✔ IMP-27 exports the guard constants it documents (0.6025ms)
+✔ IMP-27: MSA prose whose only dialect markers are homographs routes msa (0.6718ms)
+✔ IMP-27: strong dialect markers swamped by MSA anchors fail the guard (3.022ms)
+✔ IMP-27: the high-density escape lets dense dialect text through the guard (0.6884ms)
+✔ IMP-27: dialectEvidence reports msaHits and msaHitsPer100 (0.3793ms)
+✔ same seed + same spec produces a byte-identical ballot and key (19.2918ms)
+✔ different seeds produce a different candidate order (11.069ms)
+✔ key.json content (which label is which candidate) never appears in ballot.md (9.8364ms)
+✔ every pair id from the spec appears exactly once in the ballot and the key (7.5481ms)
+✔ REGISTER_PROFILES: exactly two profiles, with the documented numbers (2.5176ms)
+✔ stats echo the active register and its gates (16.7725ms)
+✔ an unknown register falls back to default and records the fallback (6.6689ms)
+✔ omitting register is identical to register:"default" (4.8765ms)
+✔ formal human MSA fixture: over-fires under default (>= 25), clean under formal (< 25) (5.0379ms)
+✔ the formal profile relaxes ONLY the rhythm signal (4.7533ms)
+✔ an AI fixture is still convicted (>= 55) under the formal profile (2.1187ms)
+✔ CLI: --register formal changes the verdict on the formal fixture (564.2197ms)
+✔ CLI: --register=formal (equals form) is accepted (288.6163ms)
+✔ CLI: the readable report shows the active register (298.0873ms)
+✔ CLI: a bad --register value exits 2 (137.5651ms)
+✔ CLI: --register is accepted for an English document and echoed (265.5917ms)
+✔ fixture carries the native-review marker on line 2 (0.4833ms)
+✔ self-scan: the real run over the project exits 0 (3233.8608ms)
+✔ self-scan: --json emits a well-formed report for the real run (2904.3929ms)
+✔ self-scan-budgets.json: every scanned file has an entry, and budgets are non-negative multiples of 5 (or the file's own current score) (1.4436ms)
+✔ self-scan: a temp file that exceeds a tiny budget makes the CLI exit 1 (470.4892ms)
+✔ self-scan: the real project run (fixed target list, real budgets file) exits 0 (2060.408ms)
+✔ self-scan: buildAdjustedText wraps Before:/After: and ❌/✓ lines and fenced code blocks in ignore markers (0.9447ms)
+✔ article-before.md / article-after-ok.md: exit 0, ok:true (200.4169ms)
+✔ article-after-bad-keyword-removed.md: exit 1, "seo-keyword-placement" FAILED (204.002ms)
+✔ article-after-bad-h2.md: exit 1, "seo-keyword-placement" FAILED (200.2557ms)
+✔ article-after-bad-link.md: exit 1, "link-anchor-internal" FAILED (199.2638ms)
+✔ article-after-bad-alt.md: exit 1, "image-alt-captions" FAILED (192.1953ms)
+✔ article-after-bad-jsonld.md: exit 1, "json-ld" FAILED (199.0966ms)
+✔ article-after-bad-shortcode.md: exit 1, "shortcodes" FAILED (200.7489ms)
+✔ article-after-bad-wpcomment.md: exit 1, "wp-comments" FAILED (182.7626ms)
+✔ article-after-bad-number.md: exit 1, "numbers" FAILED (178.2698ms)
+✔ article-after-bad-frontmatter.md: exit 1, "frontmatter-meta" FAILED (180.9297ms)
+✔ article-after-bad-codeblock.md: exit 1, "code-blocks" FAILED (190.1951ms)
+✔ article-after-bad-tablecell.md: exit 1, "table-cells" FAILED (171.4065ms)
+✔ article-after-bad-blockquote.md: exit 1, "blockquotes" FAILED (157.2318ms)
+✔ article-after-bad-stuffing.md: exit 1, "seo-stuffing" FAILED (144.2558ms)
+✔ ar-article: pure digit-system change warns (not fails) by default (125.8014ms)
+✔ ar-article: --strict-digits turns the digit-system warning into a failure (125.3724ms)
+✔ ar-article-after-ok.md: clean Arabic pair passes (134.7196ms)
+✔ detector-score check reports "not computed" when no engine is available for the language (8.3683ms)
+✔ thin-before.md / thin-after.md: shrunk section warns, does not fail (178.7051ms)
+✔ missing arguments: exit 2 (118.8067ms)
+✔ nonexistent file: exit 2 (132.982ms)
+✔ unknown flag: exit 2 (118.0017ms)
+✔ bad --lang value: exit 2 (115.3501ms)
+✔ --json output has the documented shape (168.5039ms)
+✔ without --seo, no seo-* checks are emitted, base checks still run (177.9352ms)
+✔ fidelity: an unchanged document passes the check (172.6264ms)
+✔ fidelity: an altered date WARNs by default (exit stays 0) (163.2335ms)
+✔ fidelity: --strict-fidelity turns the same altered date into a FAIL (160.519ms)
+✔ fidelity: an Arabic date rewritten across digit systems still passes (287.3707ms)
+✔ fidelity: a Hijri year survives a digit-system change (129.2219ms)
+✔ fidelity: removing a citation marker WARNs (148.3871ms)
+✔ fidelity: removing an Arabic source marker WARNs (134.5923ms)
+✔ fidelity: dropping a proper name WARNs, and FAILs under --strict-fidelity (318.5375ms)
+✔ fidelity: dropping an Arabic honorific name WARNs (132.7249ms)
+✔ fidelity: the check is present on every run, including with --seo (134.2216ms)
+✔ mode: defaults to edit, and to seo when --seo is given (274.0729ms)
+✔ mode: --mode rewrite prints "recommended for every rewrite" in the summary (147.2637ms)
+✔ mode: --mode rewrite is reported in --json (144.902ms)
+✔ mode: --mode edit and --mode seo omit the rewrite reminder (288.3955ms)
+✔ mode: an unknown --mode value exits 2 (83.5271ms)
 ℹ tests 231
 ℹ suites 0
 ℹ pass 231
@@ -509,11 +507,11 @@ all preservation tests passed
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 10301.3356
+ℹ duration_ms 9509.6946
 exit: 0
 
 ================================================================
-=== 2) node tools/check-skill.js --refs ===
+=== $ node tools/check-skill.js --refs ===
 ================================================================
 check-skill: D:\Dev\htdocs\humanizer-pro\skills\humanizer-pro\SKILL.md
 
@@ -533,20 +531,7 @@ result: 0 failure(s), 0 warning(s)
 exit: 0
 
 ================================================================
-=== 3) node tools/check-version.js ===
-================================================================
-check-version:
-  ok      package.json version: 0.2.0
-  ok      SKILL.md metadata.version: 0.2.0
-  ok      CHANGELOG.md latest heading: 0.2.0-build
-  ok      --require-tag not passed; no git commands executed
-  WARN    sources agree after stripping a -build/-rc suffix (base version "0.2.0"), but raw strings differ: package.json="0.2.0", SKILL.md="0.2.0", CHANGELOG.md="0.2.0-build"
-
-result: 0 failure(s), 1 warning(s)
-exit: 0
-
-================================================================
-=== 4) node tools/check-evals.js ===
+=== $ node tools/check-evals.js ===
 ================================================================
 evals.json: 16 entries
 Language buckets: {"en":4,"msa":4,"egt":4,"shami":4}
@@ -559,7 +544,31 @@ PASS — all checks passed.
 exit: 0
 
 ================================================================
-=== 5) npm run self-scan ===
+=== $ node tools/check-version.js ===
+================================================================
+check-version:
+  ok      package.json version: 0.2.0
+  ok      SKILL.md metadata.version: 0.2.0
+  ok      CHANGELOG.md latest heading: 0.2.0-build
+  ok      --require-tag not passed; no git commands executed
+  WARN    sources agree after stripping a -build/-rc suffix (base version "0.2.0"), but raw strings differ: package.json="0.2.0", SKILL.md="0.2.0", CHANGELOG.md="0.2.0-build"
+
+result: 0 failure(s), 1 warning(s)
+exit: 0
+
+================================================================
+=== $ node tools/check-node18.js ===
+================================================================
+check-node18: scanned 42 file(s) under skills, tools, tests
+
+  ok      no post-Node-18 API usage found
+
+result: 0 hit(s)
+note: this is a static grep; a real Node 18 run in CI is still required
+exit: 0
+
+================================================================
+=== $ npm run self-scan ===
 ================================================================
 
 > humanizer-pro@0.2.0 self-scan
@@ -601,24 +610,25 @@ docs/TODO.md                                        0          0               0
 exit: 0
 
 ================================================================
-=== 6) node evals/run-benchmark.js ===
+=== $ node tools/install.js --dir <temp dir> (temp dir removed after) ===
 ================================================================
-PASS  en-detect-01
-PASS  en-rewrite-01
-PASS  en-edit-01
-PASS  en-seo-01
-PASS  msa-detect-01
-PASS  msa-rewrite-01
-PASS  msa-edit-01
-PASS  msa-seo-01
-PASS  egt-detect-01
-PASS  egt-rewrite-01
-PASS  egt-edit-01
-PASS  egt-seo-01
-PASS  shami-detect-01
-PASS  shami-rewrite-01
-PASS  shami-edit-01
-PASS  shami-seo-01
-
-16/16 cases passed
+installed: D:\Dev\htdocs\humanizer-pro\skills\humanizer-pro -> D:\Dev\htdocs\humanizer-pro\_local\tmp\install-check\humanizer-pro
+files: 27
+bytes: 757209
+verify: ok
 exit: 0
+
+================================================================
+=== $ npm run build:zip ===
+================================================================
+
+> humanizer-pro@0.2.0 build:zip
+> node tools/build-zip.js
+
+build-zip: wrote dist\humanizer-pro.zip (276198 bytes)
+exit: 0
+
+================================================================
+=== unzip dist/humanizer-pro.zip and grep -rli <target-string> <extracted> ===
+================================================================
+matches: 0

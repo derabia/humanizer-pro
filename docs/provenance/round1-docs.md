@@ -2,7 +2,7 @@
 
 Section-by-section source map for every section added or changed in this
 pass. Format: section, source, rationale. Covers IMP-11, 15, 16, 18, 19, 21,
-22, 25, 26 from `docs/COMPETITIVE-ANALYSIS.md` section 6.
+22, 25, 26 from the competitive-analysis document (kept outside the published repository) section 6.
 
 ## `references/core-principles.md`
 

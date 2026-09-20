@@ -10,7 +10,7 @@ example instead of manufacturing one.
 
 ## What the skill does, and what it never does
 
-`humanizer-pro` is a Claude skill (and a standalone CLI) that removes
+`humanizer-pro` is an agent skill (and a standalone CLI) that removes
 AI-writing tells from a document: the hedge stacks, the formulaic
 transitions, the forced triads, the passive-voice overload in Arabic, all
 while keeping every fact, number, name, and structural element the source

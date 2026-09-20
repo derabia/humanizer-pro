@@ -135,7 +135,7 @@ File hashes at that commit (SHA-256, verified in this working tree):
 | AR-SH-007 (dialect cross-ref) | SM-EGT-008 | `humanizer-ar-egt/SKILL.md:222-236` | `2c34cce4...33734a71e` |
 | AR-SH-007 (dialect cross-ref) | SM-SHM-014 | `humanizer-ar-shami/SKILL.md:545-571` | `f3025a65...d734d58c` |
 | AR-SH-008 Vocabulary Concentration | `origin: humanizer-pro` | n/a | n/a |
-|, rationale | No upstream file in `_sources/semitic` states a lexical-variety or vocabulary-concentration rule. The three variety files cover sentence-length rhythm (SM-MSA-013, SM-EGT-010, SM-SHM-024) and mechanical synonym rotation for a single claim (SM-MSA-007, absorbed as `ar-msa.md` AR-MSA-007); neither measures how much of a document's content vocabulary one word carries, nor type-token ratio. Confirmed by direct search across all three Arabic `SKILL.md` files. The idea of adding a statistical, corpus-calibrated lexical layer is credited to finestructure-ai/humanizer-multilingual (MIT) per `docs/COMPETITIVE-ANALYSIS.md` §6 row IMP-23; the two statistics, the Arabic function-word stoplist, the 80/200-token applicability floors and both numeric gates are this project's own, measured over `corpus/` (see `docs/evidence/round1-wave2F-vocab-distribution.txt`) and not reproduced from that source. | | |
+|, rationale | No upstream file in `_sources/semitic` states a lexical-variety or vocabulary-concentration rule. The three variety files cover sentence-length rhythm (SM-MSA-013, SM-EGT-010, SM-SHM-024) and mechanical synonym rotation for a single claim (SM-MSA-007, absorbed as `ar-msa.md` AR-MSA-007); neither measures how much of a document's content vocabulary one word carries, nor type-token ratio. Confirmed by direct search across all three Arabic `SKILL.md` files. The idea of adding a statistical, corpus-calibrated lexical layer is credited to finestructure-ai/humanizer-multilingual (MIT) per the competitive-analysis document (kept outside the published repository) §6 row IMP-23; the two statistics, the Arabic function-word stoplist, the 80/200-token applicability floors and both numeric gates are this project's own, measured over `corpus/` (see `docs/evidence/round1-wave2F-vocab-distribution.txt`) and not reproduced from that source. | | |
 | Typography and numbers (whole section) | `origin: humanizer-pro` | n/a | n/a |
 | — rationale | No upstream file in `_sources/semitic` addresses Arabic punctuation glyphs (، ؛ ؟), quotation-mark convention (« » vs ""), tatweel, or Arabic-Indic vs. Western digit convention as a dedicated rule. Confirmed by direct search per `docs/inventory/semitic.md` §6 and `docs/CONFLICTS.md` C-03 (grep for the glyphs and for "curly"/"smart quote" across all three Arabic `SKILL.md` files returns no dedicated-rule hits). The tashkeel/diacritics sub-rule within this section *is* sourced (SM-MSA-023, SM-SHM-018 — cited inline in `ar-shared.md`) and is not itself `origin: humanizer-pro`; only the punctuation/quotes/tatweel/digits sub-rules are original. | | |
 | Rhetorical devices — rhetorical questions | SM-MSA-021, SM-EGT-021, SM-SHM-015 | `humanizer-ar-msa/SKILL.md:352-363`; `humanizer-ar-egt/SKILL.md:489-509`; `humanizer-ar-shami/SKILL.md:574-602` | see table above |
@@ -189,8 +189,8 @@ are in the file-hash table at the top of this document.
 ## Round-1 additions (IMP-12): the classical-rhetoric layer, AR-MSA-029 to AR-MSA-033
 
 These five entries do not come from `_sources/semitic`. They are adapted
-from a competitor repository reviewed in
-`docs/competitors/hazemshan1-rgb_humanizer-ar.md`.
+from a competitor repository reviewed in the competitive-research notes
+(kept outside the published repository).
 
 Source pin:
 
@@ -240,7 +240,7 @@ allowed after the optional proclitic, and `AR-SH-001` moves
 جدير بالذكر and جدير بالإشارة into it so الجدير بالذكر,
 والجدير بالذكر and للجدير بالذكر match the same entry. Provenance is this
 project's own (origin: humanizer-pro), from the widening recorded as
-borrow 8 in `docs/COMPETITIVE-ANALYSIS.md` section 5. The measured
+borrow 8 in the competitive-analysis document (kept outside the published repository) section 5. The measured
 false-positive effect of the widening is recorded in `corpus/RESULTS.md`.
 
 
@@ -490,7 +490,7 @@ Line numbers below are as of these commits.
 
 Section-by-section source map for every section added or changed in this
 pass. Format: section, source, rationale. Covers IMP-11, 15, 16, 18, 19, 21,
-22, 25, 26 from `docs/COMPETITIVE-ANALYSIS.md` section 6.
+22, 25, 26 from the competitive-analysis document (kept outside the published repository) section 6.
 
 ## `references/core-principles.md`
 

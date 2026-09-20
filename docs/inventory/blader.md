@@ -10,14 +10,14 @@ source-grounded: any field not present upstream is marked `—`.
 | File | Lines | Purpose |
 |---|---|---|
 | `SKILL.md` | 374 | The skill itself: YAML frontmatter + the full prompt agents read (theory, workflow, the 25-pattern catalog, "when not to act", source note). This is the product; everything else is packaging or tooling. |
-| `README.md` | 202 | Human-facing docs: install instructions (Skills CLI, Claude plugin, Claude Desktop, manual copy), usage examples, voice-matching example, "how it works" summary, a summary table of all 25 patterns, one full worked before/after example (Lisbon trip), sources, version history (v1.0.0 → v3.0.0), license. |
+| `README.md` | 202 | Human-facing docs: install instructions (Skills CLI, vendor plugin, vendor desktop app, manual copy), usage examples, voice-matching example, "how it works" summary, a summary table of all 25 patterns, one full worked before/after example (Lisbon trip), sources, version history (v1.0.0 → v3.0.0), license. |
 | `AGENTS.md` | 50 | Contributor/agent guide for maintaining this repo: what each file does, rules for renumbering patterns, version-sync rules, Plain Language writing-style rules, pre-publish checks. |
 | `LICENSE` | 21 | MIT License, copyright (c) 2025 Siqi Chen. |
-| `.claude-plugin/marketplace.json` | 18 | Claude Code marketplace manifest so the repo can be added via `/plugin marketplace add blader/humanizer`. |
-| `.claude-plugin/plugin.json` | 15 | Claude Code plugin manifest (name, description, version "3.0.0", author, license, keywords, `"skills": ["./"]` pointing the loader at the repo root). |
+| the vendor plugin marketplace manifest | 18 | A coding-agent host's marketplace manifest so the repo can be added via that host's plugin-marketplace command. |
+| the vendor plugin manifest | 15 | That coding-agent host's plugin manifest (name, description, version "3.0.0", author, license, keywords, `"skills": ["./"]` pointing the loader at the repo root). |
 | `agents/openai.yaml` | 4 | Display name/short description/default prompt for OpenAI-compatible agent loaders (`$humanizer`). |
 | `scripts/validate-package.py` | 87 | Dependency-free Python checker: validates SKILL.md frontmatter (no unsupported `version:`/`compatibility:`/`allowed-tools:` keys), version-number consistency across SKILL.md/README.md/plugin.json, single-SKILL.md-at-root rule, contiguous 1..N pattern numbering derived from `### N.` headings, README table numbering matching SKILL.md numbering, README section title `## The N patterns`, and a 400-line cap on SKILL.md. |
-| `.github/workflows/validate.yml` | 29 | CI workflow (`Check package`) on PR/push to main: runs `validate-package.py`, `npx skills@1.5.20 add . --list`, and `claude plugin validate .` (installs `@anthropic-ai/claude-code@2.1.237` first). |
+| `.github/workflows/validate.yml` | 29 | CI workflow (`Check package`) on PR/push to main: runs `validate-package.py`, `npx skills@1.5.20 add . --list`, and the vendor's plugin validator (installs the vendor's CLI first). |
 
 No fixtures, test data, or other reference/markdown files exist beyond the above.
 
@@ -39,7 +39,7 @@ metadata:
 ---
 ```
 
-From `.claude-plugin/plugin.json`:
+From the vendor plugin manifest:
 
 ```json
 {
@@ -55,7 +55,7 @@ From `.claude-plugin/plugin.json`:
 }
 ```
 
-From `.claude-plugin/marketplace.json` — plugin entry: `name: "humanizer"`, `description: "Rewrite AI-sounding text so it reads naturally without changing what it says."`, `license: "MIT"`, `keywords: ["writing", "editing", "humanize", "prose", "style"]`.
+From the vendor plugin marketplace manifest — plugin entry: `name: "humanizer"`, `description: "Rewrite AI-sounding text so it reads naturally without changing what it says."`, `license: "MIT"`, `keywords: ["writing", "editing", "humanize", "prose", "style"]`.
 
 From `agents/openai.yaml`:
 

@@ -12,8 +12,9 @@ still print the pre-rewrite hashes. Use the table below to translate any hash
 found in an evidence file into the hash that exists in the published history.
 
 Narrative documents (CHANGELOG.md, docs/REVIEW-HANDOFF.md, docs/PROGRESS.md,
-docs/COMPETITIVE-ANALYSIS.md, docs/EXAMPLES.md, corpus/RESULTS.md) were updated
-to the new hashes. Files under docs/evidence/ were deliberately left untouched.
+the competitive-analysis document kept outside the published repository,
+docs/EXAMPLES.md, corpus/RESULTS.md) were updated to the new hashes. Files
+under docs/evidence/ were deliberately left untouched.
 
 | # | subject | old hash | new hash |
 |---|---|---|---|
@@ -52,9 +53,9 @@ to the new hashes. Files under docs/evidence/ were deliberately left untouched.
 | 33 | round-1: IMP-20 ignore regions in detect.js and self-scan tool with re | `949da072ac` | `ff659652a3` |
 | 34 | round-1: IMP-27 ambiguous-marker routing guard, per-pattern contributi | `9de5d8f92c` | `801cf9564e` |
 | 35 | round-1: closure. Version 0.2.0, changelog, review handoff and competi | `475a51e289` | `0416101ee1` |
-| 36 | docs: publication guide with real before/after examples for English, M | `cc92b98069` | `1cd784eba6` |
-| 37 | state: record publication to github | `99409d9ff5` | `d0c7b47868` |
-| 38 | docs: retire the Node 18 weak spot, CI is green on 18/20/22 and Window | `9c683491d9` | `2c3b51004e` |
+| 36 | docs: publication guide with real before/after examples for English, M | `cc92b98069` | `b072dbc2da` |
+| 37 | state: record publication to github | `99409d9ff5` | `22aeeb6fd4` |
+| 38 | docs: retire the Node 18 weak spot, CI is green on 18/20/22 and Window | `9c683491d9` | `84f2982800` |
 
 The pre-rewrite history is kept locally under `refs/original/` in the build
 machine checkout. It was never published.

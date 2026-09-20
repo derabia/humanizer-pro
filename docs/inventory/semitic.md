@@ -15,7 +15,7 @@ its patterns are **not** inventoried here, per task scope.
 |---|---:|---|
 | `README.md` | 135 | Project pitch, skill table (pattern counts, install commands), usage instructions, "related skills" credits (says these are modeled on `blader/humanizer`), license (MIT). |
 | `package.json` | 37 | npm package manifest publishing all 4 skills as one `pi` package (`humanizer-semitic`); author "Ahmad Othman Ammar Adi"; repo `github.com/OthmanAdi/humanizer-semitic`. |
-| `.claude-plugin/plugin.json` | 15 | Claude Code plugin manifest; lists the 4 skill directories as plugin skills. |
+| the vendor plugin manifest | 15 | A coding-agent host's plugin manifest; lists the 4 skill directories as plugin skills. |
 | `skills/humanizer-ar-msa/SKILL.md` | 675 | Modern Standard Arabic (الفصحى) humanizer skill — 28 patterns across 5 categories. |
 | `skills/humanizer-ar-egt/SKILL.md` | 876 | Egyptian Arabic (عامية مصرية) humanizer skill — 25 patterns across 5 categories. |
 | `skills/humanizer-ar-shami/SKILL.md` | 1247 | Levantine Arabic (Syrian/Lebanese/Palestinian) humanizer skill — 25 patterns across 5 categories, with per-region variant tables. |
@@ -750,7 +750,7 @@ Expectation given: "Arabic patterns: MSA (humanizer-ar-msa), Egyptian (humanizer
 - **MSA skill's own Pattern 25 example breaks its own register rule**: the "Human" fix example for Overgeneralization of Formal MSA (line 427) uses مش تمام, an Egyptian/broadly-colloquial negation form, inside a skill whose entire premise is "these are formal MSA text edits." This is either a deliberate illustration that dialogue-in-MSA-prose should drop to colloquial, or an unflagged inconsistency — worth a native-speaker check.
 - **Two visible data artifacts inside the source itself** (not full errors, but worth flagging — see §11) suggest the source content was itself partly AI-generated or not fully copy-edited: Egyptian Pattern 18's spelling-variation table lists هيعمل three times identically as "variants" (line 440), and Egyptian Pattern 17's Arabizi example mixes scripts mid-word (`ya man mesh 3aref aعمل إيه`, line 424). Levantine Pattern 25's variation table similarly lists apparently-identical pairs (هيدا/هيدا line 956; معي/معي/مي line 959; كيف/كيف line 960; هونيك/هونيك line 961; بس/بس line 962) as if they were meaningfully different spellings.
 - **No shared "core"/"common" file or cross-reference mechanism** exists between the three Arabic skills or the four skills generally — despite heavy conceptual overlap (see §4), there is no shared config, shared vocabulary table, or `common.md`; each skill re-derives its MSA-vs-dialect framing independently, which is why the overlaps documented in §4 are similar-but-reworded rather than literally shared text.
-- **Package/plugin metadata is consistent** — `package.json` and `.claude-plugin/plugin.json` agree on the four skills and their paths; no discrepancy found there.
+- **Package/plugin metadata is consistent** — `package.json` and the vendor plugin manifest agree on the four skills and their paths; no discrepancy found there.
 
 ---
 
@@ -768,4 +768,4 @@ Flagging items that look potentially machine-generated, internally inconsistent,
 
 ---
 
-*End of inventory. This document reflects a full read of README.md, package.json, .claude-plugin/plugin.json, and all three Arabic SKILL.md files at commit `2c9d4fbe3e0086d373b59bfebc9556082275cf62`. Hebrew skill content was intentionally not inventoried beyond its frontmatter and line count, per task scope.*
+*End of inventory. This document reflects a full read of README.md, package.json, the vendor plugin manifest, and all three Arabic SKILL.md files at commit `2c9d4fbe3e0086d373b59bfebc9556082275cf62`. Hebrew skill content was intentionally not inventoried beyond its frontmatter and line count, per task scope.*

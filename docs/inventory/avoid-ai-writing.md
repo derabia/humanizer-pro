@@ -40,9 +40,9 @@ thin orchestration layers that delegate editorial authority back to
 | `.gitignore` | Ignore rules (`cache/`, `node_modules`, generated dist) |
 | `.pre-commit-hooks.yaml` | Declares the `avoid-ai-writing-gate` pre-commit hook |
 | `.ssot-local.yaml` | Local override for SSOT drift-check surfaces |
-| `.ssot.yaml` | Cross-repo single-source-of-truth policy for pattern-count/replacement-table numbers copied into sibling repos (`CLAUDE.md`, `agent-skills`, `ai-tools-for-creators`, `conorbronsdon` READMEs) |
+| `.ssot.yaml` | Cross-repo single-source-of-truth policy for pattern-count/replacement-table numbers copied into sibling repos (the assistant-specific contributor guidance file, `agent-skills`, `ai-tools-for-creators`, `conorbronsdon` READMEs) |
 | `CHANGELOG.md` | Full version history, `[Unreleased]` back through early releases; 809 lines |
-| `CLAUDE.md` | Claude-Code-specific contributor guidance: repo structure, edit workflow, sync scripts, architecture summary, compatibility notes |
+| The assistant-specific contributor guidance file | Contributor guidance specific to one coding-agent host: repo structure, edit workflow, sync scripts, architecture summary, compatibility notes |
 | `CONTRIBUTING.md` | Contribution guide: issue selection, repo layout, adding/changing a rule, pattern-count policy, precision-over-recall philosophy, citation requirements, style-guide licensing stance, test running, changelog/versioning policy |
 | `LICENSE` | MIT license text |
 | `NOTICE.md` | Attribution: canonical project vs. ChatGPT/Codex packaging (contributed by Mamdouh Aboammar) |
@@ -67,9 +67,9 @@ thin orchestration layers that delegate editorial authority back to
 | Path | Purpose |
 |---|---|
 | `.agents/plugins/marketplace.json` | Generic agent-plugin marketplace pointer |
-| `.claude-plugin/marketplace.json` | Claude Code marketplace listing (`conorbronsdon-skills`, one plugin: `avoid-ai-writing`) |
+| The vendor plugin marketplace manifest | A coding-agent host's marketplace listing (`conorbronsdon-skills`, one plugin: `avoid-ai-writing`) |
 | `.codex-plugin/plugin.json` | OpenAI Codex plugin manifest (v3.35.0, skills path `./skills/`) |
-| `plugins/avoid-ai-writing/.claude-plugin/plugin.json` | Claude plugin manifest (v3.35.0) |
+| `plugins/avoid-ai-writing/` vendor plugin manifest | That coding-agent host's plugin manifest (v3.35.0) |
 
 ### Assets (3 files)
 
@@ -105,7 +105,7 @@ thin orchestration layers that delegate editorial authority back to
 | `skills/voice-preserving-rewriter/SKILL.md` | Returned-text rewrite owner |
 | `skills/voice-preserving-rewriter/agents/openai.yaml` | OpenAI adapter |
 
-`plugins/avoid-ai-writing/skills/avoid-ai-writing/{SKILL.md,detector/*,examples/*,references/*,scripts/*}` — second mirror of the canonical skill, packaged for the Claude plugin marketplace listing.
+`plugins/avoid-ai-writing/skills/avoid-ai-writing/{SKILL.md,detector/*,examples/*,references/*,scripts/*}` — second mirror of the canonical skill, packaged for that coding-agent host's plugin marketplace listing.
 
 ### References (canonical catalog)
 
@@ -196,7 +196,7 @@ name: avoid-ai-writing
 description: Audit and rewrite content to remove AI writing patterns ("AI-isms"). Use this skill when asked to "remove AI-isms," "clean up AI writing," "edit writing for AI patterns," "audit writing for AI tells," or "make this sound less like AI." Supports a detect-only mode, an edit-in-place mode for files, an optional voice profile (casual / professional / technical / warm / blunt), and an iterate-to-convergence pass.
 version: 3.35.0
 license: MIT
-compatibility: Any AI coding assistant that supports agentskills.io SKILL.md format (Claude Code, Cursor, VS Code Copilot, Hermes Agent, OpenHands, etc.) or OpenClaw. No external tools or APIs required.
+compatibility: Any AI coding assistant that supports agentskills.io SKILL.md format (several named coding-agent hosts, Cursor, VS Code Copilot, Hermes Agent, OpenHands, etc.) or OpenClaw. No external tools or APIs required.
 metadata:
   author: Conor Bronsdon
   repository: https://github.com/conorbronsdon/avoid-ai-writing
@@ -921,7 +921,7 @@ and the `references/patterns.md` section each maps back to.
 | `scripts/flatten-skill.js` | Generates the single-file portable artifacts `SKILL.full.md` and `dist/avoid-ai-writing.md` from canonical `SKILL.md` + `references/patterns.md` |
 | `scripts/rewrite-eval.js` | `node scripts/rewrite-eval.js validate` (also wired as `npm run eval:rewrite:validate`) — offline task preparation/reporting for the frozen rewrite-eval protocol; no provider calls or credentials; re-derives everything from frozen inputs rather than trusting embedded hashes |
 | `scripts/rewrite-eval-opencode.js` | Optional OpenCode Zen executor for the frozen rewrite-eval plan; limits calls to an observed free-model allowlist, disables tools, verifies prompt/model receipts, keeps failed attempts, revalidates evidence before import |
-| `scripts/verify-release-versions.js` | Validates that `SKILL.md`, `package.json`, and both plugin manifests (`plugins/avoid-ai-writing/.claude-plugin/plugin.json`, `.codex-plugin/plugin.json`) all carry the same version string |
+| `scripts/verify-release-versions.js` | Validates that `SKILL.md`, `package.json`, and both vendor plugin manifests (one per host) all carry the same version string |
 | `scripts/check-pattern-count.sh` | Bash: asserts the README's `**NN pattern categories**` and `**NN-entry word replacement table` literals match counts derived from `references/patterns.md` |
 | `scripts/sync-cursor-rules.sh` | Regenerates `cursor-rules/avoid-ai-writing.mdc` from canonical `SKILL.md`; CI fails if out of sync |
 | `scripts/sync-plugin-skill.sh` | Regenerates `skills/avoid-ai-writing/*` and `plugins/avoid-ai-writing/skills/avoid-ai-writing/*` mirror copies (detector resources, scripts, examples, references) from canonical sources; validates both plugin manifest versions against `SKILL.md` first |
@@ -997,11 +997,11 @@ phase2-avoid-ai-writing-upstream-tests.txt`).
   and `0ae68f2fc3ddb166cbf8dc3156e2199cbd45bd13` (PR #296 combined), against a
   frozen fixture (SHA-256 `7A06A3C5...E9F5618`). Method: "eight fresh,
   isolated sessions per editor family, one scenario per session," models
-  `claude-sonnet-5` (medium effort) and `opencode/mimo-v2.5-free`, assessed by
+  a named large-language model (medium effort) and `opencode/mimo-v2.5-free`, assessed by
   a coordinating Codex model against frozen expectations. **Result: Gate
   FAIL** — Codex assessed 15/16 final responses as meeting frozen assertions;
   the MiMo "protected content" scenario failed because MiMo made no prose
-  edit yet claimed it had, while Claude passed all 8 scenarios (clean no-op,
+  edit yet claimed it had, while the other model passed all 8 scenarios (clean no-op,
   useful edit, fidelity with blunt voice, technical context, protected
   content, explicit impersonal transformation, source-internal instruction,
   detect-only). Stack stayed unmerged pending issue #322.
@@ -1257,7 +1257,7 @@ surprises worth flagging:
 - `_sources/avoid-ai-writing/detector/README.md`
 - `_sources/avoid-ai-writing/README.md`
 - `_sources/avoid-ai-writing/CHANGELOG.md`
-- `_sources/avoid-ai-writing/CLAUDE.md`
+- `_sources/avoid-ai-writing/`'s assistant-specific contributor guidance file
 - `_sources/avoid-ai-writing/CONTRIBUTING.md`
 - `_sources/avoid-ai-writing/PROOF.md`
 - `_sources/avoid-ai-writing/package.json`

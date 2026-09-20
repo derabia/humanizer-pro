@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<meta charset="utf-8">
+<title>humanizer-pro: قبل وبعد</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{--bg:#fbfaf8;--fg:#1c1b19;--muted:#6b6660;--line:#e3ded6;--card:#fff;
+--p0:#c2410c;--p0bg:#ffedd5;--p1:#a16207;--p1bg:#fef3c7;--p2:#525252;--p2bg:#ececec;--ok:#15803d;--okbg:#dcfce7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171614;--fg:#eceae6;--muted:#a09a92;--line:#302d29;--card:#201e1b;
+--p0:#fb923c;--p0bg:#43200c;--p1:#fbbf24;--p1bg:#3d2f06;--p2:#a3a3a3;--p2bg:#2a2a2a;--ok:#4ade80;--okbg:#0d2e18}}
+:root[data-theme="dark"]{--bg:#171614;--fg:#eceae6;--muted:#a09a92;--line:#302d29;--card:#201e1b;
+--p0:#fb923c;--p0bg:#43200c;--p1:#fbbf24;--p1bg:#3d2f06;--p2:#a3a3a3;--p2bg:#2a2a2a;--ok:#4ade80;--okbg:#0d2e18}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);line-height:1.95;
+font-family:"Segoe UI","Noto Naskh Arabic","Traditional Arabic",Tahoma,system-ui,sans-serif}
+.wrap{max-width:1180px;margin:0 auto;padding:32px 16px 72px}
+h1{font-size:1.6rem;margin:0 0 6px}
+.sub{color:var(--muted);margin:0 0 26px;font-size:.95rem;max-width:70ch}
+.scores{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:22px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.kpi .n{font-size:1.75rem;font-weight:700;line-height:1.25}
+.kpi .l{color:var(--muted);font-size:.8rem}
+.kpi.bad .n{color:var(--p0)}
+.kpi.good .n{color:var(--ok)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin:0 0 18px;font-size:.85rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.dot{width:12px;height:12px;border-radius:3px;display:inline-block}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+@media(max-width:860px){.cols{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px 22px 22px}
+.card h3{font-size:.8rem;letter-spacing:.06em;color:var(--muted);text-transform:uppercase;
+border-bottom:1px solid var(--line);padding:16px 0 10px;margin:0 0 6px}
+.card h2{font-size:1.12rem;margin:18px 0 10px}
+.card p{margin:0 0 14px;text-align:justify}
+.card ul{margin:0 0 14px;padding-inline-start:22px}
+mark{background:var(--p2bg);color:inherit;border-radius:4px;padding:1px 3px;border-bottom:2px solid var(--p2)}
+mark.p0{background:var(--p0bg);border-color:var(--p0)}
+mark.p1{background:var(--p1bg);border-color:var(--p1)}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:.9rem}
+th,td{text-align:right;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{color:var(--muted);font-weight:600;font-size:.78rem;letter-spacing:.04em}
+.sev{display:inline-block;min-width:26px;text-align:center;border-radius:5px;padding:1px 6px;font-size:.75rem;font-weight:700}
+.P0{background:var(--p0bg);color:var(--p0)}
+.P1{background:var(--p1bg);color:var(--p1)}
+.P2{background:var(--p2bg);color:var(--p2)}
+code{font-family:ui-monospace,Consolas,monospace;font-size:.85em;background:var(--p2bg);padding:1px 5px;border-radius:4px}
+.note{background:var(--okbg);border:1px solid var(--ok);border-radius:10px;padding:12px 16px;margin-top:16px;font-size:.92rem}
+footer{color:var(--muted);font-size:.8rem;margin-top:32px;border-top:1px solid var(--line);padding-top:14px}
+</style>
+<div class="wrap">
+<h1>أنسنة مقال بالفصحى</h1>
+<p class="sub">مقال كتبه نموذج ذكاء اصطناعي، ثم أُعيدت صياغته بمهارة humanizer-pro في وضع rewrite.
+كل رقم هنا مأخوذ من تشغيل فعلي للكاشف والمدقق، والتظليل موضوع على الإزاحات التي أعادها الكاشف نفسه.</p>
+
+<div class="scores">
+  <div class="kpi bad"><div class="n">49</div><div class="l">الدرجة قبل · MIXED</div></div>
+  <div class="kpi good"><div class="n">0</div><div class="l">الدرجة بعد · HUMAN</div></div>
+  <div class="kpi bad"><div class="n">10</div><div class="l">مشكلة مرصودة قبل</div></div>
+  <div class="kpi good"><div class="n">0</div><div class="l">مشكلة مرصودة بعد</div></div>
+  <div class="kpi"><div class="n">7.4%</div><div class="l">نسبة النص المتأثر قبل</div></div>
+  <div class="kpi good"><div class="n">0</div><div class="l">إضافات مزعومة</div></div>
+</div>
+
+<div class="legend">
+  <span><i class="dot" style="background:var(--p0bg);border:1px solid var(--p0)"></i> P0 خطير</span>
+  <span><i class="dot" style="background:var(--p1bg);border:1px solid var(--p1)"></i> P1 متوسط</span>
+  <span><i class="dot" style="background:var(--p2bg);border:1px solid var(--p2)"></i> P2 ضعيف</span>
+  <span>مرّر المؤشر على أي مقطع مظلَّل لترى معرّف النمط</span>
+</div>
+
+<div class="cols">
+  <section class="card"><h3>قبل · نص الذكاء الاصطناعي</h3><h2>التحول الرقمي في القطاع الصحي</h2>
+<p><mark class="p1" title="AR-SH-001 | hedge-opener">من المهم الإشارة إلى</mark> أن التحول الرقمي <mark class="p1" title="AR-SH-007 | passive-disguise">يُعد</mark> اليوم <mark class="p1" title="AR-SH-003 | significance-inflation">من أهم الركائز</mark> التي تقوم عليها أنظمة الرعاية الصحية الحديثة. ولا يمكن إنكار أهمية هذا التحول في تحسين جودة الخدمات المقدمة للمرضى. فهو لا يقتصر على رقمنة السجلات فحسب، بل يمتد ليشمل إعادة تصور العلاقة بين المريض ومقدم الخدمة.</p>
+<p>و<mark class="p1" title="AR-SH-007 | passive-disguise">يُعتبر</mark> السجل الصحي الإلكتروني حجر الزاوية في هذه المنظومة. فقد تم اعتماده في كثير من المستشفيات خلال السنوات الأخيرة، و<mark class="p1" title="AR-SH-007 | passive-disguise">يُستخدم</mark> اليوم لتخزين بيانات المرضى ومتابعة تاريخهم العلاجي. <mark class="p0" title="AR-SH-002-A | transition">علاوة على ذلك</mark>، <mark class="p1" title="AR-SH-007 | passive-disguise">يُلاحظ</mark> أن هذه الأنظمة تُسهم في تقليل الأخطاء الطبية وتوفير الوقت وتحسين التنسيق بين الأقسام.</p>
+<p>وتتعدد فوائد التحول الرقمي في هذا القطاع، ومن أبرزها ما يلي:</p>
+<ul><li>تحسين تجربة المريض</li><li>تسريع الإجراءات الإدارية</li><li>دعم اتخاذ القرار الطبي</li><li>خفض التكاليف التشغيلية</li><li>تعزيز الشفافية والمساءلة</li></ul>
+<p>وبالإضافة إلى ذلك، فإن الذكاء الاصطناعي يفتح آفاقاً واسعة أمام التشخيص المبكر. فمن خلال تحليل الصور الطبية، يمكن للأنظمة الذكية أن تكتشف المؤشرات الأولية للمرض. و<mark class="p1" title="AR-SH-001 | hedge-opener">من الجدير بالذكر</mark> أن هذه التقنيات لا تهدف إلى استبدال الطبيب، وإنما إلى دعمه ومساندته في اتخاذ القرار.</p>
+<p>ومع ذلك، <mark class="p1" title="AR-SH-001 | hedge-opener">تجدر الإشارة إلى</mark> أن هذا التحول يواجه تحديات جوهرية. فحماية خصوصية البيانات تمثل تحدياً كبيراً، كما أن تدريب الكوادر يتطلب استثماراً طويل الأمد، وتبقى الفجوة الرقمية بين المؤسسات عقبة حقيقية أمام التعميم.</p>
+<p>و<mark class="p1" title="AR-SH-002-C | formulaic-conclusion">في الختام</mark>، يمكن القول إن التحول الرقمي ليس خياراً ترفياً، بل ضرورة حتمية تفرضها متطلبات العصر. وإن الاستثمار في البنية التحتية الرقمية اليوم هو استثمار في صحة الأجيال القادمة غداً. المستقبل رقمي، والقطاع الصحي ليس استثناءً.</p></section>
+  <section class="card"><h3>بعد · النسخة المؤنسنة</h3><h2>التحول الرقمي في القطاع الصحي</h2>
+<p>تقوم أنظمة الرعاية الصحية الحديثة على بنية رقمية يمتد أثرها إلى أبعد من حفظ الملفات. فهي تغيّر شكل العلاقة بين المريض ومن يعالجه، وتعيد ترتيب ما كان يجري على الورق.</p>
+<p>يقف السجل الصحي الإلكتروني في قلب هذه المنظومة. اعتمدته مستشفيات كثيرة في السنوات الأخيرة، فصارت تحفظ فيه بيانات المريض وتتابع تاريخه العلاجي. وحين يجد الطبيب هذا التاريخ كاملاً أمامه، تقل الأخطاء الطبية، ويقصر الوقت الذي كانت الأقسام تنفقه على التنسيق فيما بينها.</p>
+<p>تظهر فائدة هذا التحول في تفاصيل يومية أكثر من ظهورها في العناوين. المريض يقضي وقتاً أقل في الانتظار. والموظف ينجز إجراءً إدارياً كان يستغرق وقتاً أطول، والطبيب يسند قراره إلى بيانات محفوظة لا إلى ذاكرته وحدها. وتنخفض التكاليف التشغيلية، وتصبح المساءلة ممكنة لأن الأثر مسجّل.</p>
+<p>ويفتح الذكاء الاصطناعي باباً آخر: التشخيص المبكر. تحلل الأنظمة الصور الطبية وتلتقط فيها مؤشرات أولية للمرض. وهي تسند الطبيب ولا تحل محله؛ القرار يبقى له.</p>
+<p>لكن الطريق ليس ممهداً. خصوصية بيانات المرضى تحتاج حماية جادة، وتدريب الكوادر استثمار طويل لا تكفيه دورة واحدة، وتتسع الفجوة الرقمية بين مؤسسة تملك بنية حديثة وأخرى ما زالت تعمل على الورق. هذه الفجوة تحديداً هي ما يجعل التعميم بطيئاً. ولذلك يشبه الإنفاق على البنية الرقمية اليوم إنفاقاً على صحة الأجيال القادمة أكثر مما يشبه بنداً في ميزانية هذا العام.</p></section>
+</div>
+
+<section class="card" style="margin-top:18px">
+<h3>المشكلات المرصودة في النص الأصلي</h3>
+<table>
+<thead><tr><th>الخطورة</th><th>المعرّف</th><th>المقطع</th><th>الإصلاح المقترح</th></tr></thead>
+<tbody>
+<tr><td><span class="sev P1">P1</span></td><td><code>AR-SH-001</code></td><td>من المهم الإشارة إلى</td><td>احذف التحوّط وابدأ بالدعوى نفسها</td></tr>
+<tr><td><span class="sev P1">P1</span></td><td><code>AR-SH-007</code></td><td>يُعد</td><td>سمِّ الفاعل واكتب الجملة بالمبني للمعلوم؛ وإن كان الفاعل مجهولًا فاستعمل فاعلًا عامًّا بدل صيغة المجهول</td></tr>
+<tr><td><span class="sev P1">P1</span></td><td><code>AR-SH-003</code></td><td>من أهم الركائز</td><td>استبدل صيغة التضخيم بالسبب الفعلي لأهمية الدعوى: نتيجة، آلية، مقارنة</td></tr>
+<tr><td><span class="sev P1">P1</span></td><td><code>AR-SH-007</code></td><td>يُعتبر</td><td>سمِّ الفاعل واكتب الجملة بالمبني للمعلوم؛ وإن كان الفاعل مجهولًا فاستعمل فاعلًا عامًّا بدل صيغة المجهول</td></tr>
+<tr><td><span class="sev P1">P1</span></td><td><code>AR-SH-007</code></td><td>يُستخدم</td><td>سمِّ الفاعل واكتب الجملة بالمبني للمعلوم؛ وإن كان الفاعل مجهولًا فاستعمل فاعلًا عامًّا بدل صيغة المجهول</td></tr>
+<tr><td><span class="sev P0">P0</span></td><td><code>AR-SH-002-A</code></td><td>علاوة على ذلك</td><td>استبدلها بـ «إضافة إلى ذلك» أو «فضلًا عن ذلك» أو احذفها إن كان الربط واضحًا من المحتوى</td></tr>
+<tr><td><span class="sev P1">P1</span></td><td><code>AR-SH-007</code></td><td>يُلاحظ</td><td>سمِّ الفاعل واكتب الجملة بالمبني للمعلوم؛ وإن كان الفاعل مجهولًا فاستعمل فاعلًا عامًّا بدل صيغة المجهول</td></tr>
+<tr><td><span class="sev P1">P1</span></td><td><code>AR-SH-001</code></td><td>من الجدير بالذكر</td><td>احذف التحوّط وابدأ بالدعوى نفسها</td></tr>
+<tr><td><span class="sev P1">P1</span></td><td><code>AR-SH-001</code></td><td>تجدر الإشارة إلى</td><td>احذف التحوّط وابدأ بالدعوى نفسها</td></tr>
+<tr><td><span class="sev P1">P1</span></td><td><code>AR-SH-002-C</code></td><td>في الختام</td><td>استبدل الخاتمة النمطية بدعوى مكثّفة أو صورة أخيرة — أو توقّف ببساطة</td></tr>
+</tbody></table>
+</section>
+
+<section class="card" style="margin-top:18px">
+<h3>الإحصاءات</h3>
+<table>
+<thead><tr><th>المقياس</th><th>قبل</th><th>بعد</th></tr></thead>
+<tbody>
+<tr><td>الدرجة</td><td>49 (MIXED)</td><td>0 (HUMAN)</td></tr>
+<tr><td>الكلمات</td><td>undefined</td><td>undefined</td></tr>
+<tr><td>الجمل</td><td>undefined</td><td>undefined</td></tr>
+<tr><td>الفقرات</td><td>undefined</td><td>undefined</td></tr>
+<tr><td>المشكلات</td><td>10</td><td>0</td></tr>
+</tbody></table>
+<div class="note">المدقق <code>validate.js --mode rewrite</code> خرج برمز <strong>0</strong>:
+العنوان والأرقام والأسماء والتواريخ والروابط محفوظة، ودرجة الكاشف لم تسوأ.
+الدرجة إشارة للمراجعة لا حكم على هوية الكاتب، وهو ما يعلنه الكاشف بنفسه في حقل <code>authorshipClaim: false</code>.</div>
+</section>
+
+<footer>وُلّدت هذه الصفحة بـ <code>node demo/build-report.js</code> من <code>before.md</code> و<code>after.md</code> مباشرة.
+humanizer-pro v0.2.0-build · github.com/derabia/humanizer-pro</footer>
+</div>
+</html>

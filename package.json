@@ -18,8 +18,7 @@
     "writing",
     "editing",
     "arabic",
-    "agent-skill",
-    "claude"
+    "agent-skill"
   ],
   "engines": {
     "node": ">=18"
