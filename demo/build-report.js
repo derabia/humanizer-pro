@@ -5,8 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
 
-const HOME = process.env.USERPROFILE || process.env.HOME;
-const SKILL = path.join(HOME, '.claude', 'skills', 'humanizer-pro');
+const SKILL = path.join(__dirname, "..", "skills", "humanizer-pro");
 const detect = (file) => JSON.parse(execFileSync(process.execPath,
   [path.join(SKILL, 'scripts', 'detect.js'), file, '--markdown', '--json'],
   { encoding: 'utf8' }));
