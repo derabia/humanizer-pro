@@ -3,7 +3,7 @@
 Read `docs/BUILD-PROMPT.md` first, then this file. Resume from **Next step**.
 
 ## Current phase
-Improvement round 1 complete on branch `improve/round-1`, head `9de5d8f` plus this documentation pass. Version 0.2.0, CHANGELOG section `[0.2.0-build]`, not tagged.
+Published at https://github.com/derabia/humanizer-pro (public, main, v0.2.0-build)
 
 ## Completed steps
 | Step | Commit |
@@ -50,9 +50,7 @@ Measured: tests 114 to 226, all passing. Arabic false-positive rate 1.67% (5/300
 Not closed: IMP-08 execution (ballots unfilled), IMP-24 (deferred behind IMP-08), CI never run (nothing pushed), npm never published, no sourced Levantine fixture (searched for, not found). Full table in `docs/REVIEW-HANDOFF.md` section 7, "Round-1 acceptance".
 
 ## Next step
-Tag v0.2.0-build; owner runs docs/native-review/ballot-egyptian.md; recruit Levantine reviewer; push for CI when approved.
-
-Note: `dist/humanizer-pro.zip` was rebuilt in 84f666a and is stale again, since round 1 changed lexicons.js, index.js, signals.js, lang.js and detect.js; rebuild with `node tools/build-zip.js` before uploading it anywhere. `STATE.md` is also stale and still names e90dc73.
+Owner: run docs/native-review/ballot-egyptian.md; recruit a Levantine reviewer; decide npm publish; then IMP-24 (Gulf).
 
 ## Open questions
 - None.
