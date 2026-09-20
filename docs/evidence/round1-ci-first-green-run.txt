@@ -1,0 +1,15 @@
+run 35500327096  sha cc92b98069e87ab79666b9f3c0c77ed411f1c0c2  success
+  success  node 18 / ubuntu-latest
+run 35500327096  sha cc92b98069e87ab79666b9f3c0c77ed411f1c0c2  success
+  success  node 22 / ubuntu-latest
+run 35500327096  sha cc92b98069e87ab79666b9f3c0c77ed411f1c0c2  success
+  success  node 20 / ubuntu-latest
+run 35500327096  sha cc92b98069e87ab79666b9f3c0c77ed411f1c0c2  success
+  success  node 20 / windows-latest
+
+URL: https://github.com/derabia/humanizer-pro/actions/runs/35500327096
+Workflow: .github/workflows/ci.yml
+Steps per job: npm test, check-skill.js, check-evals.js, check-version.js, check-node18.js
+This is the first real Node 18 execution of the test suite; before it, only a
+static API grep existed. Weak spot 3.9 in docs/REVIEW-HANDOFF.md is retired by
+this run.

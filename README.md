@@ -354,9 +354,10 @@ always a warning, never a failure).
   sourced Levantine fixture: paragraph-length published Levantine prose
   that can be cached under a usable licence was searched for and not
   found, so Levantine is the least evidenced of the three varieties.
-- **Node 18 compatibility is a target, not a verified fact.** The code
-  avoids anything newer than Node 18 by design, but this build ran
-  only on Node 25; no real Node 18 run has been performed here.
+- **Node 18 is verified in CI.** GitHub Actions runs the suite on Node
+  18, 20 and 22 on Linux and on Node 20 on Windows. The first green run is
+  https://github.com/derabia/humanizer-pro/actions/runs/35500327096.
+  Local development here still happens on Node 25.
 
 ## Repository layout
 
@@ -426,8 +427,8 @@ node tools/fetch-corpus.js && node tools/fp-measure.js
   `CHANGELOG.md` heading agree (a `-build`/`-rc` suffix is tolerated);
   pass `--require-tag` to also require a matching git tag.
 - `node tools/check-node18.js`: statically greps `skills/`, `tools/`,
-  and `tests/` for JS/Node APIs newer than Node 18; a real Node 18 CI
-  run is still the actual compatibility gate.
+  and `tests/` for JS/Node APIs newer than Node 18. The actual
+  compatibility gate is the Node 18 job in CI, which runs on every push.
 - `node tools/check-skill.js --refs`: also checks every pattern heading
   in `references/` against `docs/COVERAGE-MAP.md`.
 - `node evals/run-benchmark.js`: runs the 16 deterministic cases in

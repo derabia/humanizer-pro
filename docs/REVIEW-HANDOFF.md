@@ -404,10 +404,13 @@ unverified, and no English pattern, weight or threshold was changed in round 1.
 Probe: `tests/en-detector.parity.test.js` proves identity with upstream, which
 is exactly the point.
 
-**3.9 Node 18 was never actually executed.** `package.json` claims
-`engines.node: ">=18"` and `tools/run-tests.js` exists to keep `npm test`
-version-stable, but every run in `docs/evidence/` is Node v25.2.1 on Windows.
-Probe: install Node 18 and run `npm test`.
+**3.9 Retired. Node 18 now runs in CI.** The first green GitHub Actions run
+(https://github.com/derabia/humanizer-pro/actions/runs/35500327096)
+executed `npm test` plus every check script on Node 18, 20 and 22 on
+ubuntu-latest and Node 20 on windows-latest, all four jobs green. Evidence:
+`docs/evidence/round1-ci-first-green-run.txt`. Local runs in `docs/evidence/`
+are still Node v25.2.1, so a Node 18 regression would now surface in CI rather
+than locally.
 
 **3.10 The `metadata` frontmatter block in `SKILL.md` was never validated
 against a real skill loader.** `tools/check-skill.js` is this project's own
@@ -804,7 +807,7 @@ The 16 boxes from `docs/BUILD-PROMPT.md` section 4; raw output for every command
 | 5 | English detector scores match the upstream engine on its own fixtures | MET | `tests/en-detector.parity.test.js` loads `_sources/avoid-ai-writing/detector/patterns.js` directly and asserts identical score and label; 6 parity tests ran and passed (not skipped) in the recorded `npm test` |
 | 6 | Arabic detector returns exact original-string offsets; human fixtures below the threshold, AI fixtures above | MET | `tests/ar-detector.test.js` "every issue offset indexes the ORIGINAL text exactly"; fixture loop in section 1.5: 15 AI fixtures 84 to 100 (`AI`), 15 human fixtures 0 (`HUMAN`), 5 Arabic false-positive fixtures 0 |
 | 7 | `validate.js` catches every protected element type in tests | MET | `tests/validate.test.js` inside the 114-test run, plus the section 1.6 loop: 13 protected-element classes each exit 1, the clean pair exits 0 |
-| 8 | `npm test` passes on Windows with Node 18+ and zero runtime dependencies | PARTIAL | 114/114 pass on Windows 11 with Node v25.2.1; `package.json` has no dependencies of any kind. Node 18 itself was never executed (section 6) |
+| 8 | `npm test` passes on Windows with Node 18+ and zero runtime dependencies | MET | 226/226 locally on Windows 11 with Node v25.2.1, and green in CI on Node 18, 20 and 22 (Linux) and Node 20 (Windows): https://github.com/derabia/humanizer-pro/actions/runs/35500327096. `package.json` has no dependencies of any kind |
 | 9 | All evals pass or are listed as needing native-speaker review | MET for iteration-1 as recorded | `evals/runs/iteration-1/SUMMARY-en-msa.md` (8 evals, no failures, 4 NEEDS-NATIVE-REVIEW flags) and `SUMMARY-egt-shami.md` (8 evals, all PASS, 1 detector FLAG, all Arabic output NEEDS-NATIVE-REVIEW). `SELF-ASSESSMENT.md` and `iteration-2/` were written concurrently and not read here |
 | 10 | All licenses and credits present; adapted files carry original headers | MET | `skills/humanizer-pro/LICENSES/` holds all three MIT texts; `LICENSE`, `CREDITS.md`; `scripts/lib/en-detector/index.js:27` and `scripts/lib/en-validate.js:34` carry the upstream header plus a `Modified by humanizer-pro` note |
 | 11 | Skill still functions as Markdown-only when scripts cannot execute | MET | `SKILL.md` section 9 "When the scripts cannot run", plus inline fallbacks at lines 91 and 197; `check-skill` confirms all 11 reference paths are reachable from the router |
@@ -837,7 +840,7 @@ plan: it was added mid-round from corpus finding 1.
 |---|---|---|
 | IMP-01 Arabic FP corpus, Wilson CI | done | `corpus/RESULTS.md`; `docs/evidence/round1-fp-measure.txt`; `0e63a64`. 300 documents against the criterion's 200 |
 | IMP-02 sourced FP fixtures | done for MSA and Egyptian, not for Levantine | `tests/fixtures/human-sourced/{msa-01,egt-01}.md` and `_provenance.md`; `0e63a64`. The criterion asks for one per variety where available; Levantine was searched for and not found, and the shortfall is written up rather than filled |
-| IMP-03 CI matrix, Node 18/20/22 | prepared-not-run | `.github/workflows/ci.yml`; `4589438`. Never pushed, so never green. Weak spot 3.9 is not retired. `docs/evidence/round1-check-node18.txt` is a static grep only |
+| IMP-03 CI matrix, Node 18/20/22 | done | `.github/workflows/ci.yml`; `4589438`. First green run on the initial push to GitHub: https://github.com/derabia/humanizer-pro/actions/runs/35500327096 (4/4 jobs). Weak spot 3.9 retired. Evidence: `docs/evidence/round1-ci-first-green-run.txt` |
 | IMP-04 deterministic eval invariants | done | `evals/benchmark.json`, `evals/run-benchmark.js`, `tests/benchmark.test.js`; `docs/evidence/round1-benchmark.txt`; `7821f63`. 16/16 pass, and an injected invented number and a verbatim echo each fail the suite |
 | IMP-05 packaging, npm bin plus manifests | prepared-not-run | `docs/evidence/round1-npm-pack.txt`; `4589438`. The pack smoke test runs both CLIs from the tarball. The second half of the criterion, that each manifest loads in its host, is unverified: see weak spot 3.10 |
 | IMP-06 release discipline | done except the tag | `CHANGELOG.md` `[0.2.0-build]`, `tools/check-version.js`, version 0.2.0 in four files; `4589438` and this pass. The criterion requires a tagged release; the tag is the next step |

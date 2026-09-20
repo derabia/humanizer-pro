@@ -9,6 +9,14 @@ been tagged as a stable release.
 
 ## [Unreleased]
 
+### Verified
+
+- IMP-03 is now complete rather than prepared: the CI matrix ran green on the
+  first push to GitHub (Node 18, 20 and 22 on ubuntu-latest, Node 20 on
+  windows-latest). Evidence: `docs/evidence/round1-ci-first-green-run.txt` and
+  https://github.com/derabia/humanizer-pro/actions/runs/35500327096.
+  Weak spot 3.9 in `docs/REVIEW-HANDOFF.md` is retired.
+
 Round 1 closed everything in `docs/COMPETITIVE-ANALYSIS.md` section 6 except
 the items below. Each one is blocked on an action outside a code change.
 
