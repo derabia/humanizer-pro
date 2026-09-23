@@ -3,7 +3,7 @@
 Read `docs/BUILD-PROMPT.md` first, then this file. Resume from **Next step**.
 
 ## Current phase
-Published at https://github.com/derabia/humanizer-pro (public, main, v0.2.0-build)
+Published and installed. Repository re-created clean at https://github.com/derabia/humanizer-pro (one contributor, vendor-neutral).
 
 ## Completed steps
 | Step | Commit |
